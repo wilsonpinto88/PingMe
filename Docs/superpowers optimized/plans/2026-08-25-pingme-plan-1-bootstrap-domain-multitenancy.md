@@ -646,7 +646,7 @@ _Completed 2026-08-25: commit `c85dff7`, plus follow-up `49e3216` (removed lefto
 **Files:**
 - Create: `src/PingMe.Domain/Locations/QrCode.cs`
 
-- [ ] **Step 1: Create `QrCode.cs`**
+- [x] **Step 1: Create `QrCode.cs`**
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -670,17 +670,19 @@ public class QrCode : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Domain/Locations/QrCode.cs
 git commit -m "Add QrCode entity (opaque public code resolves to Tenant+Location)"
 ```
+
+_Completed 2026-08-25: commit `2051149`._
 
 ---
 
