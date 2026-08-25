@@ -1027,7 +1027,7 @@ _Completed 2026-08-25: commit `0fd55ce`. Confirmed RED state: Assert.Empty faile
 
 **Does NOT cover:** per-request tenant resolution from a JWT claim or QR code — that's wired into `CurrentTenantProvider.TenantId` by Plan 2 (auth middleware) and Plan 3 (QR resolution middleware). This task only makes the filter exist and work when the provider's `TenantId` is set.
 
-- [ ] **Step 1: Add the reflection-driven filter to `OnModelCreating`**
+- [x] **Step 1: Add the reflection-driven filter to `OnModelCreating`**
 
 Replace the body of `OnModelCreating` in `src/PingMe.Infrastructure/Persistence/PingMeDbContext.cs` with:
 
@@ -1075,7 +1075,7 @@ private void ApplyTenantFilter<TEntity>(ModelBuilder modelBuilder) where TEntity
 
 Add `using PingMe.Domain.Common;` to the top of the file (for `ITenantOwned`).
 
-- [ ] **Step 2: Regenerate the migration** (the filter itself doesn't change the schema, but confirms the model still builds cleanly)
+- [x] **Step 2: Regenerate the migration** (the filter itself doesn't change the schema, but confirms the model still builds cleanly)
 
 Run:
 ```bash
@@ -1083,17 +1083,19 @@ dotnet ef migrations add AddTenantQueryFilters --project src/PingMe.Infrastructu
 ```
 Expected: PASS — an empty (or near-empty) migration is generated since query filters aren't part of the schema. This is expected and correct.
 
-- [ ] **Step 3: Run the Task 11 test to verify it now passes**
+- [x] **Step 3: Run the Task 11 test to verify it now passes**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: PASS — `TenantA_cannot_read_TenantB_product` now passes because the global filter excludes tenant B's row from tenant A's queries.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure
 git commit -m "Implement global tenant query filter via reflection over ITenantOwned (GREEN)"
 ```
+
+_Completed 2026-08-25: commit `02567fe`. Confirmed GREEN: `TenantA_cannot_read_TenantB_product` now passes (1 passed, 0 failed). Review noted ProductOption/OrderItem are intentionally excluded from the filter per spec Section 2b (child entities, no standalone query path) — not a gap._
 
 ---
 
