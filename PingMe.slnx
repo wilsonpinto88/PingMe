@@ -1,2 +1,12 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PingMe.Api/PingMe.Api.csproj" />
+    <Project Path="src/PingMe.Application/PingMe.Application.csproj" />
+    <Project Path="src/PingMe.Domain/PingMe.Domain.csproj" />
+    <Project Path="src/PingMe.Infrastructure/PingMe.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj" />
+    <Project Path="tests/PingMe.UnitTests/PingMe.UnitTests.csproj" />
+  </Folder>
 </Solution>
