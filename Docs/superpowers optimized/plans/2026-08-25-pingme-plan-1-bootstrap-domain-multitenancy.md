@@ -726,7 +726,7 @@ _Completed 2026-08-25: commit `c2f3161`._
 
 **Does NOT cover:** the global tenant query filter itself — that is added in Task 12, after Task 11 proves (via a failing test) that its absence is a real bug, not a hypothetical one.
 
-- [ ] **Step 1: Create `CurrentTenantProvider.cs`** (mutable — later plans' JWT/QR middleware set `.TenantId` per request)
+- [x] **Step 1: Create `CurrentTenantProvider.cs`** (mutable — later plans' JWT/QR middleware set `.TenantId` per request)
 
 ```csharp
 namespace PingMe.Infrastructure.Tenants;
@@ -739,7 +739,7 @@ public class CurrentTenantProvider : ICurrentTenantProvider
 }
 ```
 
-- [ ] **Step 2: Create `PingMeDbContext.cs`**
+- [x] **Step 2: Create `PingMeDbContext.cs`**
 
 ```csharp
 namespace PingMe.Infrastructure.Persistence;
@@ -798,7 +798,7 @@ public class PingMeDbContext : DbContext
 }
 ```
 
-- [ ] **Step 3: Add EF Core + Npgsql package references to Infrastructure**
+- [x] **Step 3: Add EF Core + Npgsql package references to Infrastructure**
 
 Run:
 ```bash
@@ -806,17 +806,19 @@ dotnet add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj package Npgsql
 dotnet add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj package Microsoft.EntityFrameworkCore
 ```
 
-- [ ] **Step 4: Verify it compiles**
+- [x] **Step 4: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure
 git commit -m "Add PingMeDbContext and CurrentTenantProvider (tenant filter not yet applied)"
 ```
+
+_Completed 2026-08-25: commit `347140c`._
 
 ---
 
