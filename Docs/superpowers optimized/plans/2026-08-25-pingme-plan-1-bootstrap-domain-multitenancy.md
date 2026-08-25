@@ -143,7 +143,7 @@ _Completed 2026-08-25: commits `dc8d680` (implementation) and `33bafaf` (code-qu
 - Create: `src/PingMe.Domain/Common/Entity.cs`
 - Create: `src/PingMe.Domain/Common/ITenantOwned.cs`
 
-- [ ] **Step 1: Create `Entity.cs`**
+- [x] **Step 1: Create `Entity.cs`**
 
 ```csharp
 namespace PingMe.Domain.Common;
@@ -154,7 +154,7 @@ public abstract class Entity
 }
 ```
 
-- [ ] **Step 2: Create `ITenantOwned.cs`**
+- [x] **Step 2: Create `ITenantOwned.cs`**
 
 ```csharp
 namespace PingMe.Domain.Common;
@@ -165,12 +165,12 @@ public interface ITenantOwned
 }
 ```
 
-- [ ] **Step 3: Verify it compiles**
+- [x] **Step 3: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Domain/Common
