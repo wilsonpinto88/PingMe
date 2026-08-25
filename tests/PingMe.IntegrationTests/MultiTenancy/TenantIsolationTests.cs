@@ -2,6 +2,8 @@ namespace PingMe.IntegrationTests.MultiTenancy;
 
 using Microsoft.EntityFrameworkCore;
 using PingMe.Domain.Catalog;
+using PingMe.Domain.Locations;
+using PingMe.Domain.Ordering;
 using PingMe.Infrastructure.Persistence;
 using PingMe.Infrastructure.Tenants;
 using Xunit;
@@ -55,11 +57,11 @@ public class TenantIsolationTests
         {
             await seedContext.Database.EnsureCreatedAsync();
 
-            var venueB = new PingMe.Domain.Locations.Venue(tenantBId, "Venue B");
+            var venueB = new Venue(tenantBId, "Venue B");
             seedContext.Venues.Add(venueB);
             await seedContext.SaveChangesAsync();
 
-            var locationB = new PingMe.Domain.Locations.Location(tenantBId, venueB.Id, "Table 1");
+            var locationB = new Location(tenantBId, venueB.Id, "Table 1");
             seedContext.Locations.Add(locationB);
             await seedContext.SaveChangesAsync();
         }
@@ -81,15 +83,15 @@ public class TenantIsolationTests
         {
             await seedContext.Database.EnsureCreatedAsync();
 
-            var venueB = new PingMe.Domain.Locations.Venue(tenantBId, "Venue B");
+            var venueB = new Venue(tenantBId, "Venue B");
             seedContext.Venues.Add(venueB);
             await seedContext.SaveChangesAsync();
 
-            var locationB = new PingMe.Domain.Locations.Location(tenantBId, venueB.Id, "Table 1");
+            var locationB = new Location(tenantBId, venueB.Id, "Table 1");
             seedContext.Locations.Add(locationB);
             await seedContext.SaveChangesAsync();
 
-            var sessionB = new PingMe.Domain.Locations.CustomerSession(
+            var sessionB = new CustomerSession(
                 tenantBId, locationB.Id, DateTime.UtcNow, DateTime.UtcNow.AddHours(2));
             seedContext.CustomerSessions.Add(sessionB);
             await seedContext.SaveChangesAsync();
@@ -113,20 +115,20 @@ public class TenantIsolationTests
         {
             await seedContext.Database.EnsureCreatedAsync();
 
-            var venueB = new PingMe.Domain.Locations.Venue(tenantBId, "Venue B");
+            var venueB = new Venue(tenantBId, "Venue B");
             seedContext.Venues.Add(venueB);
             await seedContext.SaveChangesAsync();
 
-            var locationB = new PingMe.Domain.Locations.Location(tenantBId, venueB.Id, "Table 1");
+            var locationB = new Location(tenantBId, venueB.Id, "Table 1");
             seedContext.Locations.Add(locationB);
             await seedContext.SaveChangesAsync();
 
-            var sessionB = new PingMe.Domain.Locations.CustomerSession(
+            var sessionB = new CustomerSession(
                 tenantBId, locationB.Id, DateTime.UtcNow, DateTime.UtcNow.AddHours(2));
             seedContext.CustomerSessions.Add(sessionB);
             await seedContext.SaveChangesAsync();
 
-            var orderB = new PingMe.Domain.Ordering.Order(tenantBId, sessionB.Id, DateTime.UtcNow);
+            var orderB = new Order(tenantBId, sessionB.Id, DateTime.UtcNow);
             seedContext.Orders.Add(orderB);
             await seedContext.SaveChangesAsync();
             orderBId = orderB.Id;
