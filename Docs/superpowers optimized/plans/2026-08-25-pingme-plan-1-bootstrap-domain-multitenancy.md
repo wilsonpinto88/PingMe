@@ -691,7 +691,7 @@ _Completed 2026-08-25: commit `2051149`._
 **Files:**
 - Create: `src/PingMe.Application/Tenants/ICurrentTenantProvider.cs`
 
-- [ ] **Step 1: Create the interface**
+- [x] **Step 1: Create the interface**
 
 ```csharp
 namespace PingMe.Application.Tenants;
@@ -702,17 +702,19 @@ public interface ICurrentTenantProvider
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Application/PingMe.Application.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Application/Tenants
 git commit -m "Add ICurrentTenantProvider application interface"
 ```
+
+_Completed 2026-08-25: commit `c2f3161`._
 
 ---
 
