@@ -32,6 +32,7 @@ public class PingMeDbContext : DbContext
     {
         modelBuilder.Entity<Product>().Property(p => p.Price).HasPrecision(10, 2);
         modelBuilder.Entity<ProductOption>().Property(p => p.PriceDelta).HasPrecision(10, 2);
+        modelBuilder.Entity<OrderItem>().Property(i => i.UnitPrice).HasPrecision(10, 2);
 
         modelBuilder.Entity<Order>()
             .HasMany(o => o.Items)
