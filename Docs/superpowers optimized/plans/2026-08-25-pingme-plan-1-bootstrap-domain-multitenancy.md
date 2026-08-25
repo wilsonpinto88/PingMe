@@ -84,14 +84,14 @@ tests/PingMe.IntegrationTests/                        (new project)
 
 **Does NOT cover:** package references specific to EF/Npgsql (added in Task 10) or xUnit test-runner packages beyond the template defaults (added by `dotnet new xunit`, which already includes them) — this task only wires project structure and references.
 
-- [ ] **Step 1: Delete scaffold placeholder files**
+- [x] **Step 1: Delete scaffold placeholder files**
 
 Run:
 ```bash
 rm src/PingMe.Domain/Class1.cs src/PingMe.Application/Class1.cs src/PingMe.Infrastructure/Class1.cs src/PingMe.Api/WeatherForecast.cs src/PingMe.Api/Controllers/WeatherForecastController.cs
 ```
 
-- [ ] **Step 2: Add project references**
+- [x] **Step 2: Add project references**
 
 Run:
 ```bash
@@ -102,7 +102,7 @@ dotnet add src/PingMe.Api/PingMe.Api.csproj reference src/PingMe.Application/Pin
 dotnet add src/PingMe.Api/PingMe.Api.csproj reference src/PingMe.Infrastructure/PingMe.Infrastructure.csproj
 ```
 
-- [ ] **Step 3: Create test projects**
+- [x] **Step 3: Create test projects**
 
 Run:
 ```bash
@@ -114,24 +114,26 @@ dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj referenc
 dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj reference src/PingMe.Infrastructure/PingMe.Infrastructure.csproj
 ```
 
-- [ ] **Step 4: Add all 6 projects to the solution file**
+- [x] **Step 4: Add all 6 projects to the solution file**
 
 Run:
 ```bash
 dotnet sln PingMe.slnx add src/PingMe.Domain/PingMe.Domain.csproj src/PingMe.Application/PingMe.Application.csproj src/PingMe.Infrastructure/PingMe.Infrastructure.csproj src/PingMe.Api/PingMe.Api.csproj tests/PingMe.UnitTests/PingMe.UnitTests.csproj tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj
 ```
 
-- [ ] **Step 5: Verify the solution builds**
+- [x] **Step 5: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — build succeeds with 0 errors (warnings about unused usings are fine).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add PingMe.slnx src/ tests/
 git commit -m "Wire solution: project references, test projects, remove scaffold placeholders"
 ```
+
+_Completed 2026-08-25: commits `dc8d680` (implementation) and `33bafaf` (code-quality fixup: removed stale WeatherForecast .http request, added missing csproj EOF newlines)._
 
 ---
 
@@ -141,7 +143,7 @@ git commit -m "Wire solution: project references, test projects, remove scaffold
 - Create: `src/PingMe.Domain/Common/Entity.cs`
 - Create: `src/PingMe.Domain/Common/ITenantOwned.cs`
 
-- [ ] **Step 1: Create `Entity.cs`**
+- [x] **Step 1: Create `Entity.cs`**
 
 ```csharp
 namespace PingMe.Domain.Common;
@@ -152,7 +154,7 @@ public abstract class Entity
 }
 ```
 
-- [ ] **Step 2: Create `ITenantOwned.cs`**
+- [x] **Step 2: Create `ITenantOwned.cs`**
 
 ```csharp
 namespace PingMe.Domain.Common;
@@ -163,12 +165,12 @@ public interface ITenantOwned
 }
 ```
 
-- [ ] **Step 3: Verify it compiles**
+- [x] **Step 3: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Domain/Common
@@ -184,7 +186,7 @@ git commit -m "Add Entity base type and ITenantOwned marker interface"
 - Create: `src/PingMe.Domain/Locations/Venue.cs`
 - Create: `src/PingMe.Domain/Locations/Location.cs`
 
-- [ ] **Step 1: Create `Tenant.cs`**
+- [x] **Step 1: Create `Tenant.cs`**
 
 ```csharp
 namespace PingMe.Domain.Tenants;
@@ -206,7 +208,7 @@ public class Tenant : Entity
 }
 ```
 
-- [ ] **Step 2: Create `Venue.cs`**
+- [x] **Step 2: Create `Venue.cs`**
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -228,7 +230,7 @@ public class Venue : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 3: Create `Location.cs`** (self-referencing tree — see spec Section 2)
+- [x] **Step 3: Create `Location.cs`** (self-referencing tree — see spec Section 2)
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -254,17 +256,19 @@ public class Location : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 4: Verify it compiles**
+- [x] **Step 4: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Domain/Tenants src/PingMe.Domain/Locations
 git commit -m "Add Tenant, Venue, and self-referencing Location entities"
 ```
+
+_Completed 2026-08-25: commit `9b4b88c`._
 
 ---
 
@@ -275,7 +279,7 @@ git commit -m "Add Tenant, Venue, and self-referencing Location entities"
 
 **Does NOT cover:** the actual QR-scan-to-session HTTP flow (`GET /p/{code}`) — that's Plan 3. This task only models the entity and its `IsOpen`/`Close` behavior.
 
-- [ ] **Step 1: Create `CustomerSession.cs`**
+- [x] **Step 1: Create `CustomerSession.cs`**
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -309,17 +313,19 @@ public class CustomerSession : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Domain/Locations/CustomerSession.cs
 git commit -m "Add CustomerSession entity with IsOpen/Close behavior"
 ```
+
+_Completed 2026-08-25: commit `bbc9b46`._
 
 ---
 
@@ -333,7 +339,7 @@ git commit -m "Add CustomerSession entity with IsOpen/Close behavior"
 
 **Does NOT cover:** `ProductOption` has no `TenantId` per spec Section 2b — it is reached only through its parent `Product`. Application code must never query `ProductOption` standalone (this hard rule is enforced by not exposing such a repository method in later plans, not by code in this task).
 
-- [ ] **Step 1: Create `Menu.cs`**
+- [x] **Step 1: Create `Menu.cs`**
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -355,7 +361,7 @@ public class Menu : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 2: Create `Category.cs`**
+- [x] **Step 2: Create `Category.cs`**
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -381,7 +387,7 @@ public class Category : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 3: Create `Product.cs`**
+- [x] **Step 3: Create `Product.cs`**
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -414,7 +420,7 @@ public class Product : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 4: Create `ProductOption.cs`** (no `TenantId` — see Does NOT cover above)
+- [x] **Step 4: Create `ProductOption.cs`** (no `TenantId` — see Does NOT cover above)
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -438,17 +444,19 @@ public class ProductOption : Entity
 }
 ```
 
-- [ ] **Step 5: Verify it compiles**
+- [x] **Step 5: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Domain/Catalog
 git commit -m "Add Catalog entities: Menu, Category, Product, ProductOption"
 ```
+
+_Completed 2026-08-25: commit `6c24b1e`._
 
 ---
 
@@ -462,7 +470,7 @@ git commit -m "Add Catalog entities: Menu, Category, Product, ProductOption"
 
 **Does NOT cover:** `OrderItem` has no `TenantId` per spec Section 2b (same reasoning as `ProductOption`). This task also does not cover the `POST /orders` endpoint or SignalR broadcast — those are Plan 3. The state machine here only enforces `Received → Accepted → Preparing → Ready → Delivered`; `Cancelled`/`Rejected`/payment states are explicitly out of scope for MVP (spec Section 7).
 
-- [ ] **Step 1: Create `OrderStatus.cs`** (needed before the test compiles)
+- [x] **Step 1: Create `OrderStatus.cs`** (needed before the test compiles)
 
 ```csharp
 namespace PingMe.Domain.Ordering;
@@ -477,7 +485,7 @@ public enum OrderStatus
 }
 ```
 
-- [ ] **Step 2: Create `OrderItem.cs`** (needed before the test compiles — `Order.AddItem` constructs it)
+- [x] **Step 2: Create `OrderItem.cs`** (needed before the test compiles — `Order.AddItem` constructs it)
 
 ```csharp
 namespace PingMe.Domain.Ordering;
@@ -505,7 +513,7 @@ public class OrderItem : Entity
 }
 ```
 
-- [ ] **Step 3: Write the failing test for the state machine**
+- [x] **Step 3: Write the failing test for the state machine**
 
 Create `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs`:
 
@@ -560,12 +568,12 @@ public class OrderTransitionTests
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 Run: `dotnet test tests/PingMe.UnitTests/PingMe.UnitTests.csproj`
 Expected: FAIL with a compiler error — `Order` does not exist yet.
 
-- [ ] **Step 5: Create `Order.cs`**
+- [x] **Step 5: Create `Order.cs`**
 
 ```csharp
 namespace PingMe.Domain.Ordering;
@@ -617,17 +625,19 @@ public class Order : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 Run: `dotnet test tests/PingMe.UnitTests/PingMe.UnitTests.csproj`
 Expected: PASS — all 4 tests green.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Domain/Ordering tests/PingMe.UnitTests
 git commit -m "Add Order/OrderItem entities with state-machine transitions (TDD)"
 ```
+
+_Completed 2026-08-25: commit `c85dff7`, plus follow-up `49e3216` (removed leftover dotnet-new-xunit UnitTest1.cs scaffold files from both test projects, flagged in spec review)._
 
 ---
 
@@ -636,7 +646,7 @@ git commit -m "Add Order/OrderItem entities with state-machine transitions (TDD)
 **Files:**
 - Create: `src/PingMe.Domain/Locations/QrCode.cs`
 
-- [ ] **Step 1: Create `QrCode.cs`**
+- [x] **Step 1: Create `QrCode.cs`**
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -660,17 +670,19 @@ public class QrCode : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Domain/Locations/QrCode.cs
 git commit -m "Add QrCode entity (opaque public code resolves to Tenant+Location)"
 ```
+
+_Completed 2026-08-25: commit `2051149`._
 
 ---
 
@@ -679,7 +691,7 @@ git commit -m "Add QrCode entity (opaque public code resolves to Tenant+Location
 **Files:**
 - Create: `src/PingMe.Application/Tenants/ICurrentTenantProvider.cs`
 
-- [ ] **Step 1: Create the interface**
+- [x] **Step 1: Create the interface**
 
 ```csharp
 namespace PingMe.Application.Tenants;
@@ -690,17 +702,19 @@ public interface ICurrentTenantProvider
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Application/PingMe.Application.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Application/Tenants
 git commit -m "Add ICurrentTenantProvider application interface"
 ```
+
+_Completed 2026-08-25: commit `c2f3161`._
 
 ---
 
@@ -712,7 +726,7 @@ git commit -m "Add ICurrentTenantProvider application interface"
 
 **Does NOT cover:** the global tenant query filter itself — that is added in Task 12, after Task 11 proves (via a failing test) that its absence is a real bug, not a hypothetical one.
 
-- [ ] **Step 1: Create `CurrentTenantProvider.cs`** (mutable — later plans' JWT/QR middleware set `.TenantId` per request)
+- [x] **Step 1: Create `CurrentTenantProvider.cs`** (mutable — later plans' JWT/QR middleware set `.TenantId` per request)
 
 ```csharp
 namespace PingMe.Infrastructure.Tenants;
@@ -725,7 +739,7 @@ public class CurrentTenantProvider : ICurrentTenantProvider
 }
 ```
 
-- [ ] **Step 2: Create `PingMeDbContext.cs`**
+- [x] **Step 2: Create `PingMeDbContext.cs`**
 
 ```csharp
 namespace PingMe.Infrastructure.Persistence;
@@ -784,7 +798,7 @@ public class PingMeDbContext : DbContext
 }
 ```
 
-- [ ] **Step 3: Add EF Core + Npgsql package references to Infrastructure**
+- [x] **Step 3: Add EF Core + Npgsql package references to Infrastructure**
 
 Run:
 ```bash
@@ -792,17 +806,19 @@ dotnet add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj package Npgsql
 dotnet add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj package Microsoft.EntityFrameworkCore
 ```
 
-- [ ] **Step 4: Verify it compiles**
+- [x] **Step 4: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure
 git commit -m "Add PingMeDbContext and CurrentTenantProvider (tenant filter not yet applied)"
 ```
+
+_Completed 2026-08-25: commit `347140c`._
 
 ---
 
@@ -814,14 +830,14 @@ git commit -m "Add PingMeDbContext and CurrentTenantProvider (tenant filter not 
 - Modify: `src/PingMe.Api/PingMe.Api.csproj`
 - Create: `src/PingMe.Infrastructure/Persistence/Migrations/*` (generated)
 
-- [ ] **Step 1: Add `Microsoft.EntityFrameworkCore.Design` to the startup project**
+- [x] **Step 1: Add `Microsoft.EntityFrameworkCore.Design` to the startup project**
 
 Run:
 ```bash
 dotnet add src/PingMe.Api/PingMe.Api.csproj package Microsoft.EntityFrameworkCore.Design
 ```
 
-- [ ] **Step 2: Add the connection string**
+- [x] **Step 2: Add the connection string**
 
 Update `src/PingMe.Api/appsettings.Development.json` to:
 
@@ -839,7 +855,7 @@ Update `src/PingMe.Api/appsettings.Development.json` to:
 }
 ```
 
-- [ ] **Step 3: Wire DI in `Program.cs`**
+- [x] **Step 3: Wire DI in `Program.cs`**
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -871,12 +887,12 @@ app.MapControllers();
 app.Run();
 ```
 
-- [ ] **Step 4: Install `dotnet-ef` tooling**
+- [x] **Step 4: Install `dotnet-ef` tooling**
 
 Run: `dotnet tool install --global dotnet-ef`
 Expected: installs successfully, or reports it's already installed (both are fine — treat "already installed" as success).
 
-- [ ] **Step 5: Generate the initial migration**
+- [x] **Step 5: Generate the initial migration**
 
 Run:
 ```bash
@@ -884,7 +900,7 @@ dotnet ef migrations add InitialCreate --project src/PingMe.Infrastructure --sta
 ```
 Expected: PASS — creates migration files under `src/PingMe.Infrastructure/Persistence/Migrations/`.
 
-- [ ] **Step 6: Apply the migration to the local dev database**
+- [x] **Step 6: Apply the migration to the local dev database**
 
 Run:
 ```bash
@@ -892,17 +908,19 @@ dotnet ef database update --project src/PingMe.Infrastructure --startup-project 
 ```
 Expected: PASS — creates/updates the `pingme_dev` database with all 10 tables. If this fails with a connection error, verify PostgreSQL is running locally and the credentials in Step 2 match your instance (see plan Assumptions).
 
-- [ ] **Step 7: Verify the whole solution still builds**
+- [x] **Step 7: Verify the whole solution still builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Api src/PingMe.Infrastructure/Persistence/Migrations
 git commit -m "Wire EF Core DI, add connection string, generate initial migration"
 ```
+
+_Completed 2026-08-25: commit `91e7a89`, plus follow-up `e37191a` (added missing `HasPrecision(10,2)` to `OrderItem.UnitPrice` for consistency with `Product.Price`/`ProductOption.PriceDelta`, flagged in code-quality review; new migration `AddOrderItemUnitPricePrecision` applied)._
 
 ---
 
@@ -914,7 +932,7 @@ git commit -m "Wire EF Core DI, add connection string, generate initial migratio
 
 **Does NOT cover:** these tests target a separate `pingme_test` database (never `pingme_dev`) so running them doesn't touch dev data. This task deliberately runs against the **unfiltered** `PingMeDbContext` from Task 9 to prove the isolation gap is real before Task 12 fixes it.
 
-- [ ] **Step 1: Add package references needed by the integration test project**
+- [x] **Step 1: Add package references needed by the integration test project**
 
 Run:
 ```bash
@@ -922,7 +940,7 @@ dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package 
 dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package Microsoft.EntityFrameworkCore
 ```
 
-- [ ] **Step 2: Create the shared connection helper**
+- [x] **Step 2: Create the shared connection helper**
 
 ```csharp
 namespace PingMe.IntegrationTests.MultiTenancy;
@@ -934,7 +952,7 @@ internal static class IntegrationTestDbConnection
 }
 ```
 
-- [ ] **Step 3: Write the failing isolation test**
+- [x] **Step 3: Write the failing isolation test**
 
 ```csharp
 namespace PingMe.IntegrationTests.MultiTenancy;
@@ -986,17 +1004,19 @@ public class TenantIsolationTests
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: FAIL — `Assert.Empty(visibleProducts)` fails because tenant A can currently see tenant B's product (no query filter exists yet). If the test instead fails with a connection error, PostgreSQL isn't reachable — fix connectivity before continuing (see plan Assumptions); do not proceed to Task 12 until the failure is the expected assertion failure.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
 git commit -m "Add failing cross-tenant isolation test (RED — no query filter yet)"
 ```
+
+_Completed 2026-08-25: commit `0fd55ce`. Confirmed RED state: Assert.Empty failed with "Collection was not empty" (tenant A saw tenant B's product) — a genuine assertion failure, not a setup/connection error._
 
 ---
 
@@ -1007,7 +1027,7 @@ git commit -m "Add failing cross-tenant isolation test (RED — no query filter 
 
 **Does NOT cover:** per-request tenant resolution from a JWT claim or QR code — that's wired into `CurrentTenantProvider.TenantId` by Plan 2 (auth middleware) and Plan 3 (QR resolution middleware). This task only makes the filter exist and work when the provider's `TenantId` is set.
 
-- [ ] **Step 1: Add the reflection-driven filter to `OnModelCreating`**
+- [x] **Step 1: Add the reflection-driven filter to `OnModelCreating`**
 
 Replace the body of `OnModelCreating` in `src/PingMe.Infrastructure/Persistence/PingMeDbContext.cs` with:
 
@@ -1055,7 +1075,7 @@ private void ApplyTenantFilter<TEntity>(ModelBuilder modelBuilder) where TEntity
 
 Add `using PingMe.Domain.Common;` to the top of the file (for `ITenantOwned`).
 
-- [ ] **Step 2: Regenerate the migration** (the filter itself doesn't change the schema, but confirms the model still builds cleanly)
+- [x] **Step 2: Regenerate the migration** (the filter itself doesn't change the schema, but confirms the model still builds cleanly)
 
 Run:
 ```bash
@@ -1063,17 +1083,19 @@ dotnet ef migrations add AddTenantQueryFilters --project src/PingMe.Infrastructu
 ```
 Expected: PASS — an empty (or near-empty) migration is generated since query filters aren't part of the schema. This is expected and correct.
 
-- [ ] **Step 3: Run the Task 11 test to verify it now passes**
+- [x] **Step 3: Run the Task 11 test to verify it now passes**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: PASS — `TenantA_cannot_read_TenantB_product` now passes because the global filter excludes tenant B's row from tenant A's queries.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure
 git commit -m "Implement global tenant query filter via reflection over ITenantOwned (GREEN)"
 ```
+
+_Completed 2026-08-25: commit `02567fe`. Confirmed GREEN: `TenantA_cannot_read_TenantB_product` now passes (1 passed, 0 failed). Review noted ProductOption/OrderItem are intentionally excluded from the filter per spec Section 2b (child entities, no standalone query path) — not a gap._
 
 ---
 
@@ -1084,7 +1106,7 @@ git commit -m "Implement global tenant query filter via reflection over ITenantO
 
 **Does NOT cover:** the "customer session from Tenant A submits a Tenant-B productId on `POST /orders`" case from spec Section 9 — that requires the ordering HTTP endpoint, which doesn't exist until Plan 3. That specific test is carried forward to Plan 3's task list.
 
-- [ ] **Step 1: Add the remaining required cases from spec Section 9**
+- [x] **Step 1: Add the remaining required cases from spec Section 9**
 
 Append to `tests/PingMe.IntegrationTests/MultiTenancy/TenantIsolationTests.cs` (inside the `TenantIsolationTests` class, alongside `TenantA_cannot_read_TenantB_product`):
 
@@ -1183,22 +1205,24 @@ Append to `tests/PingMe.IntegrationTests/MultiTenancy/TenantIsolationTests.cs` (
     }
 ```
 
-- [ ] **Step 2: Run all integration tests to verify they pass**
+- [x] **Step 2: Run all integration tests to verify they pass**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: PASS — all 4 tests green (`TenantA_cannot_read_TenantB_product`, `TenantA_cannot_read_TenantB_location`, `TenantA_cannot_use_TenantB_customer_session`, `TenantA_cannot_manipulate_TenantB_order`).
 
-- [ ] **Step 3: Run the full test suite and full solution build as a final check**
+- [x] **Step 3: Run the full test suite and full solution build as a final check**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — solution builds, all unit and integration tests pass.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
 git commit -m "Add remaining security-critical cross-tenant isolation tests"
 ```
+
+_Completed 2026-08-25: commit `9001f4b`, plus style follow-up `4fd0f8f` (using-directives instead of fully-qualified names, flagged in code-quality review). Final state: 8/8 tests pass (4 unit + 4 integration), full solution builds clean. **Plan 1 complete — all 13 tasks done and reviewed.**_
 
 ---
 
