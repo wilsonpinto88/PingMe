@@ -279,7 +279,7 @@ _Completed 2026-08-25: commit `9b4b88c`._
 
 **Does NOT cover:** the actual QR-scan-to-session HTTP flow (`GET /p/{code}`) — that's Plan 3. This task only models the entity and its `IsOpen`/`Close` behavior.
 
-- [ ] **Step 1: Create `CustomerSession.cs`**
+- [x] **Step 1: Create `CustomerSession.cs`**
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -313,17 +313,19 @@ public class CustomerSession : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Domain/Locations/CustomerSession.cs
 git commit -m "Add CustomerSession entity with IsOpen/Close behavior"
 ```
+
+_Completed 2026-08-25: commit `bbc9b46`._
 
 ---
 
