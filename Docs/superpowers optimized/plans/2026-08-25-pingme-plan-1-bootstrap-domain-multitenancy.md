@@ -186,7 +186,7 @@ git commit -m "Add Entity base type and ITenantOwned marker interface"
 - Create: `src/PingMe.Domain/Locations/Venue.cs`
 - Create: `src/PingMe.Domain/Locations/Location.cs`
 
-- [ ] **Step 1: Create `Tenant.cs`**
+- [x] **Step 1: Create `Tenant.cs`**
 
 ```csharp
 namespace PingMe.Domain.Tenants;
@@ -208,7 +208,7 @@ public class Tenant : Entity
 }
 ```
 
-- [ ] **Step 2: Create `Venue.cs`**
+- [x] **Step 2: Create `Venue.cs`**
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -230,7 +230,7 @@ public class Venue : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 3: Create `Location.cs`** (self-referencing tree — see spec Section 2)
+- [x] **Step 3: Create `Location.cs`** (self-referencing tree — see spec Section 2)
 
 ```csharp
 namespace PingMe.Domain.Locations;
@@ -256,17 +256,19 @@ public class Location : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 4: Verify it compiles**
+- [x] **Step 4: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Domain/Tenants src/PingMe.Domain/Locations
 git commit -m "Add Tenant, Venue, and self-referencing Location entities"
 ```
+
+_Completed 2026-08-25: commit `9b4b88c`._
 
 ---
 
