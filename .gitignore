@@ -34,3 +34,5 @@ appsettings.*.local.json
 .idea/
 .DS_Store
 Thumbs.db
+session-log.md
+state.md
