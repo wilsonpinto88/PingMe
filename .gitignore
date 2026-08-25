@@ -36,3 +36,6 @@ appsettings.*.local.json
 Thumbs.db
 session-log.md
 state.md
+
+## Git worktrees (isolated plan-execution workspaces)
+.worktrees/
