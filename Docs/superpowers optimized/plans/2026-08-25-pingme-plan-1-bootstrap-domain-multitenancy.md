@@ -932,7 +932,7 @@ _Completed 2026-08-25: commit `91e7a89`, plus follow-up `e37191a` (added missing
 
 **Does NOT cover:** these tests target a separate `pingme_test` database (never `pingme_dev`) so running them doesn't touch dev data. This task deliberately runs against the **unfiltered** `PingMeDbContext` from Task 9 to prove the isolation gap is real before Task 12 fixes it.
 
-- [ ] **Step 1: Add package references needed by the integration test project**
+- [x] **Step 1: Add package references needed by the integration test project**
 
 Run:
 ```bash
@@ -940,7 +940,7 @@ dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package 
 dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package Microsoft.EntityFrameworkCore
 ```
 
-- [ ] **Step 2: Create the shared connection helper**
+- [x] **Step 2: Create the shared connection helper**
 
 ```csharp
 namespace PingMe.IntegrationTests.MultiTenancy;
@@ -952,7 +952,7 @@ internal static class IntegrationTestDbConnection
 }
 ```
 
-- [ ] **Step 3: Write the failing isolation test**
+- [x] **Step 3: Write the failing isolation test**
 
 ```csharp
 namespace PingMe.IntegrationTests.MultiTenancy;
@@ -1004,17 +1004,19 @@ public class TenantIsolationTests
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: FAIL — `Assert.Empty(visibleProducts)` fails because tenant A can currently see tenant B's product (no query filter exists yet). If the test instead fails with a connection error, PostgreSQL isn't reachable — fix connectivity before continuing (see plan Assumptions); do not proceed to Task 12 until the failure is the expected assertion failure.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
 git commit -m "Add failing cross-tenant isolation test (RED — no query filter yet)"
 ```
+
+_Completed 2026-08-25: commit `0fd55ce`. Confirmed RED state: Assert.Empty failed with "Collection was not empty" (tenant A saw tenant B's product) — a genuine assertion failure, not a setup/connection error._
 
 ---
 
