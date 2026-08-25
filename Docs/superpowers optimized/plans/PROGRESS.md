@@ -4,7 +4,7 @@ Cross-plan tracker. Each plan file owns its own task checkboxes (`- [ ]`) — th
 
 | # | Plan | File | Status | Tasks done |
 |---|------|------|--------|------------|
-| 1 | Bootstrap + Domain + EF Core + Multi-tenancy | [2026-08-25-pingme-plan-1-bootstrap-domain-multitenancy.md](2026-08-25-pingme-plan-1-bootstrap-domain-multitenancy.md) | In progress (branch `plan-1-bootstrap-domain-multitenancy`) — resume at Task 11 | 10 / 13 |
+| 1 | Bootstrap + Domain + EF Core + Multi-tenancy | [2026-08-25-pingme-plan-1-bootstrap-domain-multitenancy.md](2026-08-25-pingme-plan-1-bootstrap-domain-multitenancy.md) | Done, reviewed — merged to main | 13 / 13 |
 | 2 | Auth + Catalog/Admin | *(not yet written)* | Not started | — |
 | 3 | Locations/QR + Customer app + Ordering | *(not yet written)* | Not started | — |
 | 4 | SignalR + Staff dashboard + Deployment | *(not yet written)* | Not started | — |
