@@ -84,14 +84,14 @@ tests/PingMe.IntegrationTests/                        (new project)
 
 **Does NOT cover:** package references specific to EF/Npgsql (added in Task 10) or xUnit test-runner packages beyond the template defaults (added by `dotnet new xunit`, which already includes them) — this task only wires project structure and references.
 
-- [ ] **Step 1: Delete scaffold placeholder files**
+- [x] **Step 1: Delete scaffold placeholder files**
 
 Run:
 ```bash
 rm src/PingMe.Domain/Class1.cs src/PingMe.Application/Class1.cs src/PingMe.Infrastructure/Class1.cs src/PingMe.Api/WeatherForecast.cs src/PingMe.Api/Controllers/WeatherForecastController.cs
 ```
 
-- [ ] **Step 2: Add project references**
+- [x] **Step 2: Add project references**
 
 Run:
 ```bash
@@ -102,7 +102,7 @@ dotnet add src/PingMe.Api/PingMe.Api.csproj reference src/PingMe.Application/Pin
 dotnet add src/PingMe.Api/PingMe.Api.csproj reference src/PingMe.Infrastructure/PingMe.Infrastructure.csproj
 ```
 
-- [ ] **Step 3: Create test projects**
+- [x] **Step 3: Create test projects**
 
 Run:
 ```bash
@@ -114,24 +114,26 @@ dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj referenc
 dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj reference src/PingMe.Infrastructure/PingMe.Infrastructure.csproj
 ```
 
-- [ ] **Step 4: Add all 6 projects to the solution file**
+- [x] **Step 4: Add all 6 projects to the solution file**
 
 Run:
 ```bash
 dotnet sln PingMe.slnx add src/PingMe.Domain/PingMe.Domain.csproj src/PingMe.Application/PingMe.Application.csproj src/PingMe.Infrastructure/PingMe.Infrastructure.csproj src/PingMe.Api/PingMe.Api.csproj tests/PingMe.UnitTests/PingMe.UnitTests.csproj tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj
 ```
 
-- [ ] **Step 5: Verify the solution builds**
+- [x] **Step 5: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — build succeeds with 0 errors (warnings about unused usings are fine).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add PingMe.slnx src/ tests/
 git commit -m "Wire solution: project references, test projects, remove scaffold placeholders"
 ```
+
+_Completed 2026-08-25: commits `dc8d680` (implementation) and `33bafaf` (code-quality fixup: removed stale WeatherForecast .http request, added missing csproj EOF newlines)._
 
 ---
 
