@@ -1,0 +1,36 @@
+# AI assistant artifacts
+context-snapshot.json
+
+## .NET
+bin/
+obj/
+*.user
+.vs/
+*.suo
+
+## Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+
+## Node / React (pingme-web, when added)
+node_modules/
+dist/
+build/
+.vite/
+*.local
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+## Env / secrets
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+
+## Editors / OS
+.idea/
+.DS_Store
+Thumbs.db
