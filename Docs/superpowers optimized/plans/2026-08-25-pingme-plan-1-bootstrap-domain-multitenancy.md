@@ -1106,7 +1106,7 @@ _Completed 2026-08-25: commit `02567fe`. Confirmed GREEN: `TenantA_cannot_read_T
 
 **Does NOT cover:** the "customer session from Tenant A submits a Tenant-B productId on `POST /orders`" case from spec Section 9 — that requires the ordering HTTP endpoint, which doesn't exist until Plan 3. That specific test is carried forward to Plan 3's task list.
 
-- [ ] **Step 1: Add the remaining required cases from spec Section 9**
+- [x] **Step 1: Add the remaining required cases from spec Section 9**
 
 Append to `tests/PingMe.IntegrationTests/MultiTenancy/TenantIsolationTests.cs` (inside the `TenantIsolationTests` class, alongside `TenantA_cannot_read_TenantB_product`):
 
@@ -1205,22 +1205,24 @@ Append to `tests/PingMe.IntegrationTests/MultiTenancy/TenantIsolationTests.cs` (
     }
 ```
 
-- [ ] **Step 2: Run all integration tests to verify they pass**
+- [x] **Step 2: Run all integration tests to verify they pass**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: PASS — all 4 tests green (`TenantA_cannot_read_TenantB_product`, `TenantA_cannot_read_TenantB_location`, `TenantA_cannot_use_TenantB_customer_session`, `TenantA_cannot_manipulate_TenantB_order`).
 
-- [ ] **Step 3: Run the full test suite and full solution build as a final check**
+- [x] **Step 3: Run the full test suite and full solution build as a final check**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — solution builds, all unit and integration tests pass.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
 git commit -m "Add remaining security-critical cross-tenant isolation tests"
 ```
+
+_Completed 2026-08-25: commit `9001f4b`, plus style follow-up `4fd0f8f` (using-directives instead of fully-qualified names, flagged in code-quality review). Final state: 8/8 tests pass (4 unit + 4 integration), full solution builds clean. **Plan 1 complete — all 13 tasks done and reviewed.**_
 
 ---
 
