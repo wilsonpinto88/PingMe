@@ -339,7 +339,7 @@ _Completed 2026-08-25: commit `bbc9b46`._
 
 **Does NOT cover:** `ProductOption` has no `TenantId` per spec Section 2b — it is reached only through its parent `Product`. Application code must never query `ProductOption` standalone (this hard rule is enforced by not exposing such a repository method in later plans, not by code in this task).
 
-- [ ] **Step 1: Create `Menu.cs`**
+- [x] **Step 1: Create `Menu.cs`**
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -361,7 +361,7 @@ public class Menu : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 2: Create `Category.cs`**
+- [x] **Step 2: Create `Category.cs`**
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -387,7 +387,7 @@ public class Category : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 3: Create `Product.cs`**
+- [x] **Step 3: Create `Product.cs`**
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -420,7 +420,7 @@ public class Product : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 4: Create `ProductOption.cs`** (no `TenantId` — see Does NOT cover above)
+- [x] **Step 4: Create `ProductOption.cs`** (no `TenantId` — see Does NOT cover above)
 
 ```csharp
 namespace PingMe.Domain.Catalog;
@@ -444,17 +444,19 @@ public class ProductOption : Entity
 }
 ```
 
-- [ ] **Step 5: Verify it compiles**
+- [x] **Step 5: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Domain/PingMe.Domain.csproj`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Domain/Catalog
 git commit -m "Add Catalog entities: Menu, Category, Product, ProductOption"
 ```
+
+_Completed 2026-08-25: commit `6c24b1e`._
 
 ---
 
