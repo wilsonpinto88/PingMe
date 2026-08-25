@@ -5,7 +5,7 @@ Cross-plan tracker. Each plan file owns its own task checkboxes (`- [ ]`) — th
 | # | Plan | File | Status | Tasks done |
 |---|------|------|--------|------------|
 | 1 | Bootstrap + Domain + EF Core + Multi-tenancy | [2026-08-25-pingme-plan-1-bootstrap-domain-multitenancy.md](2026-08-25-pingme-plan-1-bootstrap-domain-multitenancy.md) | Done, reviewed — merged to main | 13 / 13 |
-| 2 | Auth + Catalog/Admin | *(not yet written)* | Not started | — |
+| 2 | Auth + Catalog/Admin | [2026-08-25-pingme-plan-2-auth-catalog-admin.md](2026-08-25-pingme-plan-2-auth-catalog-admin.md) | Written, not started | 0 / 13 |
 | 3 | Locations/QR + Customer app + Ordering | *(not yet written)* | Not started | — |
 | 4 | SignalR + Staff dashboard + Deployment | *(not yet written)* | Not started | — |
 
@@ -16,8 +16,9 @@ Cross-plan tracker. Each plan file owns its own task checkboxes (`- [ ]`) — th
 Requirements from the spec that a plan explicitly defers to a later plan — tracked here so they aren't dropped:
 
 - **Plan 1 → Plan 3:** spec Section 9's test case "CustomerSession from Tenant A submitting a Tenant B `productId` on `POST /orders` is rejected" needs the ordering HTTP endpoint. Add it to Plan 3's task list.
-- **Plan 1 → Plan 2:** `User`/Identity entity and ASP.NET Core Identity + JWT setup (spec Section 1, 6).
-- **Decided 2026-08-25:** Plan 2 must add Swagger/OpenAPI UI (e.g. Swashbuckle or Scalar) alongside the first controllers — earliest point the user can see anything in a browser (no React frontend until Plan 3).
+- **Plan 1 → Plan 2:** `User`/Identity entity and ASP.NET Core Identity + JWT setup (spec Section 1, 6) — addressed in Plan 2, closes once Plan 2 is executed.
+- **Decided 2026-08-25:** Plan 2 adds Swagger/OpenAPI UI (Swashbuckle) alongside its first controllers — addressed in Plan 2 Task 5, closes once Plan 2 is executed.
+- **Plan 2 → Plan 3:** spec Section 9's ordering-endpoint isolation test (see above) still requires Plan 3; Plan 2 only closes the *admin-API* half of HTTP-layer cross-tenant isolation testing.
 
 ## How to use this file
 
