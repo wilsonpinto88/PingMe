@@ -470,7 +470,7 @@ _Completed 2026-08-25: commit `6c24b1e`._
 
 **Does NOT cover:** `OrderItem` has no `TenantId` per spec Section 2b (same reasoning as `ProductOption`). This task also does not cover the `POST /orders` endpoint or SignalR broadcast — those are Plan 3. The state machine here only enforces `Received → Accepted → Preparing → Ready → Delivered`; `Cancelled`/`Rejected`/payment states are explicitly out of scope for MVP (spec Section 7).
 
-- [ ] **Step 1: Create `OrderStatus.cs`** (needed before the test compiles)
+- [x] **Step 1: Create `OrderStatus.cs`** (needed before the test compiles)
 
 ```csharp
 namespace PingMe.Domain.Ordering;
@@ -485,7 +485,7 @@ public enum OrderStatus
 }
 ```
 
-- [ ] **Step 2: Create `OrderItem.cs`** (needed before the test compiles — `Order.AddItem` constructs it)
+- [x] **Step 2: Create `OrderItem.cs`** (needed before the test compiles — `Order.AddItem` constructs it)
 
 ```csharp
 namespace PingMe.Domain.Ordering;
@@ -513,7 +513,7 @@ public class OrderItem : Entity
 }
 ```
 
-- [ ] **Step 3: Write the failing test for the state machine**
+- [x] **Step 3: Write the failing test for the state machine**
 
 Create `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs`:
 
@@ -568,12 +568,12 @@ public class OrderTransitionTests
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 Run: `dotnet test tests/PingMe.UnitTests/PingMe.UnitTests.csproj`
 Expected: FAIL with a compiler error — `Order` does not exist yet.
 
-- [ ] **Step 5: Create `Order.cs`**
+- [x] **Step 5: Create `Order.cs`**
 
 ```csharp
 namespace PingMe.Domain.Ordering;
@@ -625,17 +625,19 @@ public class Order : Entity, ITenantOwned
 }
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 Run: `dotnet test tests/PingMe.UnitTests/PingMe.UnitTests.csproj`
 Expected: PASS — all 4 tests green.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Domain/Ordering tests/PingMe.UnitTests
 git commit -m "Add Order/OrderItem entities with state-machine transitions (TDD)"
 ```
+
+_Completed 2026-08-25: commit `c85dff7`, plus follow-up `49e3216` (removed leftover dotnet-new-xunit UnitTest1.cs scaffold files from both test projects, flagged in spec review)._
 
 ---
 
