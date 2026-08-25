@@ -830,14 +830,14 @@ _Completed 2026-08-25: commit `347140c`._
 - Modify: `src/PingMe.Api/PingMe.Api.csproj`
 - Create: `src/PingMe.Infrastructure/Persistence/Migrations/*` (generated)
 
-- [ ] **Step 1: Add `Microsoft.EntityFrameworkCore.Design` to the startup project**
+- [x] **Step 1: Add `Microsoft.EntityFrameworkCore.Design` to the startup project**
 
 Run:
 ```bash
 dotnet add src/PingMe.Api/PingMe.Api.csproj package Microsoft.EntityFrameworkCore.Design
 ```
 
-- [ ] **Step 2: Add the connection string**
+- [x] **Step 2: Add the connection string**
 
 Update `src/PingMe.Api/appsettings.Development.json` to:
 
@@ -855,7 +855,7 @@ Update `src/PingMe.Api/appsettings.Development.json` to:
 }
 ```
 
-- [ ] **Step 3: Wire DI in `Program.cs`**
+- [x] **Step 3: Wire DI in `Program.cs`**
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -887,12 +887,12 @@ app.MapControllers();
 app.Run();
 ```
 
-- [ ] **Step 4: Install `dotnet-ef` tooling**
+- [x] **Step 4: Install `dotnet-ef` tooling**
 
 Run: `dotnet tool install --global dotnet-ef`
 Expected: installs successfully, or reports it's already installed (both are fine — treat "already installed" as success).
 
-- [ ] **Step 5: Generate the initial migration**
+- [x] **Step 5: Generate the initial migration**
 
 Run:
 ```bash
@@ -900,7 +900,7 @@ dotnet ef migrations add InitialCreate --project src/PingMe.Infrastructure --sta
 ```
 Expected: PASS — creates migration files under `src/PingMe.Infrastructure/Persistence/Migrations/`.
 
-- [ ] **Step 6: Apply the migration to the local dev database**
+- [x] **Step 6: Apply the migration to the local dev database**
 
 Run:
 ```bash
@@ -908,17 +908,19 @@ dotnet ef database update --project src/PingMe.Infrastructure --startup-project 
 ```
 Expected: PASS — creates/updates the `pingme_dev` database with all 10 tables. If this fails with a connection error, verify PostgreSQL is running locally and the credentials in Step 2 match your instance (see plan Assumptions).
 
-- [ ] **Step 7: Verify the whole solution still builds**
+- [x] **Step 7: Verify the whole solution still builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Api src/PingMe.Infrastructure/Persistence/Migrations
 git commit -m "Wire EF Core DI, add connection string, generate initial migration"
 ```
+
+_Completed 2026-08-25: commit `91e7a89`, plus follow-up `e37191a` (added missing `HasPrecision(10,2)` to `OrderItem.UnitPrice` for consistency with `Product.Price`/`ProductOption.PriceDelta`, flagged in code-quality review; new migration `AddOrderItemUnitPricePrecision` applied)._
 
 ---
 
