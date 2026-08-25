@@ -34,6 +34,7 @@ public class PingMeDbContext : DbContext
         modelBuilder.Entity<Product>().Property(p => p.Price).HasPrecision(10, 2);
         modelBuilder.Entity<ProductOption>().Property(p => p.PriceDelta).HasPrecision(10, 2);
         modelBuilder.Entity<OrderItem>().Property(i => i.UnitPrice).HasPrecision(10, 2);
+        modelBuilder.Entity<PingMe.Domain.Ordering.OrderItem>().ToTable("OrderItems");
 
         modelBuilder.Entity<Order>()
             .HasMany(o => o.Items)
@@ -68,5 +69,6 @@ public class PingMeDbContext : DbContext
     private void ApplyTenantFilter<TEntity>(ModelBuilder modelBuilder) where TEntity : class, ITenantOwned
     {
         modelBuilder.Entity<TEntity>().HasQueryFilter(e => e.TenantId == _currentTenantProvider.TenantId);
+        modelBuilder.Entity<TEntity>().HasIndex(e => e.TenantId);
     }
 }
