@@ -3,6 +3,7 @@ namespace PingMe.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Application.Tenants;
 using PingMe.Domain.Catalog;
+using PingMe.Domain.Common;
 using PingMe.Domain.Locations;
 using PingMe.Domain.Ordering;
 using PingMe.Domain.Tenants;
@@ -50,6 +51,22 @@ public class PingMeDbContext : DbContext
             .HasForeignKey(l => l.ParentLocationId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(ITenantOwned).IsAssignableFrom(entityType.ClrType))
+            {
+                var method = typeof(PingMeDbContext)
+                    .GetMethod(nameof(ApplyTenantFilter), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                    .MakeGenericMethod(entityType.ClrType);
+                method.Invoke(this, new object[] { modelBuilder });
+            }
+        }
+
         base.OnModelCreating(modelBuilder);
+    }
+
+    private void ApplyTenantFilter<TEntity>(ModelBuilder modelBuilder) where TEntity : class, ITenantOwned
+    {
+        modelBuilder.Entity<TEntity>().HasQueryFilter(e => e.TenantId == _currentTenantProvider.TenantId);
     }
 }
