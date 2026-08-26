@@ -373,7 +373,7 @@ _Completed 2026-08-26: commit `4899960`. Needed 2 extra package refs (Microsoft.
 
 **Does NOT cover:** any controller — this task only wires the pipeline. There is nothing to call yet; verification is "does it start and build", not "does an endpoint respond."
 
-- [ ] **Step 1: Create `TenantResolutionMiddleware.cs`**
+- [x] **Step 1: Create `TenantResolutionMiddleware.cs`**
 
 ```csharp
 namespace PingMe.Api.Middleware;
@@ -405,7 +405,7 @@ public class TenantResolutionMiddleware
 }
 ```
 
-- [ ] **Step 2: Replace the full contents of `Program.cs` with:**
+- [x] **Step 2: Replace the full contents of `Program.cs` with:**
 
 ```csharp
 using System.Text;
@@ -524,7 +524,7 @@ public partial class Program
 
 The `public partial class Program { }` at the bottom is required so `Microsoft.AspNetCore.Mvc.Testing`'s `WebApplicationFactory<Program>` (Task 6) can reference the entry point — top-level statement programs don't otherwise expose a usable `Program` type. `TenantResolutionMiddleware` is placed after `UseAuthentication()` (so `context.User` is populated) and before `UseAuthorization()` (so the resolved tenant is available to anything downstream, including model-level query filters that run during controller action execution).
 
-- [ ] **Step 3: Verify the solution builds and the app starts**
+- [x] **Step 3: Verify the solution builds and the app starts**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
@@ -532,12 +532,14 @@ Expected: PASS
 Run: `dotnet run --project src/PingMe.Api --launch-profile https &` then `curl -k https://localhost:7xxx/swagger/index.html` (use whichever port `launchSettings.json` assigns), then stop the process.
 Expected: the Swagger UI page loads (HTTP 200). Role seeding runs on startup without throwing — check the console output for no unhandled exceptions during the `using (var scope = ...)` block.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api
 git commit -m "Wire Identity, JWT auth, Swagger UI, tenant-resolution middleware, and role seeding"
 ```
+
+_Completed 2026-08-26: commit `24ef802`, plus fix-up `8eaa646` (Swagger's Bearer security requirement was serializing as an empty object due to `null` host document; fixed by passing the in-progress `OpenApiDocument` to `OpenApiSecuritySchemeReference`, empirically verified against `/swagger/v1/swagger.json`). Swashbuckle.AspNetCore 10.2.3's API surface differs from the plan's assumed shape (`Microsoft.OpenApi` namespace, not `Microsoft.OpenApi.Models`) — noted as an accepted, necessary adaptation._
 
 ---
 
