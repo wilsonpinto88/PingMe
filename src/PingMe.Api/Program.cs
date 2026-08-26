@@ -26,10 +26,10 @@ builder.Services.AddSwaggerGen(options =>
         In = ParameterLocation.Header,
         Description = "Paste the JWT returned by /auth/login (no \"Bearer \" prefix needed)."
     });
-    options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecuritySchemeReference("Bearer", null),
+            new OpenApiSecuritySchemeReference("Bearer", document),
             new List<string>()
         }
     });
