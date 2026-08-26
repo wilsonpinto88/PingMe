@@ -1324,7 +1324,7 @@ git commit -m "Add HTTP-layer cross-tenant isolation tests for Catalog admin end
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full solution build and test suite one more time from a clean state**
+- [x] **Step 1: Run the full solution build and test suite one more time from a clean state**
 
 Run:
 ```bash
@@ -1333,15 +1333,15 @@ dotnet test PingMe.slnx
 ```
 Expected: PASS — 0 build errors, all 17 tests passing.
 
-- [ ] **Step 2: Manually verify Swagger works end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 2: Manually verify Swagger works end-to-end** (not automatable in this plan — do this once by hand)
 
 Run `dotnet run --project src/PingMe.Api`, open the printed HTTPS URL + `/swagger` in a browser, use "Authorize" with a token obtained by calling `POST /auth/register-tenant` via the Swagger UI itself, then call `POST /admin/menus` and confirm it returns `201` with a menu. Stop the running process afterward.
 
-- [ ] **Step 3: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+- [x] **Step 3: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the Plan 2 row's Status to `Done, reviewed` and Tasks done to `13 / 13` once execution and review are complete (do this after, not before, the task-by-task review cycle — this step is a placeholder reminder for whoever executes the plan, not something to do while still mid-plan). Also remove the two Plan 2-related bullets from "Carried-forward items" (`User`/Identity entity + Swagger UI) since both are now closed, and add a note that the ordering-endpoint isolation test is still owed to Plan 3.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add "Docs/superpowers optimized/plans/PROGRESS.md"
