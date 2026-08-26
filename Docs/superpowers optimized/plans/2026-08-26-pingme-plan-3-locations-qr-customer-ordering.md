@@ -1535,7 +1535,7 @@ git commit -m "Scaffold customer-app: pnpm workspace, Vite + React + TypeScript"
 - Create: `src/pingme-web/customer-app/src/types.ts`
 - Create: `src/pingme-web/customer-app/src/api.ts`
 
-- [ ] **Step 1: Create `types.ts`**
+- [x] **Step 1: Create `types.ts`**
 
 ```typescript
 export interface CustomerProduct {
@@ -1580,7 +1580,7 @@ export interface OrderStatusResponse {
 }
 ```
 
-- [ ] **Step 2: Create `api.ts`**
+- [x] **Step 2: Create `api.ts`** (needed a `src/vite-env.d.ts` with `/// <reference types="vite/client" />` too — `import.meta.env` doesn't type-check without it)
 
 ```typescript
 import type {
@@ -1629,7 +1629,7 @@ export async function getOrderStatus(
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/types.ts src/pingme-web/customer-app/src/api.ts
@@ -1644,7 +1644,7 @@ git commit -m "Add customer-app API client and types"
 - Create: `src/pingme-web/customer-app/src/cart.ts`
 - Create: `src/pingme-web/customer-app/src/cart.test.ts`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `src/pingme-web/customer-app/src/cart.test.ts`:
 
@@ -1687,12 +1687,12 @@ describe("cart", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `cd src/pingme-web/customer-app && pnpm test`
 Expected: FAIL with "Cannot find module './cart'" (the module doesn't exist yet).
 
-- [ ] **Step 3: Implement `cart.ts`**
+- [x] **Step 3: Implement `cart.ts`**
 
 ```typescript
 export interface CartItem {
@@ -1721,12 +1721,12 @@ export function cartTotal(cart: CartItem[]): number {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `cd src/pingme-web/customer-app && pnpm test`
 Expected: PASS — all 5 tests green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/cart.ts src/pingme-web/customer-app/src/cart.test.ts
