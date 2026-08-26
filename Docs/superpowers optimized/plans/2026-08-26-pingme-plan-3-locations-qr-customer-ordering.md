@@ -1743,7 +1743,7 @@ git commit -m "Add cart logic with unit tests"
 
 **Does NOT cover:** styling/visual design beyond functional, unstyled markup — a design pass is out of scope for this plan; the goal is a working flow, not a polished UI.
 
-- [ ] **Step 1: Create `MenuBrowser.tsx`**
+- [x] **Step 1: Create `MenuBrowser.tsx`**
 
 ```tsx
 import type { CustomerMenu } from "../types";
@@ -1785,7 +1785,7 @@ export function MenuBrowser({ menus, onAddToCart }: MenuBrowserProps) {
 }
 ```
 
-- [ ] **Step 2: Create `CartView.tsx`**
+- [x] **Step 2: Create `CartView.tsx`**
 
 ```tsx
 import { cartTotal, type CartItem } from "../cart";
@@ -1822,7 +1822,7 @@ export function CartView({ cart, onRemove, onPlaceOrder, placingOrder }: CartVie
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/components/MenuBrowser.tsx src/pingme-web/customer-app/src/components/CartView.tsx
@@ -1839,7 +1839,7 @@ git commit -m "Add MenuBrowser and CartView components"
 
 **Does NOT cover:** realtime updates — the status view polls on an interval; SignalR replaces this in Plan 4 without changing this component's props contract (it still just needs a status string).
 
-- [ ] **Step 1: Create `OrderStatus.tsx`**
+- [x] **Step 1: Create `OrderStatus.tsx`**
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -1875,7 +1875,7 @@ export function OrderStatus({ orderId, sessionId }: OrderStatusProps) {
 }
 ```
 
-- [ ] **Step 2: Create `App.tsx`**
+- [x] **Step 2: Create `App.tsx`**
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -1961,7 +1961,7 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 3: Run the frontend test suite and build**
+- [x] **Step 3: Run the frontend test suite and build**
 
 Run:
 ```bash
@@ -1971,7 +1971,7 @@ pnpm build
 ```
 Expected: PASS — Vitest suite green (cart tests from Task 14), `tsc -b && vite build` completes with no TypeScript errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/components/OrderStatus.tsx src/pingme-web/customer-app/src/App.tsx
