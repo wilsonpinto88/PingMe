@@ -74,14 +74,14 @@ tests/PingMe.IntegrationTests/
 - Modify: `src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 - Modify: `src/PingMe.Api/PingMe.Api.csproj`
 
-- [ ] **Step 1: Add the Identity EF Core store package to Infrastructure**
+- [x] **Step 1: Add the Identity EF Core store package to Infrastructure**
 
 Run:
 ```bash
 dotnet add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj package Microsoft.AspNetCore.Identity.EntityFrameworkCore
 ```
 
-- [ ] **Step 2: Add JWT Bearer and Swagger packages to the Api project**
+- [x] **Step 2: Add JWT Bearer and Swagger packages to the Api project**
 
 Run:
 ```bash
@@ -89,17 +89,19 @@ dotnet add src/PingMe.Api/PingMe.Api.csproj package Microsoft.AspNetCore.Authent
 dotnet add src/PingMe.Api/PingMe.Api.csproj package Swashbuckle.AspNetCore
 ```
 
-- [ ] **Step 3: Verify the solution still builds**
+- [x] **Step 3: Verify the solution still builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj src/PingMe.Api/PingMe.Api.csproj
 git commit -m "Add Identity, JWT Bearer, and Swashbuckle package references"
 ```
+
+_Completed 2026-08-25: commit `c99cb56`._
 
 ---
 
@@ -110,7 +112,7 @@ git commit -m "Add Identity, JWT Bearer, and Swashbuckle package references"
 
 **Does NOT cover:** wiring `AppUser` into the DbContext or Identity services — that's Tasks 3 and 5.
 
-- [ ] **Step 1: Create `AppUser.cs`**
+- [x] **Step 1: Create `AppUser.cs`**
 
 ```csharp
 namespace PingMe.Infrastructure.Identity;
@@ -131,17 +133,19 @@ public class AppUser : IdentityUser<Guid>, ITenantOwned
 
 `IdentityUser<Guid>` has no built-in default-constructor `Id` assignment the way the string-keyed `IdentityUser` does — without this constructor, every new `AppUser` would default to `Guid.Empty` until EF/Identity assigned one, which never happens automatically for a `Guid` key. `TenantId` is a plain mutable property (not constructor-set like the Plan 1 domain entities) because `AppUser` is created via object-initializer syntax by `UserManager.CreateAsync`, not through a domain constructor.
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Identity/AppUser.cs
 git commit -m "Add AppUser identity entity implementing ITenantOwned"
 ```
+
+_Completed 2026-08-25: commit `555922b`._
 
 ---
 
@@ -152,7 +156,7 @@ git commit -m "Add AppUser identity entity implementing ITenantOwned"
 
 **Does NOT cover:** registering `AppUser`/Identity services in DI — that's Task 5.
 
-- [ ] **Step 1: Read the current file, then replace its full contents with:**
+- [x] **Step 1: Read the current file, then replace its full contents with:**
 
 ```csharp
 namespace PingMe.Infrastructure.Persistence;
@@ -236,7 +240,7 @@ public class PingMeDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Gu
 
 Two changes from Plan 1's version: the base class is now `IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>` instead of plain `DbContext`, and `base.OnModelCreating(modelBuilder)` moved from the end of the method to the **start** — Identity's own model configuration must run first so its tables/keys are established before any other fluent configuration touches the model (standard guidance for deriving from `IdentityDbContext`). Everything else is unchanged. `AppUser` implements `ITenantOwned`, so the existing reflection loop picks it up automatically — no new code needed to filter it.
 
-- [ ] **Step 2: Add EF/Identity design-time tooling is already present from Plan 1 — regenerate the migration**
+- [x] **Step 2: Add EF/Identity design-time tooling is already present from Plan 1 — regenerate the migration**
 
 Run:
 ```bash
@@ -244,22 +248,24 @@ dotnet ef migrations add AddIdentityTables --project src/PingMe.Infrastructure -
 ```
 Expected: PASS — creates a migration adding `AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, and related Identity tables, plus the `TenantId` column/index on `AspNetUsers` (since `AppUser` is `ITenantOwned`).
 
-- [ ] **Step 3: Apply the migration**
+- [x] **Step 3: Apply the migration**
 
 Run: `dotnet ef database update --project src/PingMe.Infrastructure --startup-project src/PingMe.Api`
 Expected: PASS
 
-- [ ] **Step 4: Verify the solution builds**
+- [x] **Step 4: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure
 git commit -m "Convert PingMeDbContext to IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>"
 ```
+
+_Completed 2026-08-26: commit `88129a7`. Migration `AddIdentityTables` confirmed AspNetUsers has TenantId column+index; tenant filter correctly picked up AppUser; 8/8 existing tests still pass._
 
 ---
 
@@ -269,7 +275,7 @@ git commit -m "Convert PingMeDbContext to IdentityDbContext<AppUser, IdentityRol
 - Modify: `src/PingMe.Api/appsettings.Development.json`
 - Create: `src/PingMe.Infrastructure/Identity/JwtTokenGenerator.cs`
 
-- [ ] **Step 1: Add JWT settings to `appsettings.Development.json`**
+- [x] **Step 1: Add JWT settings to `appsettings.Development.json`**
 
 Update `src/PingMe.Api/appsettings.Development.json` to:
 
@@ -293,7 +299,7 @@ Update `src/PingMe.Api/appsettings.Development.json` to:
 }
 ```
 
-- [ ] **Step 2: Create `JwtTokenGenerator.cs`**
+- [x] **Step 2: Create `JwtTokenGenerator.cs`**
 
 ```csharp
 namespace PingMe.Infrastructure.Identity;
@@ -343,17 +349,19 @@ public class JwtTokenGenerator
 }
 ```
 
-- [ ] **Step 3: Verify it compiles**
+- [x] **Step 3: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/appsettings.Development.json src/PingMe.Infrastructure/Identity/JwtTokenGenerator.cs
 git commit -m "Add JWT settings and JwtTokenGenerator"
 ```
+
+_Completed 2026-08-26: commit `4899960`. Needed 2 extra package refs (Microsoft.IdentityModel.Tokens, System.IdentityModel.Tokens.Jwt) since they didn't resolve transitively — anticipated fallback in the task text, not a deviation._
 
 ---
 
@@ -365,7 +373,7 @@ git commit -m "Add JWT settings and JwtTokenGenerator"
 
 **Does NOT cover:** any controller — this task only wires the pipeline. There is nothing to call yet; verification is "does it start and build", not "does an endpoint respond."
 
-- [ ] **Step 1: Create `TenantResolutionMiddleware.cs`**
+- [x] **Step 1: Create `TenantResolutionMiddleware.cs`**
 
 ```csharp
 namespace PingMe.Api.Middleware;
@@ -397,7 +405,7 @@ public class TenantResolutionMiddleware
 }
 ```
 
-- [ ] **Step 2: Replace the full contents of `Program.cs` with:**
+- [x] **Step 2: Replace the full contents of `Program.cs` with:**
 
 ```csharp
 using System.Text;
@@ -516,7 +524,7 @@ public partial class Program
 
 The `public partial class Program { }` at the bottom is required so `Microsoft.AspNetCore.Mvc.Testing`'s `WebApplicationFactory<Program>` (Task 6) can reference the entry point — top-level statement programs don't otherwise expose a usable `Program` type. `TenantResolutionMiddleware` is placed after `UseAuthentication()` (so `context.User` is populated) and before `UseAuthorization()` (so the resolved tenant is available to anything downstream, including model-level query filters that run during controller action execution).
 
-- [ ] **Step 3: Verify the solution builds and the app starts**
+- [x] **Step 3: Verify the solution builds and the app starts**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
@@ -524,12 +532,14 @@ Expected: PASS
 Run: `dotnet run --project src/PingMe.Api --launch-profile https &` then `curl -k https://localhost:7xxx/swagger/index.html` (use whichever port `launchSettings.json` assigns), then stop the process.
 Expected: the Swagger UI page loads (HTTP 200). Role seeding runs on startup without throwing — check the console output for no unhandled exceptions during the `using (var scope = ...)` block.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api
 git commit -m "Wire Identity, JWT auth, Swagger UI, tenant-resolution middleware, and role seeding"
 ```
+
+_Completed 2026-08-26: commit `24ef802`, plus fix-up `8eaa646` (Swagger's Bearer security requirement was serializing as an empty object due to `null` host document; fixed by passing the in-progress `OpenApiDocument` to `OpenApiSecuritySchemeReference`, empirically verified against `/swagger/v1/swagger.json`). Swashbuckle.AspNetCore 10.2.3's API surface differs from the plan's assumed shape (`Microsoft.OpenApi` namespace, not `Microsoft.OpenApi.Models`) — noted as an accepted, necessary adaptation._
 
 ---
 
@@ -541,14 +551,14 @@ git commit -m "Wire Identity, JWT auth, Swagger UI, tenant-resolution middleware
 
 **Does NOT cover:** any actual test — this is shared test infrastructure only, used starting Task 7.
 
-- [ ] **Step 1: Add the ASP.NET Core test-hosting package**
+- [x] **Step 1: Add the ASP.NET Core test-hosting package**
 
 Run:
 ```bash
 dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package Microsoft.AspNetCore.Mvc.Testing
 ```
 
-- [ ] **Step 2: Create `PingMeWebApplicationFactory.cs`**
+- [x] **Step 2: Create `PingMeWebApplicationFactory.cs`**
 
 ```csharp
 namespace PingMe.IntegrationTests.Infrastructure;
@@ -587,7 +597,7 @@ public class PingMeWebApplicationFactory : WebApplicationFactory<Program>
 
 This targets the same `pingme_test` database Plan 1's integration tests use — each test in this plan registers a brand-new tenant with a random-GUID email, so tests don't collide with each other or with Plan 1's leftover rows, matching the pattern already accepted in Plan 1 (no cleanup between runs; correctness doesn't depend on a clean slate since every test uses fresh identifiers).
 
-- [ ] **Step 3: Verify the test project builds**
+- [x] **Step 3: Verify the test project builds**
 
 Run: `dotnet build tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: PASS — this requires `PingMe.Api`'s `public partial class Program` from Task 5 and a project reference from `PingMe.IntegrationTests` to `PingMe.Api`. Add the reference if it's missing:
@@ -596,12 +606,14 @@ dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj referenc
 ```
 Then rebuild and confirm PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
 git commit -m "Add PingMeWebApplicationFactory for HTTP-level integration tests"
 ```
+
+_Completed 2026-08-26: commit `5542193`. 8/8 existing tests still pass; factory not yet consumed by a test class (expected — Task 7 is the first real usage)._
 
 ---
 
@@ -616,7 +628,7 @@ git commit -m "Add PingMeWebApplicationFactory for HTTP-level integration tests"
 
 **Does NOT cover:** the `Login` endpoint's implementation (stubbed as not-yet-existing here; added in Task 8). This task's test file includes both `RegisterTenant` and `Login` facts because a single HTTP-level TDD cycle is more natural when the two endpoints are tightly coupled (you can't test registration's token without also exercising login) — the RED step below covers both facts failing, and Task 8 turns the login-specific facts green without touching `RegisterTenant` again.
 
-- [ ] **Step 1: Create the 3 DTO files**
+- [x] **Step 1: Create the 3 DTO files**
 
 `src/PingMe.Api/Contracts/Auth/RegisterTenantRequest.cs`:
 ```csharp
@@ -639,7 +651,7 @@ namespace PingMe.Api.Contracts.Auth;
 public record AuthResponse(string Token);
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `tests/PingMe.IntegrationTests/Api/AuthTests.cs`:
 
@@ -726,12 +738,12 @@ public class AuthTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: FAIL — all 5 facts fail with 404 Not Found (no `AuthController` exists yet to map `/auth/register-tenant` or `/auth/login`).
 
-- [ ] **Step 4: Create `AuthController.cs`**
+- [x] **Step 4: Create `AuthController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -806,17 +818,19 @@ public class AuthController : ControllerBase
 
 `Login` is a deliberate stub returning `401` unconditionally — this task only needs `RegisterTenant` and the duplicate-email check to go green; the 3 login-related facts stay red until Task 8. The uniqueness check uses `IgnoreQueryFilters()` because at this point in the request no JWT exists yet, so `CurrentTenantProvider.TenantId` is `null` — without bypassing the filter, this query would see zero existing users regardless of how many are actually registered, and duplicate emails across tenants would never be caught (see this plan's Assumptions section).
 
-- [ ] **Step 5: Run the tests again**
+- [x] **Step 5: Run the tests again**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: `RegisterTenant_returns_201_with_a_token` and `RegisterTenant_with_duplicate_email_returns_409` PASS. The 3 `Login_*` facts still FAIL (expected — `Login` is a stub, that's Task 8's job).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api tests/PingMe.IntegrationTests
 git commit -m "Add RegisterTenant endpoint with manual cross-tenant email-uniqueness check (TDD)"
 ```
+
+_Completed 2026-08-26: commit `bf83ae4`, plus follow-up `9d8af31` (discovered `pingme_test` predated the Identity migration since Plan 1 created it via `EnsureCreatedAsync` with no migration tracking; replaced a fragile hardcoded-migration-ID reconciliation with `EnsureDeleted()`+`Migrate()` on factory construction, and disabled xUnit parallel test collections to prevent races with Plan 1's `TenantIsolationTests` — verified stable across 2 consecutive full test runs). Noted non-blocking: TOCTOU on email uniqueness check, no transaction around tenant+user creation — out of this task's scope._
 
 ---
 
@@ -827,12 +841,12 @@ git commit -m "Add RegisterTenant endpoint with manual cross-tenant email-unique
 
 **Does NOT cover:** rate limiting or account lockout after repeated failed attempts — out of MVP scope.
 
-- [ ] **Step 1: Confirm the 3 `Login_*` tests are still failing** (carried over from Task 7 — no new test file needed)
+- [x] **Step 1: Confirm the 3 `Login_*` tests are still failing** (carried over from Task 7 — no new test file needed)
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: FAIL on `Login_after_register_succeeds`, `Login_with_wrong_password_returns_401`, `Login_with_unknown_email_returns_401_not_404` (all currently hit the `Unauthorized()` stub, so `Login_with_wrong_password_returns_401` and `Login_with_unknown_email_returns_401_not_404` might already pass by coincidence — the meaningful RED signal is `Login_after_register_succeeds`, which cannot pass against a stub that always returns 401).
 
-- [ ] **Step 2: Replace the `Login` method in `AuthController.cs`**
+- [x] **Step 2: Replace the `Login` method in `AuthController.cs`**
 
 ```csharp
     [HttpPost("login")]
@@ -862,17 +876,19 @@ Expected: FAIL on `Login_after_register_succeeds`, `Login_with_wrong_password_re
 
 Same reasoning as `RegisterTenant`: the lookup by email must run with `IgnoreQueryFilters()` because the tenant isn't known until *after* this lookup succeeds — that's the whole point of resolving identity by email first. Both the "user not found" and "wrong password" branches return the same `401 Unauthorized` with no distinguishing detail, per spec Section 8 ("no distinction leaked between 'wrong password' and 'unknown user'").
 
-- [ ] **Step 3: Run the tests to verify they pass**
+- [x] **Step 3: Run the tests to verify they pass**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: PASS — all 5 facts in `AuthTests` green.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/AuthController.cs
 git commit -m "Implement Login endpoint (TDD) — no wrong-password-vs-unknown-user distinction leaked"
 ```
+
+_Completed 2026-08-26: commit `a0ef39a`. 13/13 tests pass (4 unit + 9 integration). Confirmed PasswordVerificationResult.SuccessRehashNeeded correctly falls through to a successful login._
 
 ---
 
@@ -889,7 +905,7 @@ git commit -m "Implement Login endpoint (TDD) — no wrong-password-vs-unknown-u
 - Create: `src/PingMe.Api/Contracts/Catalog/ProductOptionDto.cs`
 - Create: `src/PingMe.Api/Contracts/Catalog/CreateProductOptionRequest.cs`
 
-- [ ] **Step 1: Create all 9 DTO files**
+- [x] **Step 1: Create all 9 DTO files**
 
 `src/PingMe.Api/Contracts/Catalog/MenuDto.cs`:
 ```csharp
@@ -954,17 +970,19 @@ namespace PingMe.Api.Contracts.Catalog;
 public record CreateProductOptionRequest(string Name, decimal PriceDelta);
 ```
 
-- [ ] **Step 2: Verify the solution builds**
+- [x] **Step 2: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Catalog
 git commit -m "Add Catalog admin DTOs"
 ```
+
+_Completed 2026-08-26: commit `466684a`._
 
 ---
 
@@ -975,7 +993,7 @@ git commit -m "Add Catalog admin DTOs"
 
 **Does NOT cover:** deleting a menu or category, or reordering categories beyond accepting a `SortOrder` on creation — out of scope per this plan's Assumptions.
 
-- [ ] **Step 1: Create `MenusController.cs`**
+- [x] **Step 1: Create `MenusController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -1039,12 +1057,12 @@ public class MenusController : ControllerBase
 
 `_currentTenantProvider.TenantId!.Value` is safe here (never actually null at runtime) because `[Authorize(Roles = "Owner")]` guarantees `TenantResolutionMiddleware` already ran on an authenticated request and set it from the JWT's `tenantId` claim before this action executes. `menuExists` is checked against `_dbContext.Menus`, which is tenant-filtered — a `menuId` belonging to another tenant is invisible here and correctly produces `404`, not a cross-tenant category creation.
 
-- [ ] **Step 2: Verify the solution builds**
+- [x] **Step 2: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/MenusController.cs
@@ -1060,7 +1078,7 @@ git commit -m "Add MenusController: create/list menus, create categories under a
 
 **Does NOT cover:** deleting products/options, editing name or price after creation (only availability toggling), or listing options for a product — out of scope for this plan; add in a later plan if the Admin UI needs it.
 
-- [ ] **Step 1: Create `ProductsController.cs`**
+- [x] **Step 1: Create `ProductsController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -1147,12 +1165,12 @@ public class ProductsController : ControllerBase
 
 `AddOption` inserts directly into `_dbContext.ProductOptions` — this does not violate the Plan 1 "never query `ProductOption` standalone" hard rule, because inserting isn't a query (query filters only affect reads) and the parent-existence check (`_dbContext.Products.AnyAsync(p => p.Id == productId)`) already goes through the tenant-filtered `Products` set, so a `productId` belonging to another tenant is rejected with `404` before any `ProductOption` row is touched. No endpoint in this controller (or anywhere else in the codebase) lists or fetches a `ProductOption` independent of its parent `Product`.
 
-- [ ] **Step 2: Verify the solution builds**
+- [x] **Step 2: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/ProductsController.cs
@@ -1168,7 +1186,7 @@ git commit -m "Add ProductsController: create/read products, toggle availability
 
 **Does NOT cover:** the ordering-endpoint cross-tenant test from spec Section 9 ("session from Tenant A submits Tenant B's productId on `POST /orders`") — that endpoint doesn't exist until Plan 3; this task closes the *admin-API* half of HTTP-layer isolation, not the customer-ordering half.
 
-- [ ] **Step 1: Create `CatalogAdminIsolationTests.cs`**
+- [x] **Step 1: Create `CatalogAdminIsolationTests.cs`**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -1278,12 +1296,12 @@ public class CatalogAdminIsolationTests : IClassFixture<PingMeWebApplicationFact
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they pass**
+- [x] **Step 2: Run the tests to verify they pass**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~CatalogAdminIsolationTests`
 Expected: PASS — all 4 facts green. If `TenantA_cannot_read_TenantB_product_via_admin_api` instead fails with a `200 OK`, that means `TenantResolutionMiddleware` or the tenant filter isn't wired correctly — stop and fix before continuing, this is the security-critical case the whole plan exists to prove.
 
-- [ ] **Step 3: Run the full test suite and full solution build**
+- [x] **Step 3: Run the full test suite and full solution build**
 
 Run:
 ```bash
@@ -1292,7 +1310,7 @@ dotnet test PingMe.slnx
 ```
 Expected: PASS — solution builds, all tests pass (8 from Plan 1 + 5 `AuthTests` + 4 `CatalogAdminIsolationTests` = 17 total).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
@@ -1306,7 +1324,7 @@ git commit -m "Add HTTP-layer cross-tenant isolation tests for Catalog admin end
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full solution build and test suite one more time from a clean state**
+- [x] **Step 1: Run the full solution build and test suite one more time from a clean state**
 
 Run:
 ```bash
@@ -1315,15 +1333,15 @@ dotnet test PingMe.slnx
 ```
 Expected: PASS — 0 build errors, all 17 tests passing.
 
-- [ ] **Step 2: Manually verify Swagger works end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 2: Manually verify Swagger works end-to-end** (not automatable in this plan — do this once by hand)
 
 Run `dotnet run --project src/PingMe.Api`, open the printed HTTPS URL + `/swagger` in a browser, use "Authorize" with a token obtained by calling `POST /auth/register-tenant` via the Swagger UI itself, then call `POST /admin/menus` and confirm it returns `201` with a menu. Stop the running process afterward.
 
-- [ ] **Step 3: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+- [x] **Step 3: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the Plan 2 row's Status to `Done, reviewed` and Tasks done to `13 / 13` once execution and review are complete (do this after, not before, the task-by-task review cycle — this step is a placeholder reminder for whoever executes the plan, not something to do while still mid-plan). Also remove the two Plan 2-related bullets from "Carried-forward items" (`User`/Identity entity + Swagger UI) since both are now closed, and add a note that the ordering-endpoint isolation test is still owed to Plan 3.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add "Docs/superpowers optimized/plans/PROGRESS.md"
