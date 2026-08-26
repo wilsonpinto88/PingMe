@@ -112,7 +112,7 @@ _Completed 2026-08-25: commit `c99cb56`._
 
 **Does NOT cover:** wiring `AppUser` into the DbContext or Identity services — that's Tasks 3 and 5.
 
-- [ ] **Step 1: Create `AppUser.cs`**
+- [x] **Step 1: Create `AppUser.cs`**
 
 ```csharp
 namespace PingMe.Infrastructure.Identity;
@@ -133,17 +133,19 @@ public class AppUser : IdentityUser<Guid>, ITenantOwned
 
 `IdentityUser<Guid>` has no built-in default-constructor `Id` assignment the way the string-keyed `IdentityUser` does — without this constructor, every new `AppUser` would default to `Guid.Empty` until EF/Identity assigned one, which never happens automatically for a `Guid` key. `TenantId` is a plain mutable property (not constructor-set like the Plan 1 domain entities) because `AppUser` is created via object-initializer syntax by `UserManager.CreateAsync`, not through a domain constructor.
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Identity/AppUser.cs
 git commit -m "Add AppUser identity entity implementing ITenantOwned"
 ```
+
+_Completed 2026-08-25: commit `555922b`._
 
 ---
 
