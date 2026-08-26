@@ -77,4 +77,25 @@ public class OrdersController : ControllerBase
 
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
     }
+
+    [HttpGet("{id}/status")]
+    public async Task<ActionResult<OrderStatusResponse>> GetStatus(Guid id, [FromQuery] Guid sessionId)
+    {
+        var session = await _dbContext.CustomerSessions.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(s => s.Id == sessionId);
+        if (session is null)
+        {
+            return NotFound();
+        }
+
+        _currentTenantProvider.TenantId = session.TenantId;
+
+        var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        if (order is null || order.CustomerSessionId != session.Id)
+        {
+            return NotFound();
+        }
+
+        return Ok(new OrderStatusResponse(order.Id, order.Status.ToString()));
+    }
 }
