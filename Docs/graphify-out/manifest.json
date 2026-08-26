@@ -1,0 +1,392 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1787669328.3269126,
+    "seen": 1787746641.861544,
+    "ast_hash": "4253ab55b461626b5a0ad1d0322ea945",
+    "semantic_hash": "4253ab55b461626b5a0ad1d0322ea945"
+  },
+  "PingMe.slnx": {
+    "mtime": 1787675832.8543897,
+    "seen": 1787746641.861544,
+    "ast_hash": "5c496cd20251ab39df98c13f12ccf122",
+    "semantic_hash": "5c496cd20251ab39df98c13f12ccf122"
+  },
+  "src/PingMe.Api/Contracts/Auth/AuthResponse.cs": {
+    "mtime": 1787744642.8258102,
+    "seen": 1787746641.861544,
+    "ast_hash": "0681f7abb133985f9e4d4a58b572c84f",
+    "semantic_hash": "0681f7abb133985f9e4d4a58b572c84f"
+  },
+  "src/PingMe.Api/Contracts/Auth/LoginRequest.cs": {
+    "mtime": 1787744642.8268116,
+    "seen": 1787746641.861544,
+    "ast_hash": "7aec227ec855de05f08e792d3af81fe9",
+    "semantic_hash": "7aec227ec855de05f08e792d3af81fe9"
+  },
+  "src/PingMe.Api/Contracts/Auth/RegisterTenantRequest.cs": {
+    "mtime": 1787744642.8278122,
+    "seen": 1787746641.861544,
+    "ast_hash": "6a948e8ff8ca52eb39a56a98e7fd17a5",
+    "semantic_hash": "6a948e8ff8ca52eb39a56a98e7fd17a5"
+  },
+  "src/PingMe.Api/Contracts/Catalog/CategoryDto.cs": {
+    "mtime": 1787744642.8292773,
+    "seen": 1787746641.861544,
+    "ast_hash": "c1eda3a5dea43c0a240ce476eeb54693",
+    "semantic_hash": "c1eda3a5dea43c0a240ce476eeb54693"
+  },
+  "src/PingMe.Api/Contracts/Catalog/CreateCategoryRequest.cs": {
+    "mtime": 1787744642.830284,
+    "seen": 1787746641.861544,
+    "ast_hash": "f29a04fc9c203560934a6ad6aa13e5ff",
+    "semantic_hash": "f29a04fc9c203560934a6ad6aa13e5ff"
+  },
+  "src/PingMe.Api/Contracts/Catalog/CreateMenuRequest.cs": {
+    "mtime": 1787744642.831284,
+    "seen": 1787746641.861544,
+    "ast_hash": "92e7c88559c6a21aa22d73522c60470b",
+    "semantic_hash": "92e7c88559c6a21aa22d73522c60470b"
+  },
+  "src/PingMe.Api/Contracts/Catalog/CreateProductOptionRequest.cs": {
+    "mtime": 1787744642.8322835,
+    "seen": 1787746641.861544,
+    "ast_hash": "6aaba010bcfcdc8c9ceabd4512f114c9",
+    "semantic_hash": "6aaba010bcfcdc8c9ceabd4512f114c9"
+  },
+  "src/PingMe.Api/Contracts/Catalog/CreateProductRequest.cs": {
+    "mtime": 1787744642.833285,
+    "seen": 1787746641.861544,
+    "ast_hash": "0692db705e9c17340f41c8f120a8c5b5",
+    "semantic_hash": "0692db705e9c17340f41c8f120a8c5b5"
+  },
+  "src/PingMe.Api/Contracts/Catalog/MenuDto.cs": {
+    "mtime": 1787744642.8342834,
+    "seen": 1787746641.861544,
+    "ast_hash": "8fb6fd00a75d6b4694ea95ab113618ce",
+    "semantic_hash": "8fb6fd00a75d6b4694ea95ab113618ce"
+  },
+  "src/PingMe.Api/Contracts/Catalog/ProductDto.cs": {
+    "mtime": 1787744642.8352835,
+    "seen": 1787746641.861544,
+    "ast_hash": "bef8b4a04e7c26fabb8f94e88c35a414",
+    "semantic_hash": "bef8b4a04e7c26fabb8f94e88c35a414"
+  },
+  "src/PingMe.Api/Contracts/Catalog/ProductOptionDto.cs": {
+    "mtime": 1787744642.8362844,
+    "seen": 1787746641.861544,
+    "ast_hash": "06f9171a7bfa8ee9d6be196e530ef87c",
+    "semantic_hash": "06f9171a7bfa8ee9d6be196e530ef87c"
+  },
+  "src/PingMe.Api/Contracts/Catalog/UpdateProductAvailabilityRequest.cs": {
+    "mtime": 1787744642.837283,
+    "seen": 1787746641.861544,
+    "ast_hash": "623a210cff67d20794802ce945734151",
+    "semantic_hash": "623a210cff67d20794802ce945734151"
+  },
+  "src/PingMe.Api/Controllers/AuthController.cs": {
+    "mtime": 1787744642.8393128,
+    "seen": 1787746641.861544,
+    "ast_hash": "d2c425dc1caeb886c083a3e1f8569138",
+    "semantic_hash": "d2c425dc1caeb886c083a3e1f8569138"
+  },
+  "src/PingMe.Api/Controllers/MenusController.cs": {
+    "mtime": 1787744642.8403459,
+    "seen": 1787746641.861544,
+    "ast_hash": "e4b58666f63c8ef7acf6bac08276d602",
+    "semantic_hash": "e4b58666f63c8ef7acf6bac08276d602"
+  },
+  "src/PingMe.Api/Controllers/ProductsController.cs": {
+    "mtime": 1787744642.8413472,
+    "seen": 1787746641.861544,
+    "ast_hash": "2649570b7a2d5cc29414f21123a44166",
+    "semantic_hash": "2649570b7a2d5cc29414f21123a44166"
+  },
+  "src/PingMe.Api/Middleware/TenantResolutionMiddleware.cs": {
+    "mtime": 1787744642.843344,
+    "seen": 1787746641.861544,
+    "ast_hash": "fe38fb2ea3826e748c47047f3df88bbc",
+    "semantic_hash": "fe38fb2ea3826e748c47047f3df88bbc"
+  },
+  "src/PingMe.Api/PingMe.Api.csproj": {
+    "mtime": 1787744642.8443432,
+    "seen": 1787746641.861544,
+    "ast_hash": "6cfca3ee2a0fd530758eb2a7aafb869a",
+    "semantic_hash": "6cfca3ee2a0fd530758eb2a7aafb869a"
+  },
+  "src/PingMe.Api/Program.cs": {
+    "mtime": 1787744642.8463435,
+    "seen": 1787746641.861544,
+    "ast_hash": "4c5ff6ef51d84278d90e7273015f9f39",
+    "semantic_hash": "4c5ff6ef51d84278d90e7273015f9f39"
+  },
+  "src/PingMe.Api/Properties/launchSettings.json": {
+    "mtime": 1787659694.6777635,
+    "seen": 1787746641.861544,
+    "ast_hash": "dbc7960effd6943935562b3d916b046a",
+    "semantic_hash": "dbc7960effd6943935562b3d916b046a"
+  },
+  "src/PingMe.Api/appsettings.Development.json": {
+    "mtime": 1787744642.8473427,
+    "seen": 1787746641.861544,
+    "ast_hash": "50f454c71f97dc95bf1c945f519e8c64",
+    "semantic_hash": "50f454c71f97dc95bf1c945f519e8c64"
+  },
+  "src/PingMe.Api/appsettings.json": {
+    "mtime": 1787659694.6939268,
+    "seen": 1787746641.861544,
+    "ast_hash": "f7e65dde4e5533740a0d57ac9355c0e8",
+    "semantic_hash": "f7e65dde4e5533740a0d57ac9355c0e8"
+  },
+  "src/PingMe.Application/PingMe.Application.csproj": {
+    "mtime": 1787675832.8633049,
+    "seen": 1787746641.861544,
+    "ast_hash": "e931c5b286a8686a52214f46a22951f1",
+    "semantic_hash": "e931c5b286a8686a52214f46a22951f1"
+  },
+  "src/PingMe.Application/Tenants/ICurrentTenantProvider.cs": {
+    "mtime": 1787675832.8643045,
+    "seen": 1787746641.861544,
+    "ast_hash": "f7b9437fd49b803e6291f5606b73da41",
+    "semantic_hash": "f7b9437fd49b803e6291f5606b73da41"
+  },
+  "src/PingMe.Domain/Catalog/Category.cs": {
+    "mtime": 1787675832.8663075,
+    "seen": 1787746641.861544,
+    "ast_hash": "b61e5880e6f62202f1847544bba118c8",
+    "semantic_hash": "b61e5880e6f62202f1847544bba118c8"
+  },
+  "src/PingMe.Domain/Catalog/Menu.cs": {
+    "mtime": 1787675832.8673081,
+    "seen": 1787746641.861544,
+    "ast_hash": "49762b059668c4080006dac1b7ba152e",
+    "semantic_hash": "49762b059668c4080006dac1b7ba152e"
+  },
+  "src/PingMe.Domain/Catalog/Product.cs": {
+    "mtime": 1787675832.8683095,
+    "seen": 1787746641.861544,
+    "ast_hash": "1fbcbc4a7e34db63379e57766fac7fc1",
+    "semantic_hash": "1fbcbc4a7e34db63379e57766fac7fc1"
+  },
+  "src/PingMe.Domain/Catalog/ProductOption.cs": {
+    "mtime": 1787675832.86931,
+    "seen": 1787746641.861544,
+    "ast_hash": "b781ca2f2f2c08cb4fe33d9aef525739",
+    "semantic_hash": "b781ca2f2f2c08cb4fe33d9aef525739"
+  },
+  "src/PingMe.Domain/Common/Entity.cs": {
+    "mtime": 1787675832.8703065,
+    "seen": 1787746641.861544,
+    "ast_hash": "63a5a26e183cd4b577a74d2d0ce8acb9",
+    "semantic_hash": "63a5a26e183cd4b577a74d2d0ce8acb9"
+  },
+  "src/PingMe.Domain/Common/ITenantOwned.cs": {
+    "mtime": 1787675832.872707,
+    "seen": 1787746641.861544,
+    "ast_hash": "84e8b2b6b9775c1ae07f58f4d499a8cd",
+    "semantic_hash": "84e8b2b6b9775c1ae07f58f4d499a8cd"
+  },
+  "src/PingMe.Domain/Locations/CustomerSession.cs": {
+    "mtime": 1787675832.8758042,
+    "seen": 1787746641.861544,
+    "ast_hash": "e8167edac67d523ac7a2eecee194c4b2",
+    "semantic_hash": "e8167edac67d523ac7a2eecee194c4b2"
+  },
+  "src/PingMe.Domain/Locations/Location.cs": {
+    "mtime": 1787675832.8778143,
+    "seen": 1787746641.861544,
+    "ast_hash": "0a176518bea57af60c06768f07ff7d70",
+    "semantic_hash": "0a176518bea57af60c06768f07ff7d70"
+  },
+  "src/PingMe.Domain/Locations/QrCode.cs": {
+    "mtime": 1787675832.8788133,
+    "seen": 1787746641.861544,
+    "ast_hash": "e743f7a36f9483dafa24293ed60faaac",
+    "semantic_hash": "e743f7a36f9483dafa24293ed60faaac"
+  },
+  "src/PingMe.Domain/Locations/Venue.cs": {
+    "mtime": 1787675832.879815,
+    "seen": 1787746641.861544,
+    "ast_hash": "d27536f4886b6522dbe10cf6e563bea9",
+    "semantic_hash": "d27536f4886b6522dbe10cf6e563bea9"
+  },
+  "src/PingMe.Domain/Ordering/Order.cs": {
+    "mtime": 1787675832.882079,
+    "seen": 1787746641.861544,
+    "ast_hash": "35d5b14c57472173009a8c82e51e03c6",
+    "semantic_hash": "35d5b14c57472173009a8c82e51e03c6"
+  },
+  "src/PingMe.Domain/Ordering/OrderItem.cs": {
+    "mtime": 1787675832.883798,
+    "seen": 1787746641.861544,
+    "ast_hash": "031d4ccf7096b7eae93e9aefbccf9692",
+    "semantic_hash": "031d4ccf7096b7eae93e9aefbccf9692"
+  },
+  "src/PingMe.Domain/Ordering/OrderStatus.cs": {
+    "mtime": 1787675832.883798,
+    "seen": 1787746641.861544,
+    "ast_hash": "de68903bd1bdbca381fb48ef16b44e08",
+    "semantic_hash": "de68903bd1bdbca381fb48ef16b44e08"
+  },
+  "src/PingMe.Domain/PingMe.Domain.csproj": {
+    "mtime": 1787659699.85093,
+    "seen": 1787746641.861544,
+    "ast_hash": "46b0780bd56312ea2d1bab391f179e89",
+    "semantic_hash": "46b0780bd56312ea2d1bab391f179e89"
+  },
+  "src/PingMe.Domain/Tenants/Tenant.cs": {
+    "mtime": 1787675832.883798,
+    "seen": 1787746641.861544,
+    "ast_hash": "f7be6dab9a52296567f7750388b989d5",
+    "semantic_hash": "f7be6dab9a52296567f7750388b989d5"
+  },
+  "src/PingMe.Infrastructure/Identity/AppUser.cs": {
+    "mtime": 1787744642.8495493,
+    "seen": 1787746641.861544,
+    "ast_hash": "4263bfe7b7b209d5bc10dfec24614a9a",
+    "semantic_hash": "4263bfe7b7b209d5bc10dfec24614a9a"
+  },
+  "src/PingMe.Infrastructure/Identity/JwtTokenGenerator.cs": {
+    "mtime": 1787744642.8505576,
+    "seen": 1787746641.861544,
+    "ast_hash": "465e84dfd0f92106771d8e9221a42c1a",
+    "semantic_hash": "465e84dfd0f92106771d8e9221a42c1a"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825161039_InitialCreate.Designer.cs": {
+    "mtime": 1787675832.8893583,
+    "seen": 1787746641.861544,
+    "ast_hash": "a74928ff302fdff95caf55297852949a",
+    "semantic_hash": "a74928ff302fdff95caf55297852949a"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825161039_InitialCreate.cs": {
+    "mtime": 1787675832.891365,
+    "seen": 1787746641.861544,
+    "ast_hash": "9f2b67e12f16b6eee7680773c0af8d67",
+    "semantic_hash": "9f2b67e12f16b6eee7680773c0af8d67"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825161404_AddOrderItemUnitPricePrecision.Designer.cs": {
+    "mtime": 1787675832.8930345,
+    "seen": 1787746641.861544,
+    "ast_hash": "9ba9b91eb04c255425c97ec67caf548c",
+    "semantic_hash": "9ba9b91eb04c255425c97ec67caf548c"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825161404_AddOrderItemUnitPricePrecision.cs": {
+    "mtime": 1787675832.8940885,
+    "seen": 1787746641.861544,
+    "ast_hash": "4200e3f8b77d3a670d0255e172dd5174",
+    "semantic_hash": "4200e3f8b77d3a670d0255e172dd5174"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825162048_AddTenantQueryFilters.Designer.cs": {
+    "mtime": 1787675832.8950436,
+    "seen": 1787746641.861544,
+    "ast_hash": "df5bce06d5211d22f2f6a89019052da6",
+    "semantic_hash": "df5bce06d5211d22f2f6a89019052da6"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825162048_AddTenantQueryFilters.cs": {
+    "mtime": 1787675832.8960423,
+    "seen": 1787746641.861544,
+    "ast_hash": "81edbac29fed979ce4221324b575491d",
+    "semantic_hash": "81edbac29fed979ce4221324b575491d"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825163453_AddTenantIndexAndRenameOrderItemsTable.Designer.cs": {
+    "mtime": 1787675832.8980408,
+    "seen": 1787746641.861544,
+    "ast_hash": "8fc859eb2847a9b0b5e86ac15b3c541f",
+    "semantic_hash": "8fc859eb2847a9b0b5e86ac15b3c541f"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260825163453_AddTenantIndexAndRenameOrderItemsTable.cs": {
+    "mtime": 1787675832.8990414,
+    "seen": 1787746641.861544,
+    "ast_hash": "2fddd7e45be6d4d9a49d3369ead627d5",
+    "semantic_hash": "2fddd7e45be6d4d9a49d3369ead627d5"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260826084854_AddIdentityTables.Designer.cs": {
+    "mtime": 1787744642.851555,
+    "seen": 1787746641.861544,
+    "ast_hash": "c122f077aaf75270e72a30d0db76d04f",
+    "semantic_hash": "c122f077aaf75270e72a30d0db76d04f"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/20260826084854_AddIdentityTables.cs": {
+    "mtime": 1787744642.8525567,
+    "seen": 1787746641.861544,
+    "ast_hash": "c9886a3c6e727711e9a5111d8ef6eafa",
+    "semantic_hash": "c9886a3c6e727711e9a5111d8ef6eafa"
+  },
+  "src/PingMe.Infrastructure/Persistence/Migrations/PingMeDbContextModelSnapshot.cs": {
+    "mtime": 1787744642.8557703,
+    "seen": 1787746641.861544,
+    "ast_hash": "fa1dd7d433980b25aba66423569d1ff4",
+    "semantic_hash": "fa1dd7d433980b25aba66423569d1ff4"
+  },
+  "src/PingMe.Infrastructure/Persistence/PingMeDbContext.cs": {
+    "mtime": 1787744642.857871,
+    "seen": 1787746641.861544,
+    "ast_hash": "eef9d7ad1c0d5057d4593b6dfaa67b02",
+    "semantic_hash": "eef9d7ad1c0d5057d4593b6dfaa67b02"
+  },
+  "src/PingMe.Infrastructure/PingMe.Infrastructure.csproj": {
+    "mtime": 1787744642.8612616,
+    "seen": 1787746641.861544,
+    "ast_hash": "6cb86d3deec9a0a8a23ac8eccc2aaaf2",
+    "semantic_hash": "6cb86d3deec9a0a8a23ac8eccc2aaaf2"
+  },
+  "src/PingMe.Infrastructure/Tenants/CurrentTenantProvider.cs": {
+    "mtime": 1787675832.904049,
+    "seen": 1787746641.861544,
+    "ast_hash": "1abf0448af6ed0f27fc81789b2057e53",
+    "semantic_hash": "1abf0448af6ed0f27fc81789b2057e53"
+  },
+  "tests/PingMe.IntegrationTests/Api/AuthTests.cs": {
+    "mtime": 1787744642.8634088,
+    "seen": 1787746641.861544,
+    "ast_hash": "9a1820b4719d17e1bae97bb6d453e7e6",
+    "semantic_hash": "9a1820b4719d17e1bae97bb6d453e7e6"
+  },
+  "tests/PingMe.IntegrationTests/Api/CatalogAdminIsolationTests.cs": {
+    "mtime": 1787744642.864956,
+    "seen": 1787746641.861544,
+    "ast_hash": "7b0c310d60241bf14a454ee70ea65cfd",
+    "semantic_hash": "7b0c310d60241bf14a454ee70ea65cfd"
+  },
+  "tests/PingMe.IntegrationTests/Infrastructure/PingMeWebApplicationFactory.cs": {
+    "mtime": 1787744642.866471,
+    "seen": 1787746641.861544,
+    "ast_hash": "707576126c2bb49f7cbdd7213feb7c60",
+    "semantic_hash": "707576126c2bb49f7cbdd7213feb7c60"
+  },
+  "tests/PingMe.IntegrationTests/MultiTenancy/IntegrationTestDbConnection.cs": {
+    "mtime": 1787675832.906052,
+    "seen": 1787746641.861544,
+    "ast_hash": "9e9a5b97f2df7cd4da9f6c57a1d58f7f",
+    "semantic_hash": "9e9a5b97f2df7cd4da9f6c57a1d58f7f"
+  },
+  "tests/PingMe.IntegrationTests/MultiTenancy/TenantIsolationTests.cs": {
+    "mtime": 1787675832.906052,
+    "seen": 1787746641.861544,
+    "ast_hash": "51e0f954977662e948304365aa0bc3b5",
+    "semantic_hash": "51e0f954977662e948304365aa0bc3b5"
+  },
+  "tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj": {
+    "mtime": 1787744642.8690786,
+    "seen": 1787746641.861544,
+    "ast_hash": "6faf3a28b8a15b934e29bc9e9f98cd0b",
+    "semantic_hash": "6faf3a28b8a15b934e29bc9e9f98cd0b"
+  },
+  "tests/PingMe.IntegrationTests/xunit.runner.json": {
+    "mtime": 1787744642.8690786,
+    "seen": 1787746641.861544,
+    "ast_hash": "dceacdfd27e43838879cc998d0fb5110",
+    "semantic_hash": "dceacdfd27e43838879cc998d0fb5110"
+  },
+  "tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs": {
+    "mtime": 1787675832.9102223,
+    "seen": 1787746641.861544,
+    "ast_hash": "dbf79d1eee0b4ec105179c9a9b648bdd",
+    "semantic_hash": "dbf79d1eee0b4ec105179c9a9b648bdd"
+  },
+  "tests/PingMe.UnitTests/PingMe.UnitTests.csproj": {
+    "mtime": 1787675832.9112232,
+    "seen": 1787746641.861544,
+    "ast_hash": "eaaad78a6be8b7268a0148b0c5ab0693",
+    "semantic_hash": "eaaad78a6be8b7268a0148b0c5ab0693"
+  }
+}

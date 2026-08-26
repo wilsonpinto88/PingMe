@@ -39,3 +39,6 @@ state.md
 
 ## Git worktrees (isolated plan-execution workspaces)
 .worktrees/
+
+## Graphify project-map cache (regenerable AST/stat cache, not the map itself)
+Docs/graphify-out/cache/
