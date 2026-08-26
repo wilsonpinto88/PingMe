@@ -1242,7 +1242,7 @@ git commit -m "Add cross-tenant ordering isolation tests (closes Plan 1/2 carrie
 **Files:**
 - Create: `tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs`
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -1347,21 +1347,21 @@ public class AdminOrdersTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AdminOrdersTests`
 Expected: PASS — all 4 facts green.
 
-- [ ] **Step 3: Run the full solution build and test suite**
+- [x] **Step 3: Run the full solution build and test suite**
 
 Run:
 ```bash
 dotnet build PingMe.slnx
 dotnet test PingMe.slnx
 ```
-Expected: PASS — 0 build errors, all tests green (17 from Plan 1/2 + 1 from Task 1 + 5 from Task 4 + 6 from Task 8 + 3 from Task 10 + 4 from Task 11 = 36 total).
+Expected: PASS — 0 build errors, all tests green (17 from Plan 1/2 + 1 from Task 1 + 5 from Task 4 + 6 from Task 8 + 4 from Task 10 (a 4th fact was added during red-team review, see Task 10) + 4 from Task 11 = 38 total).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs
