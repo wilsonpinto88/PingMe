@@ -1186,7 +1186,7 @@ git commit -m "Add ProductsController: create/read products, toggle availability
 
 **Does NOT cover:** the ordering-endpoint cross-tenant test from spec Section 9 ("session from Tenant A submits Tenant B's productId on `POST /orders`") — that endpoint doesn't exist until Plan 3; this task closes the *admin-API* half of HTTP-layer isolation, not the customer-ordering half.
 
-- [ ] **Step 1: Create `CatalogAdminIsolationTests.cs`**
+- [x] **Step 1: Create `CatalogAdminIsolationTests.cs`**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -1296,12 +1296,12 @@ public class CatalogAdminIsolationTests : IClassFixture<PingMeWebApplicationFact
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they pass**
+- [x] **Step 2: Run the tests to verify they pass**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~CatalogAdminIsolationTests`
 Expected: PASS — all 4 facts green. If `TenantA_cannot_read_TenantB_product_via_admin_api` instead fails with a `200 OK`, that means `TenantResolutionMiddleware` or the tenant filter isn't wired correctly — stop and fix before continuing, this is the security-critical case the whole plan exists to prove.
 
-- [ ] **Step 3: Run the full test suite and full solution build**
+- [x] **Step 3: Run the full test suite and full solution build**
 
 Run:
 ```bash
@@ -1310,7 +1310,7 @@ dotnet test PingMe.slnx
 ```
 Expected: PASS — solution builds, all tests pass (8 from Plan 1 + 5 `AuthTests` + 4 `CatalogAdminIsolationTests` = 17 total).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
