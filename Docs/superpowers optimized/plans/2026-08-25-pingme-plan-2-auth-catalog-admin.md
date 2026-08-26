@@ -74,14 +74,14 @@ tests/PingMe.IntegrationTests/
 - Modify: `src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 - Modify: `src/PingMe.Api/PingMe.Api.csproj`
 
-- [ ] **Step 1: Add the Identity EF Core store package to Infrastructure**
+- [x] **Step 1: Add the Identity EF Core store package to Infrastructure**
 
 Run:
 ```bash
 dotnet add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj package Microsoft.AspNetCore.Identity.EntityFrameworkCore
 ```
 
-- [ ] **Step 2: Add JWT Bearer and Swagger packages to the Api project**
+- [x] **Step 2: Add JWT Bearer and Swagger packages to the Api project**
 
 Run:
 ```bash
@@ -89,17 +89,19 @@ dotnet add src/PingMe.Api/PingMe.Api.csproj package Microsoft.AspNetCore.Authent
 dotnet add src/PingMe.Api/PingMe.Api.csproj package Swashbuckle.AspNetCore
 ```
 
-- [ ] **Step 3: Verify the solution still builds**
+- [x] **Step 3: Verify the solution still builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/PingMe.Infrastructure.csproj src/PingMe.Api/PingMe.Api.csproj
 git commit -m "Add Identity, JWT Bearer, and Swashbuckle package references"
 ```
+
+_Completed 2026-08-25: commit `c99cb56`._
 
 ---
 
