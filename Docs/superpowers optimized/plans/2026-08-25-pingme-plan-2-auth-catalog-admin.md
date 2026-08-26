@@ -993,7 +993,7 @@ _Completed 2026-08-26: commit `466684a`._
 
 **Does NOT cover:** deleting a menu or category, or reordering categories beyond accepting a `SortOrder` on creation — out of scope per this plan's Assumptions.
 
-- [ ] **Step 1: Create `MenusController.cs`**
+- [x] **Step 1: Create `MenusController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -1057,12 +1057,12 @@ public class MenusController : ControllerBase
 
 `_currentTenantProvider.TenantId!.Value` is safe here (never actually null at runtime) because `[Authorize(Roles = "Owner")]` guarantees `TenantResolutionMiddleware` already ran on an authenticated request and set it from the JWT's `tenantId` claim before this action executes. `menuExists` is checked against `_dbContext.Menus`, which is tenant-filtered — a `menuId` belonging to another tenant is invisible here and correctly produces `404`, not a cross-tenant category creation.
 
-- [ ] **Step 2: Verify the solution builds**
+- [x] **Step 2: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/MenusController.cs
