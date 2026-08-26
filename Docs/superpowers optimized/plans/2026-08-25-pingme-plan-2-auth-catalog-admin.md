@@ -1078,7 +1078,7 @@ git commit -m "Add MenusController: create/list menus, create categories under a
 
 **Does NOT cover:** deleting products/options, editing name or price after creation (only availability toggling), or listing options for a product — out of scope for this plan; add in a later plan if the Admin UI needs it.
 
-- [ ] **Step 1: Create `ProductsController.cs`**
+- [x] **Step 1: Create `ProductsController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -1165,12 +1165,12 @@ public class ProductsController : ControllerBase
 
 `AddOption` inserts directly into `_dbContext.ProductOptions` — this does not violate the Plan 1 "never query `ProductOption` standalone" hard rule, because inserting isn't a query (query filters only affect reads) and the parent-existence check (`_dbContext.Products.AnyAsync(p => p.Id == productId)`) already goes through the tenant-filtered `Products` set, so a `productId` belonging to another tenant is rejected with `404` before any `ProductOption` row is touched. No endpoint in this controller (or anywhere else in the codebase) lists or fetches a `ProductOption` independent of its parent `Product`.
 
-- [ ] **Step 2: Verify the solution builds**
+- [x] **Step 2: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/ProductsController.cs
