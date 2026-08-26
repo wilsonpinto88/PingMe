@@ -371,7 +371,7 @@ git commit -m "Add QrCodesController: create/list QR codes"
 **Files:**
 - Create: `tests/PingMe.IntegrationTests/Api/LocationsAndQrCodesTests.cs`
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -470,12 +470,12 @@ public class LocationsAndQrCodesTests : IClassFixture<PingMeWebApplicationFactor
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~LocationsAndQrCodesTests`
 Expected: PASS — all 5 facts green.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/LocationsAndQrCodesTests.cs
@@ -633,7 +633,7 @@ git commit -m "Add QR resolution endpoint: GET /p/{code} creates/resumes a Custo
 
 **Does NOT cover:** payment of any kind (explicit MVP non-goal, see the approved spec), or letting the client specify `ProductOption` choices (see plan Assumptions).
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Ordering/CreateOrderItemRequest.cs`:
 
@@ -659,7 +659,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record CreateOrderResponse(Guid OrderId, string Status);
 ```
 
-- [ ] **Step 2: Create `OrdersController.cs`**
+- [x] **Step 2: Create `OrdersController.cs`** (during review, added a null guard on `request.Items` — an omitted/null `items` field would otherwise NullReferenceException into a 500 on this anonymous public endpoint)
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -746,12 +746,12 @@ public class OrdersController : ControllerBase
 
 Setting `_currentTenantProvider.TenantId = session.TenantId` before the product lookups is what makes cross-tenant rejection automatic: the global tenant query filter on `Products` means a `productId` belonging to a different tenant than the session's is simply invisible, producing `404` rather than a cross-tenant order line — this is the exact mechanism the carried-forward security test in Task 8 verifies.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/CreateOrderItemRequest.cs src/PingMe.Api/Contracts/Ordering/CreateOrderRequest.cs src/PingMe.Api/Contracts/Ordering/CreateOrderResponse.cs src/PingMe.Api/Controllers/OrdersController.cs
