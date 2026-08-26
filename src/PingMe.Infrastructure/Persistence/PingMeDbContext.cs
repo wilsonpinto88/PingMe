@@ -57,6 +57,10 @@ public class PingMeDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Gu
             .HasForeignKey(l => l.ParentLocationId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<QrCode>()
+            .HasIndex(q => q.Code)
+            .IsUnique();
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (typeof(ITenantOwned).IsAssignableFrom(entityType.ClrType))

@@ -2,17 +2,22 @@ namespace PingMe.IntegrationTests.Api;
 
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using PingMe.Api.Contracts.Auth;
+using PingMe.Infrastructure.Persistence;
 using PingMe.IntegrationTests.Infrastructure;
 using Xunit;
 
 public class AuthTests : IClassFixture<PingMeWebApplicationFactory>
 {
     private readonly HttpClient _client;
+    private readonly PingMeWebApplicationFactory _factory;
 
     public AuthTests(PingMeWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
+        _factory = factory;
     }
 
     [Fact]
@@ -76,5 +81,22 @@ public class AuthTests : IClassFixture<PingMeWebApplicationFactory>
             new LoginRequest($"unknown-{Guid.NewGuid():N}@example.com", "whatever123"));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RegisterTenant_also_creates_the_tenants_single_venue()
+    {
+        var email = $"owner-{Guid.NewGuid():N}@example.com";
+
+        var response = await _client.PostAsJsonAsync("/auth/register-tenant",
+            new RegisterTenantRequest("Test Venue", email, "P@ssw0rd123"));
+
+        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+
+        using var scope = _factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PingMeDbContext>();
+        var venueExists = await dbContext.Venues.IgnoreQueryFilters()
+            .AnyAsync(v => v.Name == "Test Venue");
+        Assert.True(venueExists, "Expected a Venue to be created for the new tenant during registration.");
     }
 }

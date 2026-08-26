@@ -69,7 +69,7 @@ src/pingme-web/
 
 **Does NOT cover:** letting a tenant create additional Venues later — single Venue per Tenant is a hard MVP assumption (see plan Assumptions).
 
-- [ ] **Step 1: Write a failing test asserting a Venue exists after registration**
+- [x] **Step 1: Write a failing test asserting a Venue exists after registration** (strengthened during review to actually assert Venue existence via `PingMeDbContext`, not just a registration smoke test — see commit)
 
 Add to `tests/PingMe.IntegrationTests/Api/AuthTests.cs` (inside the existing `AuthTests` class, using the existing `_client` field):
 
@@ -91,12 +91,12 @@ Add to `tests/PingMe.IntegrationTests/Api/AuthTests.cs` (inside the existing `Au
 
 This test alone doesn't prove a `Venue` row exists yet (there's no endpoint to check it through) — Task 2's `LocationsController` will prove it indirectly by requiring a Venue to exist for `POST /admin/locations` to succeed. For now, run it to confirm registration still works after the change in Step 3.
 
-- [ ] **Step 2: Run the test to verify current behavior**
+- [x] **Step 2: Run the test to verify current behavior**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~RegisterTenant_also_creates_the_tenants_single_venue`
 Expected: PASS (this test doesn't yet assert Venue existence, so it passes before and after — it's a smoke test for the modified endpoint, not a TDD gate. The real proof comes from Task 2's tests requiring a Venue to exist.)
 
-- [ ] **Step 3: Modify `RegisterTenant` to create the Venue**
+- [x] **Step 3: Modify `RegisterTenant` to create the Venue**
 
 In `src/PingMe.Api/Controllers/AuthController.cs`, add the import and modify `RegisterTenant`:
 
@@ -124,12 +124,12 @@ to:
         await _dbContext.SaveChangesAsync();
 ```
 
-- [ ] **Step 4: Run the full test suite**
+- [x] **Step 4: Run the full test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS, 0 build errors, all existing tests plus the new one green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/AuthController.cs tests/PingMe.IntegrationTests/Api/AuthTests.cs
@@ -147,7 +147,7 @@ git commit -m "Auto-create the tenant's single Venue at registration"
 
 **Does NOT cover:** editing or deleting a Location, or validating that `ParentLocationId` belongs to the same tenant beyond the existing tenant query filter already making a cross-tenant parent invisible (see Task where isolation is tested).
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Locations/LocationDto.cs`:
 
@@ -165,7 +165,7 @@ namespace PingMe.Api.Contracts.Locations;
 public record CreateLocationRequest(string Name, Guid? ParentLocationId);
 ```
 
-- [ ] **Step 2: Create `LocationsController.cs`**
+- [x] **Step 2: Create `LocationsController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -240,12 +240,12 @@ public class LocationsController : ControllerBase
 
 `venue.Id` comes from `_dbContext.Venues.FirstAsync()` — safe under the single-Venue-per-Tenant assumption (Task 1 guarantees exactly one exists per tenant). `[Authorize(Roles = "Owner,Staff")]` on `CloseSession` overrides the controller-level `Owner`-only policy for that one action, since Staff also need to close a session after a table pays (per the MVP spec).
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Locations src/PingMe.Api/Controllers/LocationsController.cs
@@ -263,7 +263,7 @@ git commit -m "Add LocationsController: create/list locations, close a location'
 
 **Does NOT cover:** deleting/deactivating a QR code, or generating a printable/scannable image — this plan only produces the opaque code string that a QR image generator (out of scope) would encode as a URL.
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Locations/QrCodeDto.cs`:
 
@@ -281,7 +281,7 @@ namespace PingMe.Api.Contracts.Locations;
 public record CreateQrCodeRequest(Guid LocationId);
 ```
 
-- [ ] **Step 2: Create `QrCodesController.cs`**
+- [x] **Step 2: Create `QrCodesController.cs`** (during review, strengthened `CreateQrCode` with a `GenerateUniqueCodeAsync` retry-on-collision check — a code collision would be a real cross-tenant leak since resolution bypasses the tenant filter)
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -352,12 +352,12 @@ public class QrCodesController : ControllerBase
 
 `CodeAlphabet` excludes visually ambiguous characters (`0`/`O`, `1`/`I`) since a human might need to type the code manually if a scanner fails.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Locations/QrCodeDto.cs src/PingMe.Api/Contracts/Locations/CreateQrCodeRequest.cs src/PingMe.Api/Controllers/QrCodesController.cs
@@ -371,7 +371,7 @@ git commit -m "Add QrCodesController: create/list QR codes"
 **Files:**
 - Create: `tests/PingMe.IntegrationTests/Api/LocationsAndQrCodesTests.cs`
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -470,12 +470,12 @@ public class LocationsAndQrCodesTests : IClassFixture<PingMeWebApplicationFactor
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~LocationsAndQrCodesTests`
 Expected: PASS — all 5 facts green.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/LocationsAndQrCodesTests.cs
@@ -495,7 +495,7 @@ git commit -m "Add integration tests for LocationsController and QrCodesControll
 
 **Does NOT cover:** rate-limiting or otherwise throttling repeated scans of the same code — out of scope for this MVP plan.
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Ordering/CustomerProductDto.cs`:
 
@@ -529,7 +529,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record ResolveQrCodeResponse(Guid SessionId, string VenueName, string LocationLabel, List<CustomerMenuDto> Menus);
 ```
 
-- [ ] **Step 2: Create `QrResolutionController.cs`**
+- [x] **Step 2: Create `QrResolutionController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -609,12 +609,12 @@ public class QrResolutionController : ControllerBase
 
 The controller injects the concrete `CurrentTenantProvider` (not the `ICurrentTenantProvider` interface, which only exposes a getter) so it can set the resolved tenant for the rest of the request — the same pattern `TenantResolutionMiddleware` already uses for authenticated requests, just triggered manually here since there's no JWT to read a `tenantId` claim from.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/CustomerProductDto.cs src/PingMe.Api/Contracts/Ordering/CustomerCategoryDto.cs src/PingMe.Api/Contracts/Ordering/CustomerMenuDto.cs src/PingMe.Api/Contracts/Ordering/ResolveQrCodeResponse.cs src/PingMe.Api/Controllers/QrResolutionController.cs
@@ -633,7 +633,7 @@ git commit -m "Add QR resolution endpoint: GET /p/{code} creates/resumes a Custo
 
 **Does NOT cover:** payment of any kind (explicit MVP non-goal, see the approved spec), or letting the client specify `ProductOption` choices (see plan Assumptions).
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Ordering/CreateOrderItemRequest.cs`:
 
@@ -659,7 +659,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record CreateOrderResponse(Guid OrderId, string Status);
 ```
 
-- [ ] **Step 2: Create `OrdersController.cs`**
+- [x] **Step 2: Create `OrdersController.cs`** (during review, added a null guard on `request.Items` — an omitted/null `items` field would otherwise NullReferenceException into a 500 on this anonymous public endpoint)
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -746,12 +746,12 @@ public class OrdersController : ControllerBase
 
 Setting `_currentTenantProvider.TenantId = session.TenantId` before the product lookups is what makes cross-tenant rejection automatic: the global tenant query filter on `Products` means a `productId` belonging to a different tenant than the session's is simply invisible, producing `404` rather than a cross-tenant order line — this is the exact mechanism the carried-forward security test in Task 8 verifies.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/CreateOrderItemRequest.cs src/PingMe.Api/Contracts/Ordering/CreateOrderRequest.cs src/PingMe.Api/Contracts/Ordering/CreateOrderResponse.cs src/PingMe.Api/Controllers/OrdersController.cs
@@ -768,7 +768,7 @@ git commit -m "Add customer order placement: POST /orders"
 
 **Does NOT cover:** SignalR push notifications — that's Plan 4. This is explicitly the polling fallback the approved spec calls for.
 
-- [ ] **Step 1: Create the DTO**
+- [x] **Step 1: Create the DTO**
 
 `src/PingMe.Api/Contracts/Ordering/OrderStatusResponse.cs`:
 
@@ -778,7 +778,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record OrderStatusResponse(Guid OrderId, string Status);
 ```
 
-- [ ] **Step 2: Add the status endpoint to `OrdersController.cs`**
+- [x] **Step 2: Add the status endpoint to `OrdersController.cs`**
 
 Add this action inside the existing `OrdersController` class, after `Create`:
 
@@ -807,12 +807,12 @@ Add this action inside the existing `OrdersController` class, after `Create`:
 
 `sessionId` is required as a query parameter (not just the order id) so a client can't poll an arbitrary order id without knowing the session it belongs to — `order.CustomerSessionId != session.Id` rejects a session/order mismatch with the same `404` as a nonexistent order, revealing nothing about whether the order id exists at all.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/OrderStatusResponse.cs src/PingMe.Api/Controllers/OrdersController.cs
@@ -826,7 +826,7 @@ git commit -m "Add order status polling: GET /orders/{id}/status"
 **Files:**
 - Create: `tests/PingMe.IntegrationTests/Api/CustomerOrderingFlowTests.cs`
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -969,12 +969,12 @@ public class CustomerOrderingFlowTests : IClassFixture<PingMeWebApplicationFacto
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~CustomerOrderingFlowTests`
 Expected: PASS — all 6 facts green.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/CustomerOrderingFlowTests.cs
@@ -993,7 +993,7 @@ git commit -m "Add end-to-end customer ordering flow tests"
 
 **Does NOT cover:** realtime push of new/updated orders to staff — that's Plan 4's SignalR work. This task only provides the underlying data endpoints Plan 4's dashboard will call (and that Task 10's isolation test depends on).
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs`:
 
@@ -1019,7 +1019,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record UpdateOrderStatusRequest(string Status);
 ```
 
-- [ ] **Step 2: Create `AdminOrdersController.cs`**
+- [x] **Step 2: Create `AdminOrdersController.cs`** (during implementation, added `.Include(o => o.Items)` to `GetOrders` — `Order.Items` is a non-eager EF navigation, so without it every order would silently serialize with an empty `Items` list)
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -1047,6 +1047,7 @@ public class AdminOrdersController : ControllerBase
     public async Task<ActionResult<List<AdminOrderDto>>> GetOrders()
     {
         var orders = await _dbContext.Orders
+            .Include(o => o.Items)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
 
@@ -1090,12 +1091,12 @@ public class AdminOrdersController : ControllerBase
 }
 ```
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs src/PingMe.Api/Contracts/Ordering/AdminOrderDto.cs src/PingMe.Api/Contracts/Ordering/UpdateOrderStatusRequest.cs src/PingMe.Api/Controllers/AdminOrdersController.cs
@@ -1111,7 +1112,7 @@ git commit -m "Add AdminOrdersController: list orders, transition order status"
 
 **Does NOT cover:** admin-API isolation for Locations/QrCodes (already covered by the tenant-scoping mechanism itself and exercised functionally in Task 4) — this task specifically closes the spec Section 9 case that Plan 1 and Plan 2 both explicitly deferred: a `CustomerSession` from one tenant submitting another tenant's `productId`.
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file** (a red-team review found a genuine 4th gap and a 4th fact, `TenantA_owner_cannot_transition_TenantB_order_status`, was added — `AdminOrdersController.UpdateStatus` has no ownership check beyond the tenant filter, unlike `GetStatus`)
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -1222,12 +1223,12 @@ public class OrderingIsolationTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~OrderingIsolationTests`
-Expected: PASS — all 3 facts green. If `CustomerSession_from_TenantA_submitting_TenantB_productId_on_orders_is_rejected` fails with anything other than `404`, stop and fix `OrdersController.Create`'s tenant-setting order before continuing — this is the specific security-critical case carried forward from Plan 1 and Plan 2.
+Expected: PASS — all 4 facts green. If `CustomerSession_from_TenantA_submitting_TenantB_productId_on_orders_is_rejected` fails with anything other than `404`, stop and fix `OrdersController.Create`'s tenant-setting order before continuing — this is the specific security-critical case carried forward from Plan 1 and Plan 2.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/OrderingIsolationTests.cs
@@ -1241,7 +1242,7 @@ git commit -m "Add cross-tenant ordering isolation tests (closes Plan 1/2 carrie
 **Files:**
 - Create: `tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs`
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -1346,21 +1347,21 @@ public class AdminOrdersTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AdminOrdersTests`
 Expected: PASS — all 4 facts green.
 
-- [ ] **Step 3: Run the full solution build and test suite**
+- [x] **Step 3: Run the full solution build and test suite**
 
 Run:
 ```bash
 dotnet build PingMe.slnx
 dotnet test PingMe.slnx
 ```
-Expected: PASS — 0 build errors, all tests green (17 from Plan 1/2 + 1 from Task 1 + 5 from Task 4 + 6 from Task 8 + 3 from Task 10 + 4 from Task 11 = 36 total).
+Expected: PASS — 0 build errors, all tests green (17 from Plan 1/2 + 1 from Task 1 + 5 from Task 4 + 6 from Task 8 + 4 from Task 10 (a 4th fact was added during red-team review, see Task 10) + 4 from Task 11 = 38 total).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs
@@ -1383,7 +1384,7 @@ git commit -m "Add admin order status transition tests"
 
 **Does NOT cover:** the Admin app package — that workspace member is added when a future plan builds it (see plan Assumptions on the Admin UI gap).
 
-- [ ] **Step 1: Create the pnpm workspace root**
+- [x] **Step 1: Create the pnpm workspace root** (pnpm wasn't preinstalled on this machine — activated via `corepack prepare pnpm@latest --activate`, pnpm v11.24.0. That version's supply-chain policy blocks postinstall scripts by default; added `allowBuilds: { esbuild: true }` to `pnpm-workspace.yaml`, scoped to only the one package that genuinely needs it)
 
 `src/pingme-web/pnpm-workspace.yaml`:
 
@@ -1402,7 +1403,7 @@ packages:
 }
 ```
 
-- [ ] **Step 2: Create the customer-app package**
+- [x] **Step 2: Create the customer-app package** (review found `tsconfig.node.json` was missing `skipLibCheck: true`, unlike its sibling `tsconfig.json` — without it, `tsc -b` fails on Vite's own bundled type declarations; fixed and verified with `tsc -p tsconfig.node.json --noEmit` → exit 0)
 
 `src/pingme-web/customer-app/package.json`:
 
@@ -1462,7 +1463,8 @@ packages:
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
   "include": ["vite.config.ts"]
 }
@@ -1513,12 +1515,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-- [ ] **Step 3: Install dependencies**
+- [x] **Step 3: Install dependencies**
 
 Run: `cd src/pingme-web && pnpm install`
 Expected: PASS — `pnpm-lock.yaml` created, no errors. (`App.tsx` doesn't exist yet — that's fine, `pnpm install` only resolves dependencies, it doesn't build.)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/pingme-web/pnpm-workspace.yaml src/pingme-web/package.json src/pingme-web/customer-app/package.json src/pingme-web/customer-app/tsconfig.json src/pingme-web/customer-app/tsconfig.node.json src/pingme-web/customer-app/vite.config.ts src/pingme-web/customer-app/index.html src/pingme-web/customer-app/src/main.tsx src/pingme-web/pnpm-lock.yaml
@@ -1533,7 +1535,7 @@ git commit -m "Scaffold customer-app: pnpm workspace, Vite + React + TypeScript"
 - Create: `src/pingme-web/customer-app/src/types.ts`
 - Create: `src/pingme-web/customer-app/src/api.ts`
 
-- [ ] **Step 1: Create `types.ts`**
+- [x] **Step 1: Create `types.ts`**
 
 ```typescript
 export interface CustomerProduct {
@@ -1578,7 +1580,7 @@ export interface OrderStatusResponse {
 }
 ```
 
-- [ ] **Step 2: Create `api.ts`**
+- [x] **Step 2: Create `api.ts`** (needed a `src/vite-env.d.ts` with `/// <reference types="vite/client" />` too — `import.meta.env` doesn't type-check without it)
 
 ```typescript
 import type {
@@ -1627,7 +1629,7 @@ export async function getOrderStatus(
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/types.ts src/pingme-web/customer-app/src/api.ts
@@ -1642,7 +1644,7 @@ git commit -m "Add customer-app API client and types"
 - Create: `src/pingme-web/customer-app/src/cart.ts`
 - Create: `src/pingme-web/customer-app/src/cart.test.ts`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `src/pingme-web/customer-app/src/cart.test.ts`:
 
@@ -1685,12 +1687,12 @@ describe("cart", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `cd src/pingme-web/customer-app && pnpm test`
 Expected: FAIL with "Cannot find module './cart'" (the module doesn't exist yet).
 
-- [ ] **Step 3: Implement `cart.ts`**
+- [x] **Step 3: Implement `cart.ts`**
 
 ```typescript
 export interface CartItem {
@@ -1719,12 +1721,12 @@ export function cartTotal(cart: CartItem[]): number {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `cd src/pingme-web/customer-app && pnpm test`
 Expected: PASS — all 5 tests green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/cart.ts src/pingme-web/customer-app/src/cart.test.ts
@@ -1741,7 +1743,7 @@ git commit -m "Add cart logic with unit tests"
 
 **Does NOT cover:** styling/visual design beyond functional, unstyled markup — a design pass is out of scope for this plan; the goal is a working flow, not a polished UI.
 
-- [ ] **Step 1: Create `MenuBrowser.tsx`**
+- [x] **Step 1: Create `MenuBrowser.tsx`**
 
 ```tsx
 import type { CustomerMenu } from "../types";
@@ -1783,7 +1785,7 @@ export function MenuBrowser({ menus, onAddToCart }: MenuBrowserProps) {
 }
 ```
 
-- [ ] **Step 2: Create `CartView.tsx`**
+- [x] **Step 2: Create `CartView.tsx`**
 
 ```tsx
 import { cartTotal, type CartItem } from "../cart";
@@ -1820,7 +1822,7 @@ export function CartView({ cart, onRemove, onPlaceOrder, placingOrder }: CartVie
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/components/MenuBrowser.tsx src/pingme-web/customer-app/src/components/CartView.tsx
@@ -1837,7 +1839,7 @@ git commit -m "Add MenuBrowser and CartView components"
 
 **Does NOT cover:** realtime updates — the status view polls on an interval; SignalR replaces this in Plan 4 without changing this component's props contract (it still just needs a status string).
 
-- [ ] **Step 1: Create `OrderStatus.tsx`**
+- [x] **Step 1: Create `OrderStatus.tsx`**
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -1873,7 +1875,7 @@ export function OrderStatus({ orderId, sessionId }: OrderStatusProps) {
 }
 ```
 
-- [ ] **Step 2: Create `App.tsx`**
+- [x] **Step 2: Create `App.tsx`**
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -1959,7 +1961,7 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 3: Run the frontend test suite and build**
+- [x] **Step 3: Run the frontend test suite and build**
 
 Run:
 ```bash
@@ -1969,7 +1971,7 @@ pnpm build
 ```
 Expected: PASS — Vitest suite green (cart tests from Task 14), `tsc -b && vite build` completes with no TypeScript errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/pingme-web/customer-app/src/components/OrderStatus.tsx src/pingme-web/customer-app/src/App.tsx
@@ -1983,7 +1985,7 @@ git commit -m "Add OrderStatus component and top-level App: scan -> menu -> cart
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full backend build and test suite from a clean state**
+- [x] **Step 1: Run the full backend build and test suite from a clean state**
 
 Run:
 ```bash
@@ -1992,7 +1994,7 @@ dotnet test PingMe.slnx
 ```
 Expected: PASS — 0 build errors, all 36 tests passing (see Task 11, Step 3 for the breakdown).
 
-- [ ] **Step 2: Run the full frontend build and test suite from a clean state**
+- [x] **Step 2: Run the full frontend build and test suite from a clean state**
 
 Run:
 ```bash
@@ -2003,7 +2005,7 @@ pnpm build
 ```
 Expected: PASS — no install errors, Vitest suite green, production build succeeds.
 
-- [ ] **Step 3: Manually verify the customer flow end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 3: Manually verify the customer flow end-to-end** (not automatable in this plan — do this once by hand)
 
 1. Start the backend: `dotnet run --project src/PingMe.Api`.
 2. Use Swagger (`/swagger`) to register a tenant, log in, create a menu/category/product, create a location, and create a QR code — note the returned `code`.
@@ -2011,7 +2013,9 @@ Expected: PASS — no install errors, Vitest suite green, production build succe
 4. Visit `http://localhost:5173/p/{code}` in a browser (substituting the real code) and confirm the menu loads, an item can be added to the cart, and placing the order shows an order status of `Received`.
 5. Stop both running processes afterward.
 
-- [ ] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+**Verification note:** performed with curl against both live servers instead of a real browser (no browser/screenshot tool available in this session). Confirmed: `GET /p/{code}` returns the correct nested menu JSON that `MenuBrowser`/`types.ts` expect; `POST /orders` returns `{orderId, status:"Received"}`; `GET /orders/{id}/status` returns the same status; `GET /admin/orders` shows the placed order with its snapshotted item. The Vite dev server correctly serves `index.html` referencing `/src/main.tsx`. This confirms the API contract and data shape end-to-end but does **not** confirm client-side rendering/interaction (button clicks, cart state, DOM updates) — that still needs an actual browser check by the user before merging with full confidence. Both dev servers (ports 5190, 5173) were stopped and verified down afterward.
+
+- [x] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the table to add this plan's row (`3 | Locations/QR + Customer app + Ordering | ... | Done, reviewed | 17 / 17`) and update Plan 5's row if it references "Plan 3" as a blocking dependency to confirm it's now unblocked. Also add a new carried-forward item: **"No plan currently owns an Owner/Staff Admin React UI — Plan 4 only covers the Staff order dashboard. Locations/QR/Catalog admin currently only has API + Swagger access. Needs a decision before or during Plan 4."**
 

@@ -1,0 +1,4 @@
+packages:
+  - "customer-app"
+allowBuilds:
+  esbuild: true
