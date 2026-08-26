@@ -768,7 +768,7 @@ git commit -m "Add customer order placement: POST /orders"
 
 **Does NOT cover:** SignalR push notifications — that's Plan 4. This is explicitly the polling fallback the approved spec calls for.
 
-- [ ] **Step 1: Create the DTO**
+- [x] **Step 1: Create the DTO**
 
 `src/PingMe.Api/Contracts/Ordering/OrderStatusResponse.cs`:
 
@@ -778,7 +778,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record OrderStatusResponse(Guid OrderId, string Status);
 ```
 
-- [ ] **Step 2: Add the status endpoint to `OrdersController.cs`**
+- [x] **Step 2: Add the status endpoint to `OrdersController.cs`**
 
 Add this action inside the existing `OrdersController` class, after `Create`:
 
@@ -807,12 +807,12 @@ Add this action inside the existing `OrdersController` class, after `Create`:
 
 `sessionId` is required as a query parameter (not just the order id) so a client can't poll an arbitrary order id without knowing the session it belongs to — `order.CustomerSessionId != session.Id` rejects a session/order mismatch with the same `404` as a nonexistent order, revealing nothing about whether the order id exists at all.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/OrderStatusResponse.cs src/PingMe.Api/Controllers/OrdersController.cs
