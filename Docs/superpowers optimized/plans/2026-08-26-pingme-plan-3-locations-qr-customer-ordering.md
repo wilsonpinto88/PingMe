@@ -1985,7 +1985,7 @@ git commit -m "Add OrderStatus component and top-level App: scan -> menu -> cart
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full backend build and test suite from a clean state**
+- [x] **Step 1: Run the full backend build and test suite from a clean state**
 
 Run:
 ```bash
@@ -1994,7 +1994,7 @@ dotnet test PingMe.slnx
 ```
 Expected: PASS — 0 build errors, all 36 tests passing (see Task 11, Step 3 for the breakdown).
 
-- [ ] **Step 2: Run the full frontend build and test suite from a clean state**
+- [x] **Step 2: Run the full frontend build and test suite from a clean state**
 
 Run:
 ```bash
@@ -2005,7 +2005,7 @@ pnpm build
 ```
 Expected: PASS — no install errors, Vitest suite green, production build succeeds.
 
-- [ ] **Step 3: Manually verify the customer flow end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 3: Manually verify the customer flow end-to-end** (not automatable in this plan — do this once by hand)
 
 1. Start the backend: `dotnet run --project src/PingMe.Api`.
 2. Use Swagger (`/swagger`) to register a tenant, log in, create a menu/category/product, create a location, and create a QR code — note the returned `code`.
@@ -2013,7 +2013,9 @@ Expected: PASS — no install errors, Vitest suite green, production build succe
 4. Visit `http://localhost:5173/p/{code}` in a browser (substituting the real code) and confirm the menu loads, an item can be added to the cart, and placing the order shows an order status of `Received`.
 5. Stop both running processes afterward.
 
-- [ ] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+**Verification note:** performed with curl against both live servers instead of a real browser (no browser/screenshot tool available in this session). Confirmed: `GET /p/{code}` returns the correct nested menu JSON that `MenuBrowser`/`types.ts` expect; `POST /orders` returns `{orderId, status:"Received"}`; `GET /orders/{id}/status` returns the same status; `GET /admin/orders` shows the placed order with its snapshotted item. The Vite dev server correctly serves `index.html` referencing `/src/main.tsx`. This confirms the API contract and data shape end-to-end but does **not** confirm client-side rendering/interaction (button clicks, cart state, DOM updates) — that still needs an actual browser check by the user before merging with full confidence. Both dev servers (ports 5190, 5173) were stopped and verified down afterward.
+
+- [x] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the table to add this plan's row (`3 | Locations/QR + Customer app + Ordering | ... | Done, reviewed | 17 / 17`) and update Plan 5's row if it references "Plan 3" as a blocking dependency to confirm it's now unblocked. Also add a new carried-forward item: **"No plan currently owns an Owner/Staff Admin React UI — Plan 4 only covers the Staff order dashboard. Locations/QR/Catalog admin currently only has API + Swagger access. Needs a decision before or during Plan 4."**
 
