@@ -628,7 +628,7 @@ _Completed 2026-08-26: commit `5542193`. 8/8 existing tests still pass; factory 
 
 **Does NOT cover:** the `Login` endpoint's implementation (stubbed as not-yet-existing here; added in Task 8). This task's test file includes both `RegisterTenant` and `Login` facts because a single HTTP-level TDD cycle is more natural when the two endpoints are tightly coupled (you can't test registration's token without also exercising login) — the RED step below covers both facts failing, and Task 8 turns the login-specific facts green without touching `RegisterTenant` again.
 
-- [ ] **Step 1: Create the 3 DTO files**
+- [x] **Step 1: Create the 3 DTO files**
 
 `src/PingMe.Api/Contracts/Auth/RegisterTenantRequest.cs`:
 ```csharp
@@ -651,7 +651,7 @@ namespace PingMe.Api.Contracts.Auth;
 public record AuthResponse(string Token);
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Create `tests/PingMe.IntegrationTests/Api/AuthTests.cs`:
 
@@ -738,12 +738,12 @@ public class AuthTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: FAIL — all 5 facts fail with 404 Not Found (no `AuthController` exists yet to map `/auth/register-tenant` or `/auth/login`).
 
-- [ ] **Step 4: Create `AuthController.cs`**
+- [x] **Step 4: Create `AuthController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -818,17 +818,19 @@ public class AuthController : ControllerBase
 
 `Login` is a deliberate stub returning `401` unconditionally — this task only needs `RegisterTenant` and the duplicate-email check to go green; the 3 login-related facts stay red until Task 8. The uniqueness check uses `IgnoreQueryFilters()` because at this point in the request no JWT exists yet, so `CurrentTenantProvider.TenantId` is `null` — without bypassing the filter, this query would see zero existing users regardless of how many are actually registered, and duplicate emails across tenants would never be caught (see this plan's Assumptions section).
 
-- [ ] **Step 5: Run the tests again**
+- [x] **Step 5: Run the tests again**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: `RegisterTenant_returns_201_with_a_token` and `RegisterTenant_with_duplicate_email_returns_409` PASS. The 3 `Login_*` facts still FAIL (expected — `Login` is a stub, that's Task 8's job).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api tests/PingMe.IntegrationTests
 git commit -m "Add RegisterTenant endpoint with manual cross-tenant email-uniqueness check (TDD)"
 ```
+
+_Completed 2026-08-26: commit `bf83ae4`, plus follow-up `9d8af31` (discovered `pingme_test` predated the Identity migration since Plan 1 created it via `EnsureCreatedAsync` with no migration tracking; replaced a fragile hardcoded-migration-ID reconciliation with `EnsureDeleted()`+`Migrate()` on factory construction, and disabled xUnit parallel test collections to prevent races with Plan 1's `TenantIsolationTests` — verified stable across 2 consecutive full test runs). Noted non-blocking: TOCTOU on email uniqueness check, no transaction around tenant+user creation — out of this task's scope._
 
 ---
 
