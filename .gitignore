@@ -23,6 +23,9 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.tsbuildinfo
+/src/pingme-web/customer-app/vite.config.js
+/src/pingme-web/customer-app/vite.config.d.ts
 
 ## Env / secrets
 .env
