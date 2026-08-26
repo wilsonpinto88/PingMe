@@ -63,6 +63,24 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
-        return Unauthorized();
+        var normalizedEmail = request.Email.ToUpperInvariant();
+        var user = await _dbContext.Users
+            .IgnoreQueryFilters()
+            .SingleOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var verifyResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash!, request.Password);
+        if (verifyResult == PasswordVerificationResult.Failed)
+        {
+            return Unauthorized();
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _tokenGenerator.GenerateToken(user, roles);
+        return Ok(new AuthResponse(token));
     }
 }
