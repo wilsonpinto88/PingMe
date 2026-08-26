@@ -120,6 +120,23 @@ public class CustomerOrderingFlowTests : IClassFixture<PingMeWebApplicationFacto
     }
 
     [Fact]
+    public async Task Posting_an_order_with_null_items_returns_400_not_500()
+    {
+        var seeded = await SeedTenantWithOneOrderableProductAsync(_factory);
+        var customerClient = _factory.CreateClient();
+        var resolved = await (await customerClient.GetAsync($"/p/{seeded.QrCode}")).Content.ReadFromJsonAsync<ResolveQrCodeResponse>();
+
+        var content = new StringContent(
+            "{\"sessionId\":\"" + resolved!.SessionId + "\",\"items\":null}",
+            System.Text.Encoding.UTF8,
+            "application/json");
+
+        var response = await customerClient.PostAsync("/orders", content);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Placing_an_order_against_a_closed_session_returns_409()
     {
         var seeded = await SeedTenantWithOneOrderableProductAsync(_factory);
