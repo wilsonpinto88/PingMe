@@ -156,7 +156,7 @@ _Completed 2026-08-25: commit `555922b`._
 
 **Does NOT cover:** registering `AppUser`/Identity services in DI — that's Task 5.
 
-- [ ] **Step 1: Read the current file, then replace its full contents with:**
+- [x] **Step 1: Read the current file, then replace its full contents with:**
 
 ```csharp
 namespace PingMe.Infrastructure.Persistence;
@@ -240,7 +240,7 @@ public class PingMeDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Gu
 
 Two changes from Plan 1's version: the base class is now `IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>` instead of plain `DbContext`, and `base.OnModelCreating(modelBuilder)` moved from the end of the method to the **start** — Identity's own model configuration must run first so its tables/keys are established before any other fluent configuration touches the model (standard guidance for deriving from `IdentityDbContext`). Everything else is unchanged. `AppUser` implements `ITenantOwned`, so the existing reflection loop picks it up automatically — no new code needed to filter it.
 
-- [ ] **Step 2: Add EF/Identity design-time tooling is already present from Plan 1 — regenerate the migration**
+- [x] **Step 2: Add EF/Identity design-time tooling is already present from Plan 1 — regenerate the migration**
 
 Run:
 ```bash
@@ -248,22 +248,24 @@ dotnet ef migrations add AddIdentityTables --project src/PingMe.Infrastructure -
 ```
 Expected: PASS — creates a migration adding `AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, and related Identity tables, plus the `TenantId` column/index on `AspNetUsers` (since `AppUser` is `ITenantOwned`).
 
-- [ ] **Step 3: Apply the migration**
+- [x] **Step 3: Apply the migration**
 
 Run: `dotnet ef database update --project src/PingMe.Infrastructure --startup-project src/PingMe.Api`
 Expected: PASS
 
-- [ ] **Step 4: Verify the solution builds**
+- [x] **Step 4: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure
 git commit -m "Convert PingMeDbContext to IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>"
 ```
+
+_Completed 2026-08-26: commit `88129a7`. Migration `AddIdentityTables` confirmed AspNetUsers has TenantId column+index; tenant filter correctly picked up AppUser; 8/8 existing tests still pass._
 
 ---
 
