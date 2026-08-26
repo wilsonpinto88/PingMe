@@ -275,7 +275,7 @@ _Completed 2026-08-26: commit `88129a7`. Migration `AddIdentityTables` confirmed
 - Modify: `src/PingMe.Api/appsettings.Development.json`
 - Create: `src/PingMe.Infrastructure/Identity/JwtTokenGenerator.cs`
 
-- [ ] **Step 1: Add JWT settings to `appsettings.Development.json`**
+- [x] **Step 1: Add JWT settings to `appsettings.Development.json`**
 
 Update `src/PingMe.Api/appsettings.Development.json` to:
 
@@ -299,7 +299,7 @@ Update `src/PingMe.Api/appsettings.Development.json` to:
 }
 ```
 
-- [ ] **Step 2: Create `JwtTokenGenerator.cs`**
+- [x] **Step 2: Create `JwtTokenGenerator.cs`**
 
 ```csharp
 namespace PingMe.Infrastructure.Identity;
@@ -349,17 +349,19 @@ public class JwtTokenGenerator
 }
 ```
 
-- [ ] **Step 3: Verify it compiles**
+- [x] **Step 3: Verify it compiles**
 
 Run: `dotnet build src/PingMe.Infrastructure/PingMe.Infrastructure.csproj`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/appsettings.Development.json src/PingMe.Infrastructure/Identity/JwtTokenGenerator.cs
 git commit -m "Add JWT settings and JwtTokenGenerator"
 ```
+
+_Completed 2026-08-26: commit `4899960`. Needed 2 extra package refs (Microsoft.IdentityModel.Tokens, System.IdentityModel.Tokens.Jwt) since they didn't resolve transitively — anticipated fallback in the task text, not a deviation._
 
 ---
 
