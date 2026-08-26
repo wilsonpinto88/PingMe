@@ -1,5 +1,7 @@
 namespace PingMe.Infrastructure.Persistence;
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Application.Tenants;
 using PingMe.Domain.Catalog;
@@ -7,8 +9,9 @@ using PingMe.Domain.Common;
 using PingMe.Domain.Locations;
 using PingMe.Domain.Ordering;
 using PingMe.Domain.Tenants;
+using PingMe.Infrastructure.Identity;
 
-public class PingMeDbContext : DbContext
+public class PingMeDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 {
     private readonly ICurrentTenantProvider _currentTenantProvider;
 
@@ -31,10 +34,12 @@ public class PingMeDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Product>().Property(p => p.Price).HasPrecision(10, 2);
         modelBuilder.Entity<ProductOption>().Property(p => p.PriceDelta).HasPrecision(10, 2);
         modelBuilder.Entity<OrderItem>().Property(i => i.UnitPrice).HasPrecision(10, 2);
-        modelBuilder.Entity<PingMe.Domain.Ordering.OrderItem>().ToTable("OrderItems");
+        modelBuilder.Entity<OrderItem>().ToTable("OrderItems");
 
         modelBuilder.Entity<Order>()
             .HasMany(o => o.Items)
@@ -62,8 +67,6 @@ public class PingMeDbContext : DbContext
                 method.Invoke(this, new object[] { modelBuilder });
             }
         }
-
-        base.OnModelCreating(modelBuilder);
     }
 
     private void ApplyTenantFilter<TEntity>(ModelBuilder modelBuilder) where TEntity : class, ITenantOwned
