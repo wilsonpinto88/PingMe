@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Api.Contracts.Auth;
+using PingMe.Domain.Locations;
 using PingMe.Domain.Tenants;
 using PingMe.Infrastructure.Identity;
 using PingMe.Infrastructure.Persistence;
@@ -39,6 +40,10 @@ public class AuthController : ControllerBase
 
         var tenant = new Tenant(request.TenantName, DateTime.UtcNow);
         _dbContext.Tenants.Add(tenant);
+
+        var venue = new Venue(tenant.Id, request.TenantName);
+        _dbContext.Venues.Add(venue);
+
         await _dbContext.SaveChangesAsync();
 
         var owner = new AppUser
