@@ -2019,7 +2019,7 @@ Expected: PASS — no install errors, Vitest suite green, production build succe
 
 Update the table to add this plan's row (`3 | Locations/QR + Customer app + Ordering | ... | Done, reviewed | 17 / 17`) and update Plan 5's row if it references "Plan 3" as a blocking dependency to confirm it's now unblocked. Also add a new carried-forward item: **"No plan currently owns an Owner/Staff Admin React UI — Plan 4 only covers the Staff order dashboard. Locations/QR/Catalog admin currently only has API + Swagger access. Needs a decision before or during Plan 4."**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "Docs/superpowers optimized/plans/PROGRESS.md"
