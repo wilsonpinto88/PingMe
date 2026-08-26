@@ -826,7 +826,7 @@ git commit -m "Add order status polling: GET /orders/{id}/status"
 **Files:**
 - Create: `tests/PingMe.IntegrationTests/Api/CustomerOrderingFlowTests.cs`
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file**
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -969,12 +969,12 @@ public class CustomerOrderingFlowTests : IClassFixture<PingMeWebApplicationFacto
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~CustomerOrderingFlowTests`
 Expected: PASS — all 6 facts green.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/CustomerOrderingFlowTests.cs
@@ -993,7 +993,7 @@ git commit -m "Add end-to-end customer ordering flow tests"
 
 **Does NOT cover:** realtime push of new/updated orders to staff — that's Plan 4's SignalR work. This task only provides the underlying data endpoints Plan 4's dashboard will call (and that Task 10's isolation test depends on).
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs`:
 
@@ -1019,7 +1019,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record UpdateOrderStatusRequest(string Status);
 ```
 
-- [ ] **Step 2: Create `AdminOrdersController.cs`**
+- [x] **Step 2: Create `AdminOrdersController.cs`** (during implementation, added `.Include(o => o.Items)` to `GetOrders` — `Order.Items` is a non-eager EF navigation, so without it every order would silently serialize with an empty `Items` list)
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -1047,6 +1047,7 @@ public class AdminOrdersController : ControllerBase
     public async Task<ActionResult<List<AdminOrderDto>>> GetOrders()
     {
         var orders = await _dbContext.Orders
+            .Include(o => o.Items)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
 
@@ -1090,12 +1091,12 @@ public class AdminOrdersController : ControllerBase
 }
 ```
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs src/PingMe.Api/Contracts/Ordering/AdminOrderDto.cs src/PingMe.Api/Contracts/Ordering/UpdateOrderStatusRequest.cs src/PingMe.Api/Controllers/AdminOrdersController.cs
