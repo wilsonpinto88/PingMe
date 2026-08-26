@@ -841,12 +841,12 @@ _Completed 2026-08-26: commit `bf83ae4`, plus follow-up `9d8af31` (discovered `p
 
 **Does NOT cover:** rate limiting or account lockout after repeated failed attempts — out of MVP scope.
 
-- [ ] **Step 1: Confirm the 3 `Login_*` tests are still failing** (carried over from Task 7 — no new test file needed)
+- [x] **Step 1: Confirm the 3 `Login_*` tests are still failing** (carried over from Task 7 — no new test file needed)
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: FAIL on `Login_after_register_succeeds`, `Login_with_wrong_password_returns_401`, `Login_with_unknown_email_returns_401_not_404` (all currently hit the `Unauthorized()` stub, so `Login_with_wrong_password_returns_401` and `Login_with_unknown_email_returns_401_not_404` might already pass by coincidence — the meaningful RED signal is `Login_after_register_succeeds`, which cannot pass against a stub that always returns 401).
 
-- [ ] **Step 2: Replace the `Login` method in `AuthController.cs`**
+- [x] **Step 2: Replace the `Login` method in `AuthController.cs`**
 
 ```csharp
     [HttpPost("login")]
@@ -876,17 +876,19 @@ Expected: FAIL on `Login_after_register_succeeds`, `Login_with_wrong_password_re
 
 Same reasoning as `RegisterTenant`: the lookup by email must run with `IgnoreQueryFilters()` because the tenant isn't known until *after* this lookup succeeds — that's the whole point of resolving identity by email first. Both the "user not found" and "wrong password" branches return the same `401 Unauthorized` with no distinguishing detail, per spec Section 8 ("no distinction leaked between 'wrong password' and 'unknown user'").
 
-- [ ] **Step 3: Run the tests to verify they pass**
+- [x] **Step 3: Run the tests to verify they pass**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~AuthTests`
 Expected: PASS — all 5 facts in `AuthTests` green.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/AuthController.cs
 git commit -m "Implement Login endpoint (TDD) — no wrong-password-vs-unknown-user distinction leaked"
 ```
+
+_Completed 2026-08-26: commit `a0ef39a`. 13/13 tests pass (4 unit + 9 integration). Confirmed PasswordVerificationResult.SuccessRehashNeeded correctly falls through to a successful login._
 
 ---
 
