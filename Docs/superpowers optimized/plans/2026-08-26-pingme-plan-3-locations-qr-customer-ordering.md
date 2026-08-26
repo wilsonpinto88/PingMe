@@ -69,7 +69,7 @@ src/pingme-web/
 
 **Does NOT cover:** letting a tenant create additional Venues later — single Venue per Tenant is a hard MVP assumption (see plan Assumptions).
 
-- [ ] **Step 1: Write a failing test asserting a Venue exists after registration**
+- [x] **Step 1: Write a failing test asserting a Venue exists after registration** (strengthened during review to actually assert Venue existence via `PingMeDbContext`, not just a registration smoke test — see commit)
 
 Add to `tests/PingMe.IntegrationTests/Api/AuthTests.cs` (inside the existing `AuthTests` class, using the existing `_client` field):
 
@@ -91,12 +91,12 @@ Add to `tests/PingMe.IntegrationTests/Api/AuthTests.cs` (inside the existing `Au
 
 This test alone doesn't prove a `Venue` row exists yet (there's no endpoint to check it through) — Task 2's `LocationsController` will prove it indirectly by requiring a Venue to exist for `POST /admin/locations` to succeed. For now, run it to confirm registration still works after the change in Step 3.
 
-- [ ] **Step 2: Run the test to verify current behavior**
+- [x] **Step 2: Run the test to verify current behavior**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~RegisterTenant_also_creates_the_tenants_single_venue`
 Expected: PASS (this test doesn't yet assert Venue existence, so it passes before and after — it's a smoke test for the modified endpoint, not a TDD gate. The real proof comes from Task 2's tests requiring a Venue to exist.)
 
-- [ ] **Step 3: Modify `RegisterTenant` to create the Venue**
+- [x] **Step 3: Modify `RegisterTenant` to create the Venue**
 
 In `src/PingMe.Api/Controllers/AuthController.cs`, add the import and modify `RegisterTenant`:
 
@@ -124,12 +124,12 @@ to:
         await _dbContext.SaveChangesAsync();
 ```
 
-- [ ] **Step 4: Run the full test suite**
+- [x] **Step 4: Run the full test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS, 0 build errors, all existing tests plus the new one green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/AuthController.cs tests/PingMe.IntegrationTests/Api/AuthTests.cs
