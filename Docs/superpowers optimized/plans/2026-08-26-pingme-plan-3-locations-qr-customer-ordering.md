@@ -1384,7 +1384,7 @@ git commit -m "Add admin order status transition tests"
 
 **Does NOT cover:** the Admin app package — that workspace member is added when a future plan builds it (see plan Assumptions on the Admin UI gap).
 
-- [ ] **Step 1: Create the pnpm workspace root**
+- [x] **Step 1: Create the pnpm workspace root** (pnpm wasn't preinstalled on this machine — activated via `corepack prepare pnpm@latest --activate`, pnpm v11.24.0. That version's supply-chain policy blocks postinstall scripts by default; added `allowBuilds: { esbuild: true }` to `pnpm-workspace.yaml`, scoped to only the one package that genuinely needs it)
 
 `src/pingme-web/pnpm-workspace.yaml`:
 
@@ -1403,7 +1403,7 @@ packages:
 }
 ```
 
-- [ ] **Step 2: Create the customer-app package**
+- [x] **Step 2: Create the customer-app package** (review found `tsconfig.node.json` was missing `skipLibCheck: true`, unlike its sibling `tsconfig.json` — without it, `tsc -b` fails on Vite's own bundled type declarations; fixed and verified with `tsc -p tsconfig.node.json --noEmit` → exit 0)
 
 `src/pingme-web/customer-app/package.json`:
 
@@ -1463,7 +1463,8 @@ packages:
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
   "include": ["vite.config.ts"]
 }
@@ -1514,12 +1515,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-- [ ] **Step 3: Install dependencies**
+- [x] **Step 3: Install dependencies**
 
 Run: `cd src/pingme-web && pnpm install`
 Expected: PASS — `pnpm-lock.yaml` created, no errors. (`App.tsx` doesn't exist yet — that's fine, `pnpm install` only resolves dependencies, it doesn't build.)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/pingme-web/pnpm-workspace.yaml src/pingme-web/package.json src/pingme-web/customer-app/package.json src/pingme-web/customer-app/tsconfig.json src/pingme-web/customer-app/tsconfig.node.json src/pingme-web/customer-app/vite.config.ts src/pingme-web/customer-app/index.html src/pingme-web/customer-app/src/main.tsx src/pingme-web/pnpm-lock.yaml
