@@ -1112,7 +1112,7 @@ git commit -m "Add AdminOrdersController: list orders, transition order status"
 
 **Does NOT cover:** admin-API isolation for Locations/QrCodes (already covered by the tenant-scoping mechanism itself and exercised functionally in Task 4) — this task specifically closes the spec Section 9 case that Plan 1 and Plan 2 both explicitly deferred: a `CustomerSession` from one tenant submitting another tenant's `productId`.
 
-- [ ] **Step 1: Create the test file**
+- [x] **Step 1: Create the test file** (a red-team review found a genuine 4th gap and a 4th fact, `TenantA_owner_cannot_transition_TenantB_order_status`, was added — `AdminOrdersController.UpdateStatus` has no ownership check beyond the tenant filter, unlike `GetStatus`)
 
 ```csharp
 namespace PingMe.IntegrationTests.Api;
@@ -1223,12 +1223,12 @@ public class OrderingIsolationTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `dotnet test tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj --filter FullyQualifiedName~OrderingIsolationTests`
-Expected: PASS — all 3 facts green. If `CustomerSession_from_TenantA_submitting_TenantB_productId_on_orders_is_rejected` fails with anything other than `404`, stop and fix `OrdersController.Create`'s tenant-setting order before continuing — this is the specific security-critical case carried forward from Plan 1 and Plan 2.
+Expected: PASS — all 4 facts green. If `CustomerSession_from_TenantA_submitting_TenantB_productId_on_orders_is_rejected` fails with anything other than `404`, stop and fix `OrdersController.Create`'s tenant-setting order before continuing — this is the specific security-critical case carried forward from Plan 1 and Plan 2.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests/Api/OrderingIsolationTests.cs
