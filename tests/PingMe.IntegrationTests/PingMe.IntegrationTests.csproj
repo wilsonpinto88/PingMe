@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\PingMe.Domain\PingMe.Domain.csproj" />
     <ProjectReference Include="..\..\src\PingMe.Application\PingMe.Application.csproj" />
     <ProjectReference Include="..\..\src\PingMe.Infrastructure\PingMe.Infrastructure.csproj" />
