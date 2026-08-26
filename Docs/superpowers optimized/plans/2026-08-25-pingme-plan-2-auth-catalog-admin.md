@@ -551,14 +551,14 @@ _Completed 2026-08-26: commit `24ef802`, plus fix-up `8eaa646` (Swagger's Bearer
 
 **Does NOT cover:** any actual test — this is shared test infrastructure only, used starting Task 7.
 
-- [ ] **Step 1: Add the ASP.NET Core test-hosting package**
+- [x] **Step 1: Add the ASP.NET Core test-hosting package**
 
 Run:
 ```bash
 dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package Microsoft.AspNetCore.Mvc.Testing
 ```
 
-- [ ] **Step 2: Create `PingMeWebApplicationFactory.cs`**
+- [x] **Step 2: Create `PingMeWebApplicationFactory.cs`**
 
 ```csharp
 namespace PingMe.IntegrationTests.Infrastructure;
@@ -597,7 +597,7 @@ public class PingMeWebApplicationFactory : WebApplicationFactory<Program>
 
 This targets the same `pingme_test` database Plan 1's integration tests use — each test in this plan registers a brand-new tenant with a random-GUID email, so tests don't collide with each other or with Plan 1's leftover rows, matching the pattern already accepted in Plan 1 (no cleanup between runs; correctness doesn't depend on a clean slate since every test uses fresh identifiers).
 
-- [ ] **Step 3: Verify the test project builds**
+- [x] **Step 3: Verify the test project builds**
 
 Run: `dotnet build tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`
 Expected: PASS — this requires `PingMe.Api`'s `public partial class Program` from Task 5 and a project reference from `PingMe.IntegrationTests` to `PingMe.Api`. Add the reference if it's missing:
@@ -606,12 +606,14 @@ dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj referenc
 ```
 Then rebuild and confirm PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/PingMe.IntegrationTests
 git commit -m "Add PingMeWebApplicationFactory for HTTP-level integration tests"
 ```
+
+_Completed 2026-08-26: commit `5542193`. 8/8 existing tests still pass; factory not yet consumed by a test class (expected — Task 7 is the first real usage)._
 
 ---
 
