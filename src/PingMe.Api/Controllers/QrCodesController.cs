@@ -44,11 +44,26 @@ public class QrCodesController : ControllerBase
             return NotFound();
         }
 
-        var code = await GenerateUniqueCodeAsync();
-        var qrCode = new QrCode(_currentTenantProvider.TenantId!.Value, request.LocationId, code);
-        _dbContext.QrCodes.Add(qrCode);
-        await _dbContext.SaveChangesAsync();
-        return Created(string.Empty, new QrCodeDto(qrCode.Id, qrCode.LocationId, qrCode.Code));
+        const int maxInsertAttempts = 5;
+        for (var attempt = 0; attempt < maxInsertAttempts; attempt++)
+        {
+            var code = await GenerateUniqueCodeAsync();
+            var qrCode = new QrCode(_currentTenantProvider.TenantId!.Value, request.LocationId, code);
+            _dbContext.QrCodes.Add(qrCode);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return Created(string.Empty, new QrCodeDto(qrCode.Id, qrCode.LocationId, qrCode.Code));
+            }
+            catch (DbUpdateException)
+            {
+                // The Code unique index rejected a race with a concurrent insert of the same
+                // candidate — detach and retry with a freshly generated code.
+                _dbContext.Entry(qrCode).State = EntityState.Detached;
+            }
+        }
+
+        throw new InvalidOperationException($"Failed to insert a unique QR code after {maxInsertAttempts} attempts.");
     }
 
     private async Task<string> GenerateUniqueCodeAsync()
