@@ -147,7 +147,7 @@ git commit -m "Auto-create the tenant's single Venue at registration"
 
 **Does NOT cover:** editing or deleting a Location, or validating that `ParentLocationId` belongs to the same tenant beyond the existing tenant query filter already making a cross-tenant parent invisible (see Task where isolation is tested).
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Locations/LocationDto.cs`:
 
@@ -165,7 +165,7 @@ namespace PingMe.Api.Contracts.Locations;
 public record CreateLocationRequest(string Name, Guid? ParentLocationId);
 ```
 
-- [ ] **Step 2: Create `LocationsController.cs`**
+- [x] **Step 2: Create `LocationsController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -240,12 +240,12 @@ public class LocationsController : ControllerBase
 
 `venue.Id` comes from `_dbContext.Venues.FirstAsync()` — safe under the single-Venue-per-Tenant assumption (Task 1 guarantees exactly one exists per tenant). `[Authorize(Roles = "Owner,Staff")]` on `CloseSession` overrides the controller-level `Owner`-only policy for that one action, since Staff also need to close a session after a table pays (per the MVP spec).
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Locations src/PingMe.Api/Controllers/LocationsController.cs
@@ -263,7 +263,7 @@ git commit -m "Add LocationsController: create/list locations, close a location'
 
 **Does NOT cover:** deleting/deactivating a QR code, or generating a printable/scannable image — this plan only produces the opaque code string that a QR image generator (out of scope) would encode as a URL.
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Locations/QrCodeDto.cs`:
 
@@ -281,7 +281,7 @@ namespace PingMe.Api.Contracts.Locations;
 public record CreateQrCodeRequest(Guid LocationId);
 ```
 
-- [ ] **Step 2: Create `QrCodesController.cs`**
+- [x] **Step 2: Create `QrCodesController.cs`** (during review, strengthened `CreateQrCode` with a `GenerateUniqueCodeAsync` retry-on-collision check — a code collision would be a real cross-tenant leak since resolution bypasses the tenant filter)
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -352,12 +352,12 @@ public class QrCodesController : ControllerBase
 
 `CodeAlphabet` excludes visually ambiguous characters (`0`/`O`, `1`/`I`) since a human might need to type the code manually if a scanner fails.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Locations/QrCodeDto.cs src/PingMe.Api/Contracts/Locations/CreateQrCodeRequest.cs src/PingMe.Api/Controllers/QrCodesController.cs
@@ -495,7 +495,7 @@ git commit -m "Add integration tests for LocationsController and QrCodesControll
 
 **Does NOT cover:** rate-limiting or otherwise throttling repeated scans of the same code — out of scope for this MVP plan.
 
-- [ ] **Step 1: Create the DTOs**
+- [x] **Step 1: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Ordering/CustomerProductDto.cs`:
 
@@ -529,7 +529,7 @@ namespace PingMe.Api.Contracts.Ordering;
 public record ResolveQrCodeResponse(Guid SessionId, string VenueName, string LocationLabel, List<CustomerMenuDto> Menus);
 ```
 
-- [ ] **Step 2: Create `QrResolutionController.cs`**
+- [x] **Step 2: Create `QrResolutionController.cs`**
 
 ```csharp
 namespace PingMe.Api.Controllers;
@@ -609,12 +609,12 @@ public class QrResolutionController : ControllerBase
 
 The controller injects the concrete `CurrentTenantProvider` (not the `ICurrentTenantProvider` interface, which only exposes a getter) so it can set the resolved tenant for the rest of the request — the same pattern `TenantResolutionMiddleware` already uses for authenticated requests, just triggered manually here since there's no JWT to read a `tenantId` claim from.
 
-- [ ] **Step 3: Verify the solution builds**
+- [x] **Step 3: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Ordering/CustomerProductDto.cs src/PingMe.Api/Contracts/Ordering/CustomerCategoryDto.cs src/PingMe.Api/Contracts/Ordering/CustomerMenuDto.cs src/PingMe.Api/Contracts/Ordering/ResolveQrCodeResponse.cs src/PingMe.Api/Controllers/QrResolutionController.cs
