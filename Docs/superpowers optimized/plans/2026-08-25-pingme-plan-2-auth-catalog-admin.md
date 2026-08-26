@@ -905,7 +905,7 @@ _Completed 2026-08-26: commit `a0ef39a`. 13/13 tests pass (4 unit + 9 integratio
 - Create: `src/PingMe.Api/Contracts/Catalog/ProductOptionDto.cs`
 - Create: `src/PingMe.Api/Contracts/Catalog/CreateProductOptionRequest.cs`
 
-- [ ] **Step 1: Create all 9 DTO files**
+- [x] **Step 1: Create all 9 DTO files**
 
 `src/PingMe.Api/Contracts/Catalog/MenuDto.cs`:
 ```csharp
@@ -970,17 +970,19 @@ namespace PingMe.Api.Contracts.Catalog;
 public record CreateProductOptionRequest(string Name, decimal PriceDelta);
 ```
 
-- [ ] **Step 2: Verify the solution builds**
+- [x] **Step 2: Verify the solution builds**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Catalog
 git commit -m "Add Catalog admin DTOs"
 ```
+
+_Completed 2026-08-26: commit `466684a`._
 
 ---
 
