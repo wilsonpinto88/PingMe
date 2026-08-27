@@ -1286,7 +1286,7 @@ git commit -m "Add OrderList component"
 
 **Does NOT cover:** any staff-registration flow — login only, matching this plan's stated assumption that Staff/Owner accounts already exist.
 
-- [ ] **Step 1: Create `App.tsx`**
+- [x] **Step 1: Create `App.tsx`**
 
 This implements the connect-then-fetch sequencing from the spec's failure-mode resolution (Section 5 of the design doc): the hub connection is awaited *before* the initial `getOrders()` fetch, and every update — from the fetch or from a broadcast — goes through `upsertById`, so an order arriving during the handoff between the two can never appear twice.
 
@@ -1373,7 +1373,7 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 2: Run the full staff-app test suite and build**
+- [x] **Step 2: Run the full staff-app test suite and build**
 
 Run:
 ```bash
@@ -1383,7 +1383,7 @@ pnpm build
 ```
 Expected: PASS — Vitest suite green (the 3 `orders.test.ts` facts from Task 9), `tsc -b && vite build` completes with no TypeScript errors. This is the first point where the full `staff-app` project builds cleanly (`main.tsx`'s import of `./App` finally resolves).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/App.tsx
