@@ -18,12 +18,13 @@ export default function App() {
     setLoginError(null);
     try {
       const auth = await login(email, password);
-      const connection = await connectOrdersHub(auth.token);
-      connection.on("OrderReceived", (order: AdminOrderDto) => {
-        setOrders((current) => upsertById(current, order));
-      });
-      connection.on("OrderStatusChanged", (order: AdminOrderDto) => {
-        setOrders((current) => upsertById(current, order));
+      await connectOrdersHub(auth.token, (connection) => {
+        connection.on("OrderReceived", (order: AdminOrderDto) => {
+          setOrders((current) => upsertById(current, order));
+        });
+        connection.on("OrderStatusChanged", (order: AdminOrderDto) => {
+          setOrders((current) => upsertById(current, order));
+        });
       });
 
       const initialOrders = await getOrders(auth.token);
