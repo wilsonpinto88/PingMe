@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Api.Contracts.Ordering;
+using PingMe.Application.Ordering;
 using PingMe.Domain.Ordering;
 using PingMe.Infrastructure.Persistence;
 

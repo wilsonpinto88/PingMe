@@ -7,6 +7,7 @@ using PingMe.Api.Contracts.Auth;
 using PingMe.Api.Contracts.Catalog;
 using PingMe.Api.Contracts.Locations;
 using PingMe.Api.Contracts.Ordering;
+using PingMe.Application.Ordering;
 using PingMe.IntegrationTests.Infrastructure;
 using Xunit;
 
