@@ -28,7 +28,7 @@
 
 **Does NOT cover:** moving any other DTO in `PingMe.Api.Contracts.Ordering` (e.g. `CreateOrderRequest`, `UpdateOrderStatusRequest`) — only `AdminOrderDto`/`AdminOrderItemDto` move, because only these two are needed by the new `IOrderNotifier` interface (Task 2), which must live in `PingMe.Application` and cannot reference `PingMe.Api` (wrong dependency direction — `PingMe.Api.csproj` references `PingMe.Application.csproj`, not the reverse).
 
-- [ ] **Step 1: Create the new DTO files**
+- [x] **Step 1: Create the new DTO files**
 
 `src/PingMe.Application/Ordering/AdminOrderItemDto.cs`:
 ```csharp
@@ -44,11 +44,11 @@ namespace PingMe.Application.Ordering;
 public record AdminOrderDto(Guid Id, string Status, DateTime CreatedAt, List<AdminOrderItemDto> Items);
 ```
 
-- [ ] **Step 2: Delete the old files**
+- [x] **Step 2: Delete the old files**
 
 Delete `src/PingMe.Api/Contracts/Ordering/AdminOrderDto.cs` and `src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs`.
 
-- [ ] **Step 3: Update `AdminOrdersController.cs`'s usings**
+- [x] **Step 3: Update `AdminOrdersController.cs`'s usings**
 
 In `src/PingMe.Api/Controllers/AdminOrdersController.cs`, change:
 ```csharp
@@ -61,7 +61,7 @@ using PingMe.Application.Ordering;
 ```
 (The controller still uses `UpdateOrderStatusRequest` from `PingMe.Api.Contracts.Ordering`, so that using stays — `AdminOrderDto`/`AdminOrderItemDto` now resolve from the new namespace.)
 
-- [ ] **Step 4: Update the two test files' usings**
+- [x] **Step 4: Update the two test files' usings**
 
 In `tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs`, change:
 ```csharp
@@ -79,12 +79,12 @@ using PingMe.Api.Contracts.Ordering;
 using PingMe.Application.Ordering;
 ```
 
-- [ ] **Step 5: Build and run the full backend test suite**
+- [x] **Step 5: Build and run the full backend test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 38 existing tests still green (this is a pure namespace move, no behavior change).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Application/Ordering/AdminOrderDto.cs src/PingMe.Application/Ordering/AdminOrderItemDto.cs src/PingMe.Api/Contracts/Ordering/AdminOrderDto.cs src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs src/PingMe.Api/Controllers/AdminOrdersController.cs tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs tests/PingMe.IntegrationTests/Api/OrderingIsolationTests.cs
