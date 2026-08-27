@@ -32,7 +32,7 @@ This plan requires `POST /orders` (Plan 3's order-creation endpoint) to already 
 ## 3. Architecture
 
 ```
-CreateOrderHandler (Plan 3)
+OrdersController.Create (Plan 3, extended by Plan 4 with SignalR notification)
       │  order persisted first (existing behavior, unchanged)
       ▼
 IPosOrderDispatcher.TryDispatchAsync(order)
@@ -145,18 +145,45 @@ Owner-only, same pattern as `MenusController`/`ProductsController` from Plan 2:
 
 DTOs only — no EF entities cross the boundary, consistent with the rest of the Api layer.
 
-## 6. Order-Creation Integration Point (informational — implemented as part of this plan's tasks, called from Plan 3's handler)
+## 6. Order-Creation Integration Point (informational — implemented as part of this plan's tasks, called from `OrdersController.Create`)
 
-Once Plan 3 exists, its order-creation handler calls:
+Corrected against the actual merged Plan 3/Plan 4 code (no repository abstraction exists — `OrdersController` calls `PingMeDbContext` directly, and Plan 4 already added an `IOrderNotifier` call after the first `SaveChangesAsync`). `OrdersController.Create`'s tail currently reads:
 
 ```csharp
-var order = await _orderRepository.CreateAsync(...);   // Plan 3's existing step, unchanged
-var status = await _posOrderDispatcher.TryDispatchAsync(order, cancellationToken);
-order.RecordPosDeliveryStatus(status);
-await _dbContext.SaveChangesAsync(cancellationToken);
+_dbContext.Orders.Add(order);
+await _dbContext.SaveChangesAsync();
+
+var orderDto = new AdminOrderDto(
+    order.Id,
+    order.Status.ToString(),
+    order.CreatedAt,
+    order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList());
+await _orderNotifier.NotifyOrderReceivedAsync(order.TenantId, orderDto);
+
+return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
 ```
 
-This plan's tasks build everything up to and including `IPosOrderDispatcher`; wiring the two lines above into Plan 3's actual handler is the first task of this plan that touches `PingMe.Application.Ordering`, executed as part of this plan (not deferred) since Plan 3 will already be done by the time this plan executes (Section 2).
+This plan inserts the POS dispatch **after** the SignalR notification and **before** the `Created` response, with its own second `SaveChangesAsync` to persist the `PosDeliveryStatus` field (the first `SaveChangesAsync` has already assigned `order.Id` and persisted the items, which the dispatcher/payload-builder needs):
+
+```csharp
+_dbContext.Orders.Add(order);
+await _dbContext.SaveChangesAsync();
+
+var orderDto = new AdminOrderDto(
+    order.Id,
+    order.Status.ToString(),
+    order.CreatedAt,
+    order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList());
+await _orderNotifier.NotifyOrderReceivedAsync(order.TenantId, orderDto);
+
+var posDeliveryStatus = await _posOrderDispatcher.TryDispatchAsync(order, HttpContext.RequestAborted);
+order.RecordPosDeliveryStatus(posDeliveryStatus);
+await _dbContext.SaveChangesAsync();
+
+return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
+```
+
+`OrdersController` gains a fourth constructor dependency, `IPosOrderDispatcher`, alongside the existing `PingMeDbContext`, `CurrentTenantProvider`, and `IOrderNotifier`. This plan's tasks build everything up to and including `IPosOrderDispatcher`; wiring the block above into `OrdersController.Create` is one of this plan's own tasks (not deferred), executed directly against the real merged code since Plan 3 and Plan 4 are both already done and merged (Section 2).
 
 ## 7. Webhook Payload Contract
 
