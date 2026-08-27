@@ -290,12 +290,12 @@ git commit -m "Add OrdersHub with tenant-scoped groups and JWT-over-querystring 
 
 **Does NOT cover:** calling the notifier from any controller (Tasks 5, 6) — this task proves the notifier itself only ever delivers to the tenant it's told to, using a raw `IHubContext<OrdersHub>` broadcast for one fact and the real `IOrderNotifier` for the other.
 
-- [ ] **Step 1: Add the SignalR client test package**
+- [x] **Step 1: Add the SignalR client test package**
 
 Run: `dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package Microsoft.AspNetCore.SignalR.Client`
 Expected: the command succeeds and adds a `<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" ... />` line to `tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`.
 
-- [ ] **Step 2: Write failing tests**
+- [x] **Step 2: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/OrderNotifierIsolationTests.cs`:
 ```csharp
@@ -405,12 +405,12 @@ public class OrderNotifierIsolationTests : IClassFixture<PingMeWebApplicationFac
 }
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderNotifierIsolationTests"`
 Expected: FAIL — the first fact fails because nothing is broadcast yet against a real scenario is fine (it uses raw `IHubContext`, so it may actually pass once Task 3's hub exists); the second fact FAILS with a DI resolution error ("Unable to resolve service for type 'PingMe.Application.Ordering.IOrderNotifier'") because `IOrderNotifier` has no registered implementation yet.
 
-- [ ] **Step 4: Implement `SignalROrderNotifier`**
+- [x] **Step 4: Implement `SignalROrderNotifier`**
 
 `src/PingMe.Api/Realtime/SignalROrderNotifier.cs`:
 ```csharp
@@ -456,7 +456,7 @@ public class SignalROrderNotifier : IOrderNotifier
 }
 ```
 
-- [ ] **Step 5: Register it in `Program.cs`**
+- [x] **Step 5: Register it in `Program.cs`**
 
 Add the `using`:
 ```csharp
@@ -468,17 +468,17 @@ Add the registration right after `builder.Services.AddSignalR();`:
 builder.Services.AddScoped<IOrderNotifier, SignalROrderNotifier>();
 ```
 
-- [ ] **Step 6: Run tests to verify they pass**
+- [x] **Step 6: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderNotifierIsolationTests"`
 Expected: PASS — both facts green.
 
-- [ ] **Step 7: Run the full backend test suite**
+- [x] **Step 7: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 42 tests green (40 existing + 2 new).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Api/Realtime/SignalROrderNotifier.cs src/PingMe.Api/Program.cs tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj tests/PingMe.IntegrationTests/Api/OrderNotifierIsolationTests.cs
