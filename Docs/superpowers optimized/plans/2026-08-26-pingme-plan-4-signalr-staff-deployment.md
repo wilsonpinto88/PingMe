@@ -1401,7 +1401,7 @@ git commit -m "Add login gate and top-level App: login -> live order list -> sta
 
 **Does NOT cover:** containerizing `customer-app` or `staff-app` (explicit non-goal, Section 1 of the design doc) — both keep running via `pnpm dev`. Does NOT cover any cloud deployment target or CI pipeline.
 
-- [ ] **Step 1: Create the Dockerfile**
+- [x] **Step 1: Create the Dockerfile**
 
 `src/PingMe.Api/Dockerfile`:
 ```dockerfile
@@ -1416,7 +1416,7 @@ COPY --from=build /app .
 ENTRYPOINT ["dotnet", "PingMe.Api.dll"]
 ```
 
-- [ ] **Step 2: Create `docker-compose.yml`**
+- [x] **Step 2: Create `docker-compose.yml`**
 
 `docker-compose.yml` at the repo root (Postgres mapped to host port `55432`, not the native `5432` already used by the existing local dev Postgres, to avoid a port collision between the two workflows):
 ```yaml
@@ -1453,16 +1453,16 @@ volumes:
 
 Migrations are not applied automatically on container startup — run `dotnet ef database update` against the compose Postgres instance (`Host=localhost;Port=55432;...`) the same way migrations are already applied manually against the native local dev instance today; this plan does not add migrate-on-startup logic.
 
-- [ ] **Step 3: Verify the compose file**
+- [x] **Step 3: Verify the compose file**
 
 Run: `docker compose config`
 Expected: if the Docker CLI is available, this prints the fully resolved compose configuration with no errors. **If the Docker CLI is not available in the current environment** (confirmed absent during this plan's design), skip execution and instead manually re-read `docker-compose.yml` against the YAML above to confirm it's syntactically identical — do not claim a live smoke test (`docker compose up`) was performed if Docker isn't available; note this limitation explicitly in the task's completion notes and flag it to the user as a recommended manual check.
 
-- [ ] **Step 4: Update `.gitignore`**
+- [x] **Step 4: Update `.gitignore`**
 
 Add a rule so the frontend apps' `dist/` build output under `src/pingme-web` (already covered by the existing generic `dist/` rule) isn't accidentally mixed up with Docker build context expectations — verify the existing `.gitignore` already has `dist/` and `node_modules/` (it does, from Plan 3); no new rule is needed unless `docker compose config` surfaces one. If it doesn't, skip this file entirely and remove it from the commit in Step 5.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Api/Dockerfile docker-compose.yml
