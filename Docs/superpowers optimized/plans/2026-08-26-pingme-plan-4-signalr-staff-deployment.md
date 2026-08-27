@@ -1078,7 +1078,7 @@ git commit -m "Add staff-app API client and types"
 
 **Does NOT cover:** any SignalR or fetch wiring — this is a pure function, testable in isolation, matching Plan 3's `cart.ts`/`cart.test.ts` precedent.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `src/pingme-web/staff-app/src/orders.test.ts`:
 ```ts
@@ -1113,7 +1113,7 @@ describe("upsertById", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run:
 ```bash
@@ -1122,7 +1122,7 @@ pnpm test
 ```
 Expected: FAIL — `orders.ts` does not exist (`Cannot find module './orders'`).
 
-- [ ] **Step 3: Implement `orders.ts`**
+- [x] **Step 3: Implement `orders.ts`**
 
 `src/pingme-web/staff-app/src/orders.ts`:
 ```ts
@@ -1140,7 +1140,7 @@ export function upsertById(current: AdminOrderDto[], updated: AdminOrderDto): Ad
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run:
 ```bash
@@ -1149,7 +1149,7 @@ pnpm test
 ```
 Expected: PASS — all 3 facts green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/orders.ts src/pingme-web/staff-app/src/orders.test.ts
