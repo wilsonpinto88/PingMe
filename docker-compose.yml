@@ -19,6 +19,7 @@ services:
     ports:
       - "5190:8080"
     environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
       ConnectionStrings__PingMe: "Host=postgres;Port=5432;Database=pingme_dev;Username=postgres;Password=postgres"
       Jwt__Key: "dev-only-signing-key-change-before-production-1234567890"
       Jwt__Issuer: "PingMe"
