@@ -666,7 +666,7 @@ git commit -m "Broadcast OrderReceived to the owning tenant's staff on order cre
 
 **Does NOT cover:** any change to `Order.TransitionTo`'s validation rules — the state machine itself is unchanged from Plan 1/3.
 
-- [ ] **Step 1: Add a failing test to the existing file**
+- [x] **Step 1: Add a failing test to the existing file**
 
 Add this fact inside the `RealtimeOrderNotificationTests` class from Task 5 (`tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs`), and add `using PingMe.Api.Contracts.Ordering;`'s `UpdateOrderStatusRequest` is already imported via the existing `using PingMe.Api.Contracts.Ordering;` line:
 ```csharp
@@ -698,12 +698,12 @@ Add this fact inside the `RealtimeOrderNotificationTests` class from Task 5 (`te
     }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Updating_order_status_broadcasts_OrderStatusChanged"`
 Expected: FAIL — times out (no broadcast sent from `AdminOrdersController.UpdateStatus` yet).
 
-- [ ] **Step 3: Wire the notifier into `AdminOrdersController`**
+- [x] **Step 3: Wire the notifier into `AdminOrdersController`**
 
 In `src/PingMe.Api/Controllers/AdminOrdersController.cs`, add the dependency:
 ```csharp
@@ -786,17 +786,17 @@ to:
 
 Note the added `.Include(o => o.Items)` — without it, `order.Items` would be empty at broadcast time (the same non-eager-navigation gap already fixed once in `GetOrders` during Plan 3), which is exactly what the test's `Assert.Single(broadcast.Items)` catches if missed.
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Updating_order_status_broadcasts_OrderStatusChanged"`
 Expected: PASS.
 
-- [ ] **Step 5: Run the full backend test suite**
+- [x] **Step 5: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 44 tests green.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/AdminOrdersController.cs tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs
