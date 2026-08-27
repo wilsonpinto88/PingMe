@@ -1476,12 +1476,12 @@ git commit -m "Add Dockerfile and docker-compose.yml for local API+Postgres depl
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full backend build and test suite from a clean state**
+- [x] **Step 1: Run the full backend build and test suite from a clean state**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 44 tests passing (see Task 6, Step 5 for the breakdown).
 
-- [ ] **Step 2: Run the full frontend build and test suite for both apps from a clean state**
+- [x] **Step 2: Run the full frontend build and test suite for both apps from a clean state**
 
 Run:
 ```bash
@@ -1492,7 +1492,7 @@ cd staff-app && pnpm test && pnpm build && cd ..
 ```
 Expected: PASS — no install errors, both apps' Vitest suites green, both production builds succeed.
 
-- [ ] **Step 3: Manually verify the staff flow end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 3: Manually verify the staff flow end-to-end** (not automatable in this plan — do this once by hand)
 
 1. Start the backend: `dotnet run --project src/PingMe.Api`.
 2. Start the staff app: `cd src/pingme-web/staff-app && pnpm dev`.
@@ -1505,11 +1505,13 @@ Expected: PASS — no install errors, both apps' Vitest suites green, both produ
 
 If a real browser isn't available to perform this check (as was the case during Plan 3's equivalent step), perform the curl/SignalR-client-level verification instead (the integration tests in Tasks 4-6 already prove the wire protocol end-to-end) and note explicitly in the completion report that interactive browser verification is still recommended before considering this plan fully closed.
 
-- [ ] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+**Verification note:** no browser tool was available in this session, so this was performed at the wire-protocol level instead: started the real backend, registered a tenant, seeded a menu/product/location/QR code via curl, then connected an actual `@microsoft/signalr` client (Node, using the same package `staff-app` depends on) over a real WebSocket to `/hubs/orders` with the Owner's JWT. Placed a customer order via `POST /orders` and confirmed `OrderReceived` arrived on the live connection with the correct order id/status/items within ~2 seconds. Transitioned the order via `PUT /admin/orders/{id}/status` twice (`Accepted`, then `Preparing`) and confirmed `OrderStatusChanged` arrived live both times with the correct updated status. This proves the actual SignalR wire protocol end-to-end (not just the backend-only integration tests), but does **not** confirm the React UI's rendering/click-through (button disappearing at `Delivered`, live DOM updates) — an interactive browser check is still recommended before treating the staff dashboard as fully verified.
+
+- [x] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the table to add this plan's row (`4 | SignalR + Staff dashboard + Deployment | ... | Done, reviewed | 14 / 14`), replacing the `*(not yet written)*` placeholder. Also add a new carried-forward item: **"Docker Compose covers API + Postgres only — customer-app and staff-app are not containerized and still require `pnpm dev`. No CI pipeline or cloud deployment target exists yet."**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "Docs/superpowers optimized/plans/PROGRESS.md"
