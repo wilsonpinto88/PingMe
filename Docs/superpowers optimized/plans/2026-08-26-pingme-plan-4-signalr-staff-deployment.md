@@ -819,7 +819,7 @@ git commit -m "Broadcast OrderStatusChanged to the owning tenant's staff on stat
 
 **Does NOT cover:** any actual dashboard UI (Tasks 8-12) — `main.tsx` imports `./App`, which does not exist until Task 12, matching Plan 3's precedent for `customer-app`'s scaffold task.
 
-- [ ] **Step 1: Add `staff-app` to the pnpm workspace**
+- [x] **Step 1: Add `staff-app` to the pnpm workspace**
 
 In `src/pingme-web/pnpm-workspace.yaml`, change:
 ```yaml
@@ -837,7 +837,7 @@ allowBuilds:
   esbuild: true
 ```
 
-- [ ] **Step 2: Create `package.json`**
+- [x] **Step 2: Create `package.json`**
 
 `src/pingme-web/staff-app/package.json`:
 ```json
@@ -867,7 +867,7 @@ allowBuilds:
 }
 ```
 
-- [ ] **Step 3: Create `tsconfig.json` and `tsconfig.node.json`**
+- [x] **Step 3: Create `tsconfig.json` and `tsconfig.node.json`**
 
 `src/pingme-web/staff-app/tsconfig.json` (identical to `customer-app`'s):
 ```json
@@ -904,7 +904,7 @@ allowBuilds:
 }
 ```
 
-- [ ] **Step 4: Create `vite.config.ts`**
+- [x] **Step 4: Create `vite.config.ts`**
 
 `src/pingme-web/staff-app/vite.config.ts` (port `5174` — one above `customer-app`'s `5173`, so both dev servers can run simultaneously):
 ```ts
@@ -919,7 +919,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 5: Create `index.html`, `main.tsx`, `vite-env.d.ts`**
+- [x] **Step 5: Create `index.html`, `main.tsx`, `vite-env.d.ts`**
 
 `src/pingme-web/staff-app/index.html`:
 ```html
@@ -955,7 +955,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 /// <reference types="vite/client" />
 ```
 
-- [ ] **Step 6: Install dependencies**
+- [x] **Step 6: Install dependencies**
 
 Run:
 ```bash
@@ -964,7 +964,7 @@ pnpm install
 ```
 Expected: succeeds with no `ERR_PNPM_IGNORED_BUILDS` prompt (the workspace's existing `allowBuilds: { esbuild: true }` already covers the new app's transitive `esbuild` dependency).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/pingme-web/pnpm-workspace.yaml src/pingme-web/staff-app/package.json src/pingme-web/staff-app/tsconfig.json src/pingme-web/staff-app/tsconfig.node.json src/pingme-web/staff-app/vite.config.ts src/pingme-web/staff-app/index.html src/pingme-web/staff-app/src/main.tsx src/pingme-web/staff-app/src/vite-env.d.ts src/pingme-web/pnpm-lock.yaml
