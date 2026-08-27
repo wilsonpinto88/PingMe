@@ -1209,7 +1209,7 @@ git commit -m "Add SignalR connection wrapper for the orders hub"
 
 **Does NOT cover:** styling/visual design beyond functional, unstyled markup — matches Plan 3's `MenuBrowser`/`CartView` precedent; a design pass is out of scope for this plan.
 
-- [ ] **Step 1: Create `OrderList.tsx`**
+- [x] **Step 1: Create `OrderList.tsx`**
 
 ```tsx
 import type { AdminOrderDto } from "../types";
@@ -1261,7 +1261,7 @@ export function OrderList({ orders, onAdvanceStatus, errorByOrderId }: OrderList
 }
 ```
 
-- [ ] **Step 2: Type-check**
+- [x] **Step 2: Type-check**
 
 Run:
 ```bash
@@ -1270,7 +1270,7 @@ pnpm exec tsc -b
 ```
 Expected: FAILS only on the still-missing `./App` import in `main.tsx` — no error referencing `OrderList.tsx`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/components/OrderList.tsx
