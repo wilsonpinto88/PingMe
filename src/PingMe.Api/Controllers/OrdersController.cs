@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Api.Contracts.Ordering;
+using PingMe.Application.Ordering;
 using PingMe.Domain.Ordering;
 using PingMe.Infrastructure.Persistence;
 using PingMe.Infrastructure.Tenants;
@@ -15,11 +16,13 @@ public class OrdersController : ControllerBase
 {
     private readonly PingMeDbContext _dbContext;
     private readonly CurrentTenantProvider _currentTenantProvider;
+    private readonly IOrderNotifier _orderNotifier;
 
-    public OrdersController(PingMeDbContext dbContext, CurrentTenantProvider currentTenantProvider)
+    public OrdersController(PingMeDbContext dbContext, CurrentTenantProvider currentTenantProvider, IOrderNotifier orderNotifier)
     {
         _dbContext = dbContext;
         _currentTenantProvider = currentTenantProvider;
+        _orderNotifier = orderNotifier;
     }
 
     [HttpPost]
@@ -74,6 +77,13 @@ public class OrdersController : ControllerBase
 
         _dbContext.Orders.Add(order);
         await _dbContext.SaveChangesAsync();
+
+        var orderDto = new AdminOrderDto(
+            order.Id,
+            order.Status.ToString(),
+            order.CreatedAt,
+            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList());
+        await _orderNotifier.NotifyOrderReceivedAsync(order.TenantId, orderDto);
 
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
     }

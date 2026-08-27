@@ -1,3 +1,3 @@
-namespace PingMe.Api.Contracts.Ordering;
+namespace PingMe.Application.Ordering;
 
 public record AdminOrderDto(Guid Id, string Status, DateTime CreatedAt, List<AdminOrderItemDto> Items);

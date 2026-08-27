@@ -26,6 +26,8 @@ yarn-error.log*
 *.tsbuildinfo
 /src/pingme-web/customer-app/vite.config.js
 /src/pingme-web/customer-app/vite.config.d.ts
+/src/pingme-web/staff-app/vite.config.js
+/src/pingme-web/staff-app/vite.config.d.ts
 
 ## Env / secrets
 .env

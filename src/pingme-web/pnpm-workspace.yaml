@@ -1,4 +1,5 @@
 packages:
   - "customer-app"
+  - "staff-app"
 allowBuilds:
   esbuild: true

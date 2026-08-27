@@ -28,7 +28,7 @@
 
 **Does NOT cover:** moving any other DTO in `PingMe.Api.Contracts.Ordering` (e.g. `CreateOrderRequest`, `UpdateOrderStatusRequest`) — only `AdminOrderDto`/`AdminOrderItemDto` move, because only these two are needed by the new `IOrderNotifier` interface (Task 2), which must live in `PingMe.Application` and cannot reference `PingMe.Api` (wrong dependency direction — `PingMe.Api.csproj` references `PingMe.Application.csproj`, not the reverse).
 
-- [ ] **Step 1: Create the new DTO files**
+- [x] **Step 1: Create the new DTO files**
 
 `src/PingMe.Application/Ordering/AdminOrderItemDto.cs`:
 ```csharp
@@ -44,11 +44,11 @@ namespace PingMe.Application.Ordering;
 public record AdminOrderDto(Guid Id, string Status, DateTime CreatedAt, List<AdminOrderItemDto> Items);
 ```
 
-- [ ] **Step 2: Delete the old files**
+- [x] **Step 2: Delete the old files**
 
 Delete `src/PingMe.Api/Contracts/Ordering/AdminOrderDto.cs` and `src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs`.
 
-- [ ] **Step 3: Update `AdminOrdersController.cs`'s usings**
+- [x] **Step 3: Update `AdminOrdersController.cs`'s usings**
 
 In `src/PingMe.Api/Controllers/AdminOrdersController.cs`, change:
 ```csharp
@@ -61,7 +61,7 @@ using PingMe.Application.Ordering;
 ```
 (The controller still uses `UpdateOrderStatusRequest` from `PingMe.Api.Contracts.Ordering`, so that using stays — `AdminOrderDto`/`AdminOrderItemDto` now resolve from the new namespace.)
 
-- [ ] **Step 4: Update the two test files' usings**
+- [x] **Step 4: Update the two test files' usings**
 
 In `tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs`, change:
 ```csharp
@@ -79,12 +79,12 @@ using PingMe.Api.Contracts.Ordering;
 using PingMe.Application.Ordering;
 ```
 
-- [ ] **Step 5: Build and run the full backend test suite**
+- [x] **Step 5: Build and run the full backend test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 38 existing tests still green (this is a pure namespace move, no behavior change).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Application/Ordering/AdminOrderDto.cs src/PingMe.Application/Ordering/AdminOrderItemDto.cs src/PingMe.Api/Contracts/Ordering/AdminOrderDto.cs src/PingMe.Api/Contracts/Ordering/AdminOrderItemDto.cs src/PingMe.Api/Controllers/AdminOrdersController.cs tests/PingMe.IntegrationTests/Api/AdminOrdersTests.cs tests/PingMe.IntegrationTests/Api/OrderingIsolationTests.cs
@@ -100,7 +100,7 @@ git commit -m "Move AdminOrderDto/AdminOrderItemDto into PingMe.Application.Orde
 
 **Does NOT cover:** any implementation of this interface (Task 4) or wiring callers (Tasks 5, 6) — this task only adds the seam.
 
-- [ ] **Step 1: Create the interface**
+- [x] **Step 1: Create the interface**
 
 ```csharp
 namespace PingMe.Application.Ordering;
@@ -112,12 +112,12 @@ public interface IOrderNotifier
 }
 ```
 
-- [ ] **Step 2: Build**
+- [x] **Step 2: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors (this interface has no implementers yet, which is fine; nothing references it).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Application/Ordering/IOrderNotifier.cs
@@ -135,7 +135,7 @@ git commit -m "Add IOrderNotifier interface"
 
 **Does NOT cover:** actually broadcasting any order events (Tasks 5, 6) or the `IOrderNotifier` implementation (Task 4) — this task only stands up the hub route and its auth gate.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/OrdersHubAuthTests.cs`:
 ```csharp
@@ -184,12 +184,12 @@ public class OrdersHubAuthTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrdersHubAuthTests"`
 Expected: FAIL — both requests 404 (route `/hubs/orders` doesn't exist yet).
 
-- [ ] **Step 3: Create the hub**
+- [x] **Step 3: Create the hub**
 
 `src/PingMe.Api/Realtime/OrdersHub.cs`:
 ```csharp
@@ -214,7 +214,7 @@ public class OrdersHub : Hub
 }
 ```
 
-- [ ] **Step 4: Wire SignalR into `Program.cs`**
+- [x] **Step 4: Wire SignalR into `Program.cs`**
 
 Add the `using`:
 ```csharp
@@ -261,17 +261,17 @@ Add the hub route mapping right after `app.MapControllers();`:
 app.MapHub<OrdersHub>("/hubs/orders");
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrdersHubAuthTests"`
 Expected: PASS — both facts green.
 
-- [ ] **Step 6: Run the full backend test suite**
+- [x] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 40 tests green (38 existing + 2 new).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Api/Realtime/OrdersHub.cs src/PingMe.Api/Program.cs tests/PingMe.IntegrationTests/Api/OrdersHubAuthTests.cs
@@ -290,12 +290,12 @@ git commit -m "Add OrdersHub with tenant-scoped groups and JWT-over-querystring 
 
 **Does NOT cover:** calling the notifier from any controller (Tasks 5, 6) — this task proves the notifier itself only ever delivers to the tenant it's told to, using a raw `IHubContext<OrdersHub>` broadcast for one fact and the real `IOrderNotifier` for the other.
 
-- [ ] **Step 1: Add the SignalR client test package**
+- [x] **Step 1: Add the SignalR client test package**
 
 Run: `dotnet add tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj package Microsoft.AspNetCore.SignalR.Client`
 Expected: the command succeeds and adds a `<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" ... />` line to `tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj`.
 
-- [ ] **Step 2: Write failing tests**
+- [x] **Step 2: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/OrderNotifierIsolationTests.cs`:
 ```csharp
@@ -405,12 +405,12 @@ public class OrderNotifierIsolationTests : IClassFixture<PingMeWebApplicationFac
 }
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderNotifierIsolationTests"`
 Expected: FAIL — the first fact fails because nothing is broadcast yet against a real scenario is fine (it uses raw `IHubContext`, so it may actually pass once Task 3's hub exists); the second fact FAILS with a DI resolution error ("Unable to resolve service for type 'PingMe.Application.Ordering.IOrderNotifier'") because `IOrderNotifier` has no registered implementation yet.
 
-- [ ] **Step 4: Implement `SignalROrderNotifier`**
+- [x] **Step 4: Implement `SignalROrderNotifier`**
 
 `src/PingMe.Api/Realtime/SignalROrderNotifier.cs`:
 ```csharp
@@ -456,7 +456,7 @@ public class SignalROrderNotifier : IOrderNotifier
 }
 ```
 
-- [ ] **Step 5: Register it in `Program.cs`**
+- [x] **Step 5: Register it in `Program.cs`**
 
 Add the `using`:
 ```csharp
@@ -468,17 +468,17 @@ Add the registration right after `builder.Services.AddSignalR();`:
 builder.Services.AddScoped<IOrderNotifier, SignalROrderNotifier>();
 ```
 
-- [ ] **Step 6: Run tests to verify they pass**
+- [x] **Step 6: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderNotifierIsolationTests"`
 Expected: PASS — both facts green.
 
-- [ ] **Step 7: Run the full backend test suite**
+- [x] **Step 7: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 42 tests green (40 existing + 2 new).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Api/Realtime/SignalROrderNotifier.cs src/PingMe.Api/Program.cs tests/PingMe.IntegrationTests/PingMe.IntegrationTests.csproj tests/PingMe.IntegrationTests/Api/OrderNotifierIsolationTests.cs
@@ -495,7 +495,7 @@ git commit -m "Add SignalROrderNotifier with tenant-group broadcast isolation te
 
 **Does NOT cover:** the `OrderStatusChanged` broadcast on admin status transitions — that's Task 6, added to the same test file.
 
-- [ ] **Step 1: Write a failing test**
+- [x] **Step 1: Write a failing test**
 
 `tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs`:
 ```csharp
@@ -591,12 +591,12 @@ public class RealtimeOrderNotificationTests : IClassFixture<PingMeWebApplication
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Placing_an_order_broadcasts_OrderReceived"`
 Expected: FAIL — times out waiting on `received.Task` (no broadcast is ever sent from `OrdersController.Create` yet).
 
-- [ ] **Step 3: Wire the notifier into `OrdersController`**
+- [x] **Step 3: Wire the notifier into `OrdersController`**
 
 In `src/PingMe.Api/Controllers/OrdersController.cs`, add the using:
 ```csharp
@@ -639,17 +639,17 @@ to:
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Placing_an_order_broadcasts_OrderReceived"`
 Expected: PASS.
 
-- [ ] **Step 5: Run the full backend test suite**
+- [x] **Step 5: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 43 tests green.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/OrdersController.cs tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs
@@ -666,7 +666,7 @@ git commit -m "Broadcast OrderReceived to the owning tenant's staff on order cre
 
 **Does NOT cover:** any change to `Order.TransitionTo`'s validation rules — the state machine itself is unchanged from Plan 1/3.
 
-- [ ] **Step 1: Add a failing test to the existing file**
+- [x] **Step 1: Add a failing test to the existing file**
 
 Add this fact inside the `RealtimeOrderNotificationTests` class from Task 5 (`tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs`), and add `using PingMe.Api.Contracts.Ordering;`'s `UpdateOrderStatusRequest` is already imported via the existing `using PingMe.Api.Contracts.Ordering;` line:
 ```csharp
@@ -698,12 +698,12 @@ Add this fact inside the `RealtimeOrderNotificationTests` class from Task 5 (`te
     }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Updating_order_status_broadcasts_OrderStatusChanged"`
 Expected: FAIL — times out (no broadcast sent from `AdminOrdersController.UpdateStatus` yet).
 
-- [ ] **Step 3: Wire the notifier into `AdminOrdersController`**
+- [x] **Step 3: Wire the notifier into `AdminOrdersController`**
 
 In `src/PingMe.Api/Controllers/AdminOrdersController.cs`, add the dependency:
 ```csharp
@@ -786,17 +786,17 @@ to:
 
 Note the added `.Include(o => o.Items)` — without it, `order.Items` would be empty at broadcast time (the same non-eager-navigation gap already fixed once in `GetOrders` during Plan 3), which is exactly what the test's `Assert.Single(broadcast.Items)` catches if missed.
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Updating_order_status_broadcasts_OrderStatusChanged"`
 Expected: PASS.
 
-- [ ] **Step 5: Run the full backend test suite**
+- [x] **Step 5: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 44 tests green.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/AdminOrdersController.cs tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs
@@ -819,7 +819,7 @@ git commit -m "Broadcast OrderStatusChanged to the owning tenant's staff on stat
 
 **Does NOT cover:** any actual dashboard UI (Tasks 8-12) — `main.tsx` imports `./App`, which does not exist until Task 12, matching Plan 3's precedent for `customer-app`'s scaffold task.
 
-- [ ] **Step 1: Add `staff-app` to the pnpm workspace**
+- [x] **Step 1: Add `staff-app` to the pnpm workspace**
 
 In `src/pingme-web/pnpm-workspace.yaml`, change:
 ```yaml
@@ -837,7 +837,7 @@ allowBuilds:
   esbuild: true
 ```
 
-- [ ] **Step 2: Create `package.json`**
+- [x] **Step 2: Create `package.json`**
 
 `src/pingme-web/staff-app/package.json`:
 ```json
@@ -867,7 +867,7 @@ allowBuilds:
 }
 ```
 
-- [ ] **Step 3: Create `tsconfig.json` and `tsconfig.node.json`**
+- [x] **Step 3: Create `tsconfig.json` and `tsconfig.node.json`**
 
 `src/pingme-web/staff-app/tsconfig.json` (identical to `customer-app`'s):
 ```json
@@ -904,7 +904,7 @@ allowBuilds:
 }
 ```
 
-- [ ] **Step 4: Create `vite.config.ts`**
+- [x] **Step 4: Create `vite.config.ts`**
 
 `src/pingme-web/staff-app/vite.config.ts` (port `5174` — one above `customer-app`'s `5173`, so both dev servers can run simultaneously):
 ```ts
@@ -919,7 +919,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 5: Create `index.html`, `main.tsx`, `vite-env.d.ts`**
+- [x] **Step 5: Create `index.html`, `main.tsx`, `vite-env.d.ts`**
 
 `src/pingme-web/staff-app/index.html`:
 ```html
@@ -955,7 +955,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 /// <reference types="vite/client" />
 ```
 
-- [ ] **Step 6: Install dependencies**
+- [x] **Step 6: Install dependencies**
 
 Run:
 ```bash
@@ -964,7 +964,7 @@ pnpm install
 ```
 Expected: succeeds with no `ERR_PNPM_IGNORED_BUILDS` prompt (the workspace's existing `allowBuilds: { esbuild: true }` already covers the new app's transitive `esbuild` dependency).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/pingme-web/pnpm-workspace.yaml src/pingme-web/staff-app/package.json src/pingme-web/staff-app/tsconfig.json src/pingme-web/staff-app/tsconfig.node.json src/pingme-web/staff-app/vite.config.ts src/pingme-web/staff-app/index.html src/pingme-web/staff-app/src/main.tsx src/pingme-web/staff-app/src/vite-env.d.ts src/pingme-web/pnpm-lock.yaml
@@ -981,7 +981,7 @@ git commit -m "Scaffold staff-app: pnpm workspace, Vite + React + TypeScript"
 
 **Does NOT cover:** the SignalR connection wrapper (Task 10) or any UI (Tasks 11-12).
 
-- [ ] **Step 1: Create `types.ts`**
+- [x] **Step 1: Create `types.ts`**
 
 `src/pingme-web/staff-app/src/types.ts` (mirrors the backend's `AuthResponse`, `AdminOrderDto`/`AdminOrderItemDto` exactly — camelCase per ASP.NET Core's default JSON serialization):
 ```ts
@@ -1003,7 +1003,7 @@ export interface AdminOrderDto {
 }
 ```
 
-- [ ] **Step 2: Create `api.ts`**
+- [x] **Step 2: Create `api.ts`**
 
 `src/pingme-web/staff-app/src/api.ts`:
 ```ts
@@ -1052,7 +1052,7 @@ export async function updateOrderStatus(
 }
 ```
 
-- [ ] **Step 3: Type-check**
+- [x] **Step 3: Type-check**
 
 Run:
 ```bash
@@ -1061,7 +1061,7 @@ pnpm exec tsc -b
 ```
 Expected: FAILS only on the still-missing `./App` import in `main.tsx` (`TS2307: Cannot find module './App'`) — this is the same expected, deliberate gap as Plan 3's `customer-app` scaffold task, closed in Task 12. No error should reference `types.ts` or `api.ts`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/types.ts src/pingme-web/staff-app/src/api.ts
@@ -1078,7 +1078,7 @@ git commit -m "Add staff-app API client and types"
 
 **Does NOT cover:** any SignalR or fetch wiring — this is a pure function, testable in isolation, matching Plan 3's `cart.ts`/`cart.test.ts` precedent.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `src/pingme-web/staff-app/src/orders.test.ts`:
 ```ts
@@ -1113,7 +1113,7 @@ describe("upsertById", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run:
 ```bash
@@ -1122,7 +1122,7 @@ pnpm test
 ```
 Expected: FAIL — `orders.ts` does not exist (`Cannot find module './orders'`).
 
-- [ ] **Step 3: Implement `orders.ts`**
+- [x] **Step 3: Implement `orders.ts`**
 
 `src/pingme-web/staff-app/src/orders.ts`:
 ```ts
@@ -1140,7 +1140,7 @@ export function upsertById(current: AdminOrderDto[], updated: AdminOrderDto): Ad
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run:
 ```bash
@@ -1149,7 +1149,7 @@ pnpm test
 ```
 Expected: PASS — all 3 facts green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/orders.ts src/pingme-web/staff-app/src/orders.test.ts
@@ -1165,7 +1165,7 @@ git commit -m "Add order-list upsert logic with unit tests"
 
 **Does NOT cover:** any UI wiring (Task 12) — this is a thin, testable-by-inspection wrapper around `@microsoft/signalr`'s `HubConnectionBuilder`.
 
-- [ ] **Step 1: Create `signalr.ts`**
+- [x] **Step 1: Create `signalr.ts`**
 
 `src/pingme-web/staff-app/src/signalr.ts`:
 ```ts
@@ -1184,7 +1184,7 @@ export async function connectOrdersHub(token: string): Promise<HubConnection> {
 }
 ```
 
-- [ ] **Step 2: Type-check**
+- [x] **Step 2: Type-check**
 
 Run:
 ```bash
@@ -1193,7 +1193,7 @@ pnpm exec tsc -b
 ```
 Expected: FAILS only on the still-missing `./App` import in `main.tsx`, same as Task 8's step 3 — no error referencing `signalr.ts`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/signalr.ts
@@ -1209,7 +1209,7 @@ git commit -m "Add SignalR connection wrapper for the orders hub"
 
 **Does NOT cover:** styling/visual design beyond functional, unstyled markup — matches Plan 3's `MenuBrowser`/`CartView` precedent; a design pass is out of scope for this plan.
 
-- [ ] **Step 1: Create `OrderList.tsx`**
+- [x] **Step 1: Create `OrderList.tsx`**
 
 ```tsx
 import type { AdminOrderDto } from "../types";
@@ -1261,7 +1261,7 @@ export function OrderList({ orders, onAdvanceStatus, errorByOrderId }: OrderList
 }
 ```
 
-- [ ] **Step 2: Type-check**
+- [x] **Step 2: Type-check**
 
 Run:
 ```bash
@@ -1270,7 +1270,7 @@ pnpm exec tsc -b
 ```
 Expected: FAILS only on the still-missing `./App` import in `main.tsx` — no error referencing `OrderList.tsx`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/components/OrderList.tsx
@@ -1286,7 +1286,7 @@ git commit -m "Add OrderList component"
 
 **Does NOT cover:** any staff-registration flow — login only, matching this plan's stated assumption that Staff/Owner accounts already exist.
 
-- [ ] **Step 1: Create `App.tsx`**
+- [x] **Step 1: Create `App.tsx`**
 
 This implements the connect-then-fetch sequencing from the spec's failure-mode resolution (Section 5 of the design doc): the hub connection is awaited *before* the initial `getOrders()` fetch, and every update — from the fetch or from a broadcast — goes through `upsertById`, so an order arriving during the handoff between the two can never appear twice.
 
@@ -1373,7 +1373,7 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 2: Run the full staff-app test suite and build**
+- [x] **Step 2: Run the full staff-app test suite and build**
 
 Run:
 ```bash
@@ -1383,7 +1383,7 @@ pnpm build
 ```
 Expected: PASS — Vitest suite green (the 3 `orders.test.ts` facts from Task 9), `tsc -b && vite build` completes with no TypeScript errors. This is the first point where the full `staff-app` project builds cleanly (`main.tsx`'s import of `./App` finally resolves).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/App.tsx
@@ -1401,7 +1401,7 @@ git commit -m "Add login gate and top-level App: login -> live order list -> sta
 
 **Does NOT cover:** containerizing `customer-app` or `staff-app` (explicit non-goal, Section 1 of the design doc) — both keep running via `pnpm dev`. Does NOT cover any cloud deployment target or CI pipeline.
 
-- [ ] **Step 1: Create the Dockerfile**
+- [x] **Step 1: Create the Dockerfile**
 
 `src/PingMe.Api/Dockerfile`:
 ```dockerfile
@@ -1416,7 +1416,7 @@ COPY --from=build /app .
 ENTRYPOINT ["dotnet", "PingMe.Api.dll"]
 ```
 
-- [ ] **Step 2: Create `docker-compose.yml`**
+- [x] **Step 2: Create `docker-compose.yml`**
 
 `docker-compose.yml` at the repo root (Postgres mapped to host port `55432`, not the native `5432` already used by the existing local dev Postgres, to avoid a port collision between the two workflows):
 ```yaml
@@ -1453,16 +1453,16 @@ volumes:
 
 Migrations are not applied automatically on container startup — run `dotnet ef database update` against the compose Postgres instance (`Host=localhost;Port=55432;...`) the same way migrations are already applied manually against the native local dev instance today; this plan does not add migrate-on-startup logic.
 
-- [ ] **Step 3: Verify the compose file**
+- [x] **Step 3: Verify the compose file**
 
 Run: `docker compose config`
 Expected: if the Docker CLI is available, this prints the fully resolved compose configuration with no errors. **If the Docker CLI is not available in the current environment** (confirmed absent during this plan's design), skip execution and instead manually re-read `docker-compose.yml` against the YAML above to confirm it's syntactically identical — do not claim a live smoke test (`docker compose up`) was performed if Docker isn't available; note this limitation explicitly in the task's completion notes and flag it to the user as a recommended manual check.
 
-- [ ] **Step 4: Update `.gitignore`**
+- [x] **Step 4: Update `.gitignore`**
 
 Add a rule so the frontend apps' `dist/` build output under `src/pingme-web` (already covered by the existing generic `dist/` rule) isn't accidentally mixed up with Docker build context expectations — verify the existing `.gitignore` already has `dist/` and `node_modules/` (it does, from Plan 3); no new rule is needed unless `docker compose config` surfaces one. If it doesn't, skip this file entirely and remove it from the commit in Step 5.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Api/Dockerfile docker-compose.yml
@@ -1476,12 +1476,12 @@ git commit -m "Add Dockerfile and docker-compose.yml for local API+Postgres depl
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full backend build and test suite from a clean state**
+- [x] **Step 1: Run the full backend build and test suite from a clean state**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 44 tests passing (see Task 6, Step 5 for the breakdown).
 
-- [ ] **Step 2: Run the full frontend build and test suite for both apps from a clean state**
+- [x] **Step 2: Run the full frontend build and test suite for both apps from a clean state**
 
 Run:
 ```bash
@@ -1492,7 +1492,7 @@ cd staff-app && pnpm test && pnpm build && cd ..
 ```
 Expected: PASS — no install errors, both apps' Vitest suites green, both production builds succeed.
 
-- [ ] **Step 3: Manually verify the staff flow end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 3: Manually verify the staff flow end-to-end** (not automatable in this plan — do this once by hand)
 
 1. Start the backend: `dotnet run --project src/PingMe.Api`.
 2. Start the staff app: `cd src/pingme-web/staff-app && pnpm dev`.
@@ -1505,11 +1505,13 @@ Expected: PASS — no install errors, both apps' Vitest suites green, both produ
 
 If a real browser isn't available to perform this check (as was the case during Plan 3's equivalent step), perform the curl/SignalR-client-level verification instead (the integration tests in Tasks 4-6 already prove the wire protocol end-to-end) and note explicitly in the completion report that interactive browser verification is still recommended before considering this plan fully closed.
 
-- [ ] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+**Verification note:** no browser tool was available in this session, so this was performed at the wire-protocol level instead: started the real backend, registered a tenant, seeded a menu/product/location/QR code via curl, then connected an actual `@microsoft/signalr` client (Node, using the same package `staff-app` depends on) over a real WebSocket to `/hubs/orders` with the Owner's JWT. Placed a customer order via `POST /orders` and confirmed `OrderReceived` arrived on the live connection with the correct order id/status/items within ~2 seconds. Transitioned the order via `PUT /admin/orders/{id}/status` twice (`Accepted`, then `Preparing`) and confirmed `OrderStatusChanged` arrived live both times with the correct updated status. This proves the actual SignalR wire protocol end-to-end (not just the backend-only integration tests), but does **not** confirm the React UI's rendering/click-through (button disappearing at `Delivered`, live DOM updates) — an interactive browser check is still recommended before treating the staff dashboard as fully verified.
+
+- [x] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the table to add this plan's row (`4 | SignalR + Staff dashboard + Deployment | ... | Done, reviewed | 14 / 14`), replacing the `*(not yet written)*` placeholder. Also add a new carried-forward item: **"Docker Compose covers API + Postgres only — customer-app and staff-app are not containerized and still require `pnpm dev`. No CI pipeline or cloud deployment target exists yet."**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "Docs/superpowers optimized/plans/PROGRESS.md"

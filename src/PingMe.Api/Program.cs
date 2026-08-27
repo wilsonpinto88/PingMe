@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PingMe.Api.Middleware;
+using PingMe.Api.Realtime;
+using PingMe.Application.Ordering;
 using PingMe.Application.Tenants;
 using PingMe.Infrastructure.Identity;
 using PingMe.Infrastructure.Persistence;
@@ -72,9 +74,36 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
             ValidateLifetime = true,
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    context.HttpContext.Request.Path.StartsWithSegments("/hubs/orders"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddSignalR();
+builder.Services.AddScoped<IOrderNotifier, SignalROrderNotifier>();
+
+const string FrontendDevCorsPolicy = "FrontendDevCorsPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(FrontendDevCorsPolicy, policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -98,10 +127,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(FrontendDevCorsPolicy);
 app.UseAuthentication();
 app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<OrdersHub>("/hubs/orders");
 app.Run();
 
 public partial class Program

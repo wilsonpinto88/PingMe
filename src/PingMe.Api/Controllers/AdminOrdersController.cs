@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Api.Contracts.Ordering;
+using PingMe.Application.Ordering;
 using PingMe.Domain.Ordering;
 using PingMe.Infrastructure.Persistence;
 
@@ -13,10 +14,12 @@ using PingMe.Infrastructure.Persistence;
 public class AdminOrdersController : ControllerBase
 {
     private readonly PingMeDbContext _dbContext;
+    private readonly IOrderNotifier _orderNotifier;
 
-    public AdminOrdersController(PingMeDbContext dbContext)
+    public AdminOrdersController(PingMeDbContext dbContext, IOrderNotifier orderNotifier)
     {
         _dbContext = dbContext;
+        _orderNotifier = orderNotifier;
     }
 
     [HttpGet]
@@ -46,7 +49,7 @@ public class AdminOrdersController : ControllerBase
             return BadRequest($"'{request.Status}' is not a valid order status.");
         }
 
-        var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        var order = await _dbContext.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
         if (order is null)
         {
             return NotFound();
@@ -62,6 +65,14 @@ public class AdminOrdersController : ControllerBase
         }
 
         await _dbContext.SaveChangesAsync();
+
+        var orderDto = new AdminOrderDto(
+            order.Id,
+            order.Status.ToString(),
+            order.CreatedAt,
+            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList());
+        await _orderNotifier.NotifyOrderStatusChangedAsync(order.TenantId, orderDto);
+
         return NoContent();
     }
 }
