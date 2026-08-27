@@ -87,4 +87,31 @@ public class RealtimeOrderNotificationTests : IClassFixture<PingMeWebApplication
         Assert.Single(broadcast.Items);
         Assert.Equal(2, broadcast.Items[0].Quantity);
     }
+
+    [Fact]
+    public async Task Updating_order_status_broadcasts_OrderStatusChanged_to_the_owning_tenants_staff()
+    {
+        var seeded = await SeedTenantWithOneOrderableProductAsync("Venue B");
+        var customerClient = _factory.CreateClient();
+        var resolved = await (await customerClient.GetAsync($"/p/{seeded.QrCode}"))
+            .Content.ReadFromJsonAsync<ResolveQrCodeResponse>();
+        var order = await (await customerClient.PostAsJsonAsync("/orders",
+                new CreateOrderRequest(resolved!.SessionId, new List<CreateOrderItemRequest> { new(seeded.Product.Id, 1) })))
+            .Content.ReadFromJsonAsync<CreateOrderResponse>();
+
+        await using var staffConnection = BuildHubConnection(seeded.Token);
+        var received = new TaskCompletionSource<AdminOrderDto>();
+        staffConnection.On<AdminOrderDto>("OrderStatusChanged", updated => received.TrySetResult(updated));
+        await staffConnection.StartAsync();
+
+        await seeded.OwnerClient.PutAsJsonAsync(
+            $"/admin/orders/{order!.OrderId}/status", new UpdateOrderStatusRequest("Accepted"));
+
+        var completed = await Task.WhenAny(received.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+        Assert.Same(received.Task, completed);
+        var broadcast = await received.Task;
+        Assert.Equal(order.OrderId, broadcast.Id);
+        Assert.Equal("Accepted", broadcast.Status);
+        Assert.Single(broadcast.Items);
+    }
 }
