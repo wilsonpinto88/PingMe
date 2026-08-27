@@ -495,7 +495,7 @@ git commit -m "Add SignalROrderNotifier with tenant-group broadcast isolation te
 
 **Does NOT cover:** the `OrderStatusChanged` broadcast on admin status transitions — that's Task 6, added to the same test file.
 
-- [ ] **Step 1: Write a failing test**
+- [x] **Step 1: Write a failing test**
 
 `tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs`:
 ```csharp
@@ -591,12 +591,12 @@ public class RealtimeOrderNotificationTests : IClassFixture<PingMeWebApplication
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Placing_an_order_broadcasts_OrderReceived"`
 Expected: FAIL — times out waiting on `received.Task` (no broadcast is ever sent from `OrdersController.Create` yet).
 
-- [ ] **Step 3: Wire the notifier into `OrdersController`**
+- [x] **Step 3: Wire the notifier into `OrdersController`**
 
 In `src/PingMe.Api/Controllers/OrdersController.cs`, add the using:
 ```csharp
@@ -639,17 +639,17 @@ to:
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~Placing_an_order_broadcasts_OrderReceived"`
 Expected: PASS.
 
-- [ ] **Step 5: Run the full backend test suite**
+- [x] **Step 5: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 43 tests green.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/OrdersController.cs tests/PingMe.IntegrationTests/Api/RealtimeOrderNotificationTests.cs
