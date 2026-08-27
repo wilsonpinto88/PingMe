@@ -100,7 +100,7 @@ git commit -m "Move AdminOrderDto/AdminOrderItemDto into PingMe.Application.Orde
 
 **Does NOT cover:** any implementation of this interface (Task 4) or wiring callers (Tasks 5, 6) — this task only adds the seam.
 
-- [ ] **Step 1: Create the interface**
+- [x] **Step 1: Create the interface**
 
 ```csharp
 namespace PingMe.Application.Ordering;
@@ -112,12 +112,12 @@ public interface IOrderNotifier
 }
 ```
 
-- [ ] **Step 2: Build**
+- [x] **Step 2: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors (this interface has no implementers yet, which is fine; nothing references it).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/PingMe.Application/Ordering/IOrderNotifier.cs
