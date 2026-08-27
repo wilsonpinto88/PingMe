@@ -135,7 +135,7 @@ git commit -m "Add IOrderNotifier interface"
 
 **Does NOT cover:** actually broadcasting any order events (Tasks 5, 6) or the `IOrderNotifier` implementation (Task 4) — this task only stands up the hub route and its auth gate.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/OrdersHubAuthTests.cs`:
 ```csharp
@@ -184,12 +184,12 @@ public class OrdersHubAuthTests : IClassFixture<PingMeWebApplicationFactory>
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrdersHubAuthTests"`
 Expected: FAIL — both requests 404 (route `/hubs/orders` doesn't exist yet).
 
-- [ ] **Step 3: Create the hub**
+- [x] **Step 3: Create the hub**
 
 `src/PingMe.Api/Realtime/OrdersHub.cs`:
 ```csharp
@@ -214,7 +214,7 @@ public class OrdersHub : Hub
 }
 ```
 
-- [ ] **Step 4: Wire SignalR into `Program.cs`**
+- [x] **Step 4: Wire SignalR into `Program.cs`**
 
 Add the `using`:
 ```csharp
@@ -261,17 +261,17 @@ Add the hub route mapping right after `app.MapControllers();`:
 app.MapHub<OrdersHub>("/hubs/orders");
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrdersHubAuthTests"`
 Expected: PASS — both facts green.
 
-- [ ] **Step 6: Run the full backend test suite**
+- [x] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 40 tests green (38 existing + 2 new).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Api/Realtime/OrdersHub.cs src/PingMe.Api/Program.cs tests/PingMe.IntegrationTests/Api/OrdersHubAuthTests.cs
