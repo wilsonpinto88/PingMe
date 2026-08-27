@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PingMe.Api.Middleware;
 using PingMe.Api.Realtime;
+using PingMe.Application.Ordering;
 using PingMe.Application.Tenants;
 using PingMe.Infrastructure.Identity;
 using PingMe.Infrastructure.Persistence;
@@ -91,6 +92,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IOrderNotifier, SignalROrderNotifier>();
 
 var app = builder.Build();
 
