@@ -981,7 +981,7 @@ git commit -m "Scaffold staff-app: pnpm workspace, Vite + React + TypeScript"
 
 **Does NOT cover:** the SignalR connection wrapper (Task 10) or any UI (Tasks 11-12).
 
-- [ ] **Step 1: Create `types.ts`**
+- [x] **Step 1: Create `types.ts`**
 
 `src/pingme-web/staff-app/src/types.ts` (mirrors the backend's `AuthResponse`, `AdminOrderDto`/`AdminOrderItemDto` exactly — camelCase per ASP.NET Core's default JSON serialization):
 ```ts
@@ -1003,7 +1003,7 @@ export interface AdminOrderDto {
 }
 ```
 
-- [ ] **Step 2: Create `api.ts`**
+- [x] **Step 2: Create `api.ts`**
 
 `src/pingme-web/staff-app/src/api.ts`:
 ```ts
@@ -1052,7 +1052,7 @@ export async function updateOrderStatus(
 }
 ```
 
-- [ ] **Step 3: Type-check**
+- [x] **Step 3: Type-check**
 
 Run:
 ```bash
@@ -1061,7 +1061,7 @@ pnpm exec tsc -b
 ```
 Expected: FAILS only on the still-missing `./App` import in `main.tsx` (`TS2307: Cannot find module './App'`) — this is the same expected, deliberate gap as Plan 3's `customer-app` scaffold task, closed in Task 12. No error should reference `types.ts` or `api.ts`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/types.ts src/pingme-web/staff-app/src/api.ts
