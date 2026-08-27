@@ -1165,7 +1165,7 @@ git commit -m "Add order-list upsert logic with unit tests"
 
 **Does NOT cover:** any UI wiring (Task 12) — this is a thin, testable-by-inspection wrapper around `@microsoft/signalr`'s `HubConnectionBuilder`.
 
-- [ ] **Step 1: Create `signalr.ts`**
+- [x] **Step 1: Create `signalr.ts`**
 
 `src/pingme-web/staff-app/src/signalr.ts`:
 ```ts
@@ -1184,7 +1184,7 @@ export async function connectOrdersHub(token: string): Promise<HubConnection> {
 }
 ```
 
-- [ ] **Step 2: Type-check**
+- [x] **Step 2: Type-check**
 
 Run:
 ```bash
@@ -1193,7 +1193,7 @@ pnpm exec tsc -b
 ```
 Expected: FAILS only on the still-missing `./App` import in `main.tsx`, same as Task 8's step 3 — no error referencing `signalr.ts`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/pingme-web/staff-app/src/signalr.ts
