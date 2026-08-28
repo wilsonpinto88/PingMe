@@ -8,7 +8,7 @@ Cross-plan tracker. Each plan file owns its own task checkboxes (`- [ ]`) — th
 | 2 | Auth + Catalog/Admin | [2026-08-25-pingme-plan-2-auth-catalog-admin.md](2026-08-25-pingme-plan-2-auth-catalog-admin.md) | Done, reviewed — merged to main | 13 / 13 |
 | 3 | Locations/QR + Customer app + Ordering | [2026-08-26-pingme-plan-3-locations-qr-customer-ordering.md](2026-08-26-pingme-plan-3-locations-qr-customer-ordering.md) | Done, reviewed | 17 / 17 |
 | 4 | SignalR + Staff dashboard + Deployment | [2026-08-26-pingme-plan-4-signalr-staff-deployment.md](2026-08-26-pingme-plan-4-signalr-staff-deployment.md) | Done, reviewed | 14 / 14 |
-| 5 | POS/ERP Integration (Level 1 order-push MVP) | [2026-08-27-pingme-plan-5-pos-integration.md](2026-08-27-pingme-plan-5-pos-integration.md) | In progress | 6 / 10 |
+| 5 | POS/ERP Integration (Level 1 order-push MVP) | [2026-08-27-pingme-plan-5-pos-integration.md](2026-08-27-pingme-plan-5-pos-integration.md) | In progress | 7 / 10 |
 
 **Status values:** `Not started` → `Written, not started` → `In progress` → `Done, reviewed`.
 

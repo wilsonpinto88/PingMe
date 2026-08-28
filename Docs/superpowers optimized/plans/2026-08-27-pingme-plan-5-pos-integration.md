@@ -751,7 +751,7 @@ git commit -m "Implement PosIntegrationResolver and PosOrderDispatcher"
 
 **Does NOT cover:** any controller (Task 8) — this task only registers services so they're resolvable.
 
-- [ ] **Step 1: Add the usings**
+- [x] **Step 1: Add the usings**
 
 In `src/PingMe.Api/Program.cs`, add:
 ```csharp
@@ -759,7 +759,7 @@ using PingMe.Application.Integrations;
 using PingMe.Infrastructure.Integrations;
 ```
 
-- [ ] **Step 2: Register the named `HttpClient` and the two services**
+- [x] **Step 2: Register the named `HttpClient` and the two services**
 
 Add this block right after the existing `builder.Services.AddScoped<IOrderNotifier, SignalROrderNotifier>();` line:
 ```csharp
@@ -773,17 +773,17 @@ builder.Services.AddScoped<IPosOrderDispatcher, PosOrderDispatcher>();
 
 The 5-second timeout matters here specifically because POS dispatch happens inline during `POST /orders` (Task 9) — without a bound, an unresponsive POS endpoint could hang a customer's order request indefinitely. `PosOrderDispatcher`'s try/catch (Task 6) already turns a `TaskCanceledException` from this timeout into a `Failed` status, same as any other dispatch failure.
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors.
 
-- [ ] **Step 4: Run the full backend test suite**
+- [x] **Step 4: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 51 tests green (no behavior change yet for existing tests; this task only adds registrations nothing calls yet).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Api/Program.cs
