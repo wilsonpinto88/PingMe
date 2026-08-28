@@ -3,6 +3,7 @@ namespace PingMe.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PingMe.Api.Contracts.Ordering;
 using PingMe.Application.Integrations;
 using PingMe.Application.Ordering;
@@ -20,17 +21,20 @@ public class OrdersController : ControllerBase
     private readonly CurrentTenantProvider _currentTenantProvider;
     private readonly IOrderNotifier _orderNotifier;
     private readonly IPosOrderDispatcher _posOrderDispatcher;
+    private readonly ILogger<OrdersController> _logger;
 
     public OrdersController(
         PingMeDbContext dbContext,
         CurrentTenantProvider currentTenantProvider,
         IOrderNotifier orderNotifier,
-        IPosOrderDispatcher posOrderDispatcher)
+        IPosOrderDispatcher posOrderDispatcher,
+        ILogger<OrdersController> logger)
     {
         _dbContext = dbContext;
         _currentTenantProvider = currentTenantProvider;
         _orderNotifier = orderNotifier;
         _posOrderDispatcher = posOrderDispatcher;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -94,11 +98,22 @@ public class OrdersController : ControllerBase
             order.PosDeliveryStatus.ToString());
         await _orderNotifier.NotifyOrderReceivedAsync(order.TenantId, orderDto);
 
-        var sessionLocation = await _dbContext.Locations.FirstOrDefaultAsync(l => l.Id == session.LocationId);
-        var locationLabel = sessionLocation?.Name ?? "Unknown location";
-        var posDeliveryStatus = await _posOrderDispatcher.TryDispatchAsync(order, locationLabel, HttpContext.RequestAborted);
-        order.RecordPosDeliveryStatus(posDeliveryStatus);
-        await _dbContext.SaveChangesAsync();
+        try
+        {
+            var sessionLocation = await _dbContext.Locations.FirstOrDefaultAsync(l => l.Id == session.LocationId);
+            var locationLabel = sessionLocation?.Name ?? "Unknown location";
+            var posDeliveryStatus = await _posOrderDispatcher.TryDispatchAsync(order, locationLabel, HttpContext.RequestAborted);
+            order.RecordPosDeliveryStatus(posDeliveryStatus);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // The order itself is already committed above — a failure here (location lookup,
+            // or persisting the POS status) must never turn a successful order into an HTTP
+            // error for the customer. Worst case, PosDeliveryStatus stays at its NotConfigured
+            // default and staff can complete the POS entry manually.
+            _logger.LogWarning(ex, "Failed to record POS delivery status for order {OrderId}", order.Id);
+        }
 
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
     }
