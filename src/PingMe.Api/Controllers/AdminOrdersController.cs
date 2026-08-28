@@ -35,7 +35,8 @@ public class AdminOrdersController : ControllerBase
                 o.Id,
                 o.Status.ToString(),
                 o.CreatedAt,
-                o.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList()))
+                o.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList(),
+                o.PosDeliveryStatus.ToString()))
             .ToList();
 
         return Ok(result);
@@ -70,7 +71,8 @@ public class AdminOrdersController : ControllerBase
             order.Id,
             order.Status.ToString(),
             order.CreatedAt,
-            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList());
+            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList(),
+            order.PosDeliveryStatus.ToString());
         await _orderNotifier.NotifyOrderStatusChangedAsync(order.TenantId, orderDto);
 
         return NoContent();

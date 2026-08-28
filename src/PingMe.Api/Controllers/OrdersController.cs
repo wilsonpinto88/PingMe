@@ -82,7 +82,8 @@ public class OrdersController : ControllerBase
             order.Id,
             order.Status.ToString(),
             order.CreatedAt,
-            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList());
+            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList(),
+            order.PosDeliveryStatus.ToString());
         await _orderNotifier.NotifyOrderReceivedAsync(order.TenantId, orderDto);
 
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
