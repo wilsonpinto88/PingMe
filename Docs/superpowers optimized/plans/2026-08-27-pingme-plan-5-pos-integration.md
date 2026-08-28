@@ -347,11 +347,11 @@ git commit -m "Add IPosIntegration, IPosIntegrationResolver, IPosOrderDispatcher
 
 **Deviation from the spec's Section 9 testing strategy (documented):** the spec lists the exact-JSON-shape assertion under `PingMe.IntegrationTests`, implying a live webhook receiver. This plan instead verifies it as a fast `PingMe.UnitTests` test against a stub `HttpMessageHandler` that captures the outgoing request without touching a real socket — this proves the exact same thing (the JSON body `WebhookPosIntegration` sends) without depending on OS-level HTTP-listener behavior, which has no precedent elsewhere in this codebase's test suite.
 
-- [ ] **Step 1: Add a project reference so unit tests can construct `HttpClient`/`HttpMessageHandler`**
+- [x] **Step 1: Add a project reference so unit tests can construct `HttpClient`/`HttpMessageHandler`**
 
 `System.Net.Http` types are part of the base class library (no new package needed) — `PingMe.UnitTests.csproj` doesn't need a new `PackageReference` for this task. Skip this step's file changes; it exists only to confirm no csproj edit is needed here (the csproj edit for Task 6's fakes comes later).
 
-- [ ] **Step 2: Write a failing test**
+- [x] **Step 2: Write a failing test**
 
 `tests/PingMe.UnitTests/Integrations/WebhookPosIntegrationTests.cs`:
 ```csharp
@@ -436,12 +436,12 @@ public class WebhookPosIntegrationTests
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~WebhookPosIntegrationTests"`
 Expected: FAIL to compile — `PingMe.Infrastructure.Integrations.WebhookPosIntegration` doesn't exist yet, and `PingMe.UnitTests` doesn't reference `PingMe.Infrastructure` yet.
 
-- [ ] **Step 4: Add the `PingMe.Infrastructure` project reference to the unit test project**
+- [x] **Step 4: Add the `PingMe.Infrastructure` project reference to the unit test project**
 
 In `tests/PingMe.UnitTests/PingMe.UnitTests.csproj`, change:
 ```xml
@@ -460,7 +460,7 @@ to:
 
 This pulls in EF Core/Npgsql packages transitively (via `PingMe.Infrastructure`), but none of this plan's unit tests open a real database connection — they only construct plain C# objects.
 
-- [ ] **Step 5: Implement `WebhookPosIntegration`**
+- [x] **Step 5: Implement `WebhookPosIntegration`**
 
 `src/PingMe.Infrastructure/Integrations/WebhookPosIntegration.cs`:
 ```csharp
@@ -515,17 +515,17 @@ public class WebhookPosIntegration : IPosIntegration
 
 `JsonSerializerDefaults.Web` sets camelCase property naming — this is what makes the outgoing JSON match the spec's Section 7 contract (`eventId`, `eventType`, `occurredAt`, `tenantId`, `order.id/locationLabel/items[].productId/name/quantity/unitPrice/total`) despite the C# records using PascalCase property names. `eventId` is generated fresh on every call to `SendOrderAsync` — it is not persisted anywhere and exists solely so a future retry/idempotency mechanism (out of scope for this plan) has a stable key to build on without a breaking payload change later.
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~WebhookPosIntegrationTests"`
 Expected: PASS.
 
-- [ ] **Step 7: Run the full backend test suite**
+- [x] **Step 7: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 48 tests green (46 existing + 2 new).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Integrations/WebhookPosIntegration.cs tests/PingMe.UnitTests/Integrations/WebhookPosIntegrationTests.cs tests/PingMe.UnitTests/PingMe.UnitTests.csproj
