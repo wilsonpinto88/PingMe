@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Api.Contracts.Ordering;
+using PingMe.Application.Integrations;
 using PingMe.Application.Ordering;
+using PingMe.Domain.Locations;
 using PingMe.Domain.Ordering;
 using PingMe.Infrastructure.Persistence;
 using PingMe.Infrastructure.Tenants;
@@ -17,12 +19,18 @@ public class OrdersController : ControllerBase
     private readonly PingMeDbContext _dbContext;
     private readonly CurrentTenantProvider _currentTenantProvider;
     private readonly IOrderNotifier _orderNotifier;
+    private readonly IPosOrderDispatcher _posOrderDispatcher;
 
-    public OrdersController(PingMeDbContext dbContext, CurrentTenantProvider currentTenantProvider, IOrderNotifier orderNotifier)
+    public OrdersController(
+        PingMeDbContext dbContext,
+        CurrentTenantProvider currentTenantProvider,
+        IOrderNotifier orderNotifier,
+        IPosOrderDispatcher posOrderDispatcher)
     {
         _dbContext = dbContext;
         _currentTenantProvider = currentTenantProvider;
         _orderNotifier = orderNotifier;
+        _posOrderDispatcher = posOrderDispatcher;
     }
 
     [HttpPost]
@@ -85,6 +93,12 @@ public class OrdersController : ControllerBase
             order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList(),
             order.PosDeliveryStatus.ToString());
         await _orderNotifier.NotifyOrderReceivedAsync(order.TenantId, orderDto);
+
+        var sessionLocation = await _dbContext.Locations.FirstOrDefaultAsync(l => l.Id == session.LocationId);
+        var locationLabel = sessionLocation?.Name ?? "Unknown location";
+        var posDeliveryStatus = await _posOrderDispatcher.TryDispatchAsync(order, locationLabel, HttpContext.RequestAborted);
+        order.RecordPosDeliveryStatus(posDeliveryStatus);
+        await _dbContext.SaveChangesAsync();
 
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
     }
