@@ -6,9 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PingMe.Api.Middleware;
 using PingMe.Api.Realtime;
+using PingMe.Application.Integrations;
 using PingMe.Application.Ordering;
 using PingMe.Application.Tenants;
 using PingMe.Infrastructure.Identity;
+using PingMe.Infrastructure.Integrations;
 using PingMe.Infrastructure.Persistence;
 using PingMe.Infrastructure.Tenants;
 
@@ -93,6 +95,12 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
 builder.Services.AddScoped<IOrderNotifier, SignalROrderNotifier>();
+builder.Services.AddHttpClient(nameof(WebhookPosIntegration), client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(5);
+});
+builder.Services.AddScoped<IPosIntegrationResolver, PosIntegrationResolver>();
+builder.Services.AddScoped<IPosOrderDispatcher, PosOrderDispatcher>();
 
 const string FrontendDevCorsPolicy = "FrontendDevCorsPolicy";
 builder.Services.AddCors(options =>
