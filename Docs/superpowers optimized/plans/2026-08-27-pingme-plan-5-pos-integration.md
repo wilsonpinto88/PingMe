@@ -1039,7 +1039,7 @@ git commit -m "Add PosIntegrationSettingsController: GET/PUT /admin/pos-integrat
 
 **Does NOT cover:** re-broadcasting an `OrderStatusChanged` SignalR event after the POS status is recorded — the existing `OrderReceived` broadcast (built before dispatch runs) already fired with `PosDeliveryStatus = NotConfigured`; this plan does not add a second broadcast for the POS outcome. Staff can only see the final `PosDeliveryStatus` by re-fetching `GET /admin/orders`.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/PosDispatchOnOrderCreationTests.cs`:
 ```csharp
@@ -1158,12 +1158,12 @@ public class PosDispatchOnOrderCreationTests : IClassFixture<PingMeWebApplicatio
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosDispatchOnOrderCreationTests"`
 Expected: FAIL — `AdminOrderDto.PosDeliveryStatus` is always `"NotConfigured"` for every order today (correct for the first and third tests, but only by coincidence since dispatch never runs) and the second test fails because a webhook was configured but nothing ever calls it, so `PosDeliveryStatus` stays `"NotConfigured"` instead of the expected `"Failed"`.
 
-- [ ] **Step 3: Wire the dispatcher into `OrdersController`**
+- [x] **Step 3: Wire the dispatcher into `OrdersController`**
 
 In `src/PingMe.Api/Controllers/OrdersController.cs`, add the usings:
 ```csharp
@@ -1224,17 +1224,17 @@ to:
 
 This reuses `session` (the `CustomerSession` already loaded at the top of `Create`) to resolve the location cheaply, matching the parameter shape locked in by Task 4's `IPosOrderDispatcher.TryDispatchAsync(order, locationLabel, cancellationToken)`.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosDispatchOnOrderCreationTests"`
 Expected: PASS — all 3 facts green.
 
-- [ ] **Step 5: Run the full backend test suite**
+- [x] **Step 5: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 60 tests green (57 existing + 3 new).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/OrdersController.cs tests/PingMe.IntegrationTests/Api/PosDispatchOnOrderCreationTests.cs
