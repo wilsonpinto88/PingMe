@@ -37,9 +37,16 @@ public class PosIntegrationSettingsController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<PosIntegrationSettingsDto>> Upsert(UpsertPosIntegrationSettingsRequest request)
     {
-        if (!Enum.TryParse<ProviderType>(request.ProviderType, out var providerType))
+        if (!Enum.TryParse<ProviderType>(request.ProviderType, out var providerType) ||
+            !Enum.IsDefined(providerType))
         {
             return BadRequest($"'{request.ProviderType}' is not a valid provider type.");
+        }
+
+        if (!Uri.TryCreate(request.WebhookUrl, UriKind.Absolute, out var webhookUri) ||
+            (webhookUri.Scheme is not "http" and not "https"))
+        {
+            return BadRequest($"'{request.WebhookUrl}' is not a valid absolute http/https URL.");
         }
 
         var settings = await _dbContext.TenantPosIntegrationSettings.FirstOrDefaultAsync();

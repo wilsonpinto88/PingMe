@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using PingMe.Api.Contracts.Ordering;
 using PingMe.Application.Integrations;
 using PingMe.Application.Ordering;
-using PingMe.Domain.Locations;
 using PingMe.Domain.Ordering;
 using PingMe.Infrastructure.Persistence;
 using PingMe.Infrastructure.Tenants;
@@ -102,7 +101,10 @@ public class OrdersController : ControllerBase
         {
             var sessionLocation = await _dbContext.Locations.FirstOrDefaultAsync(l => l.Id == session.LocationId);
             var locationLabel = sessionLocation?.Name ?? "Unknown location";
-            var posDeliveryStatus = await _posOrderDispatcher.TryDispatchAsync(order, locationLabel, HttpContext.RequestAborted);
+            // Deliberately not HttpContext.RequestAborted: the order is already committed above,
+            // so a customer disconnecting mid-request must not cancel POS delivery and record a
+            // false Failed. The dispatcher's own HttpClient.Timeout (Program.cs) already bounds this.
+            var posDeliveryStatus = await _posOrderDispatcher.TryDispatchAsync(order, locationLabel, CancellationToken.None);
             order.RecordPosDeliveryStatus(posDeliveryStatus);
             await _dbContext.SaveChangesAsync();
         }

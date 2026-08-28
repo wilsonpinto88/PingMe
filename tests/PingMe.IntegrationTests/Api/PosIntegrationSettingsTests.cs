@@ -95,6 +95,28 @@ public class PosIntegrationSettingsTests : IClassFixture<PingMeWebApplicationFac
     }
 
     [Fact]
+    public async Task Upserting_with_an_undefined_numeric_provider_type_returns_400()
+    {
+        var owner = await RegisterOwnerAsync("Venue D2");
+
+        var response = await owner.PutAsJsonAsync("/admin/pos-integration",
+            new UpsertPosIntegrationSettingsRequest("7", "http://example.invalid/webhook", true));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Upserting_with_a_malformed_webhook_url_returns_400()
+    {
+        var owner = await RegisterOwnerAsync("Venue D3");
+
+        var response = await owner.PutAsJsonAsync("/admin/pos-integration",
+            new UpsertPosIntegrationSettingsRequest("Webhook", "not-a-url", true));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task TenantA_cannot_see_TenantBs_pos_integration_settings()
     {
         var ownerA = await RegisterOwnerAsync("Venue E");
@@ -111,5 +133,24 @@ public class PosIntegrationSettingsTests : IClassFixture<PingMeWebApplicationFac
             await client.PutAsJsonAsync("/admin/pos-integration",
                 new UpsertPosIntegrationSettingsRequest("Webhook", "http://example.invalid/tenant-b", true));
         }
+    }
+
+    [Fact]
+    public async Task TenantA_cannot_modify_TenantBs_pos_integration_settings()
+    {
+        var ownerA = await RegisterOwnerAsync("Venue G");
+        var ownerB = await RegisterOwnerAsync("Venue H");
+
+        await ownerB.PutAsJsonAsync("/admin/pos-integration",
+            new UpsertPosIntegrationSettingsRequest("Webhook", "http://example.invalid/tenant-b-original", true));
+
+        await ownerA.PutAsJsonAsync("/admin/pos-integration",
+            new UpsertPosIntegrationSettingsRequest("Webhook", "http://example.invalid/tenant-a-attempt", false));
+
+        var tenantBSettings = await (await ownerB.GetAsync("/admin/pos-integration"))
+            .Content.ReadFromJsonAsync<PosIntegrationSettingsDto>();
+
+        Assert.Equal("http://example.invalid/tenant-b-original", tenantBSettings!.WebhookUrl);
+        Assert.True(tenantBSettings.IsEnabled);
     }
 }
