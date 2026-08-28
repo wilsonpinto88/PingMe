@@ -228,7 +228,7 @@ git commit -m "Add TenantPosIntegrationSettings entity and ProviderType enum"
 
 **Does NOT cover:** any controller reading/writing this table (Task 8).
 
-- [ ] **Step 1: Add the DbSet and unique index**
+- [x] **Step 1: Add the DbSet and unique index**
 
 In `src/PingMe.Infrastructure/Persistence/PingMeDbContext.cs`, add the using:
 ```csharp
@@ -249,17 +249,17 @@ Add the unique index in `OnModelCreating`, after the existing `QrCode.Code` uniq
 
 Note: the automatic `ApplyTenantFilter<TEntity>` loop later in the same method also calls `HasIndex(e => e.TenantId)` (non-unique) for every `ITenantOwned` entity, including this one. EF Core's fluent API resolves multiple `HasIndex` calls on the same property set to the same underlying index — since only this explicit call sets `.IsUnique()`, the resulting index stays unique regardless of the loop also touching it. This mirrors how `QrCode.Code`'s explicit unique index coexists with the same loop.
 
-- [ ] **Step 2: Generate the migration**
+- [x] **Step 2: Generate the migration**
 
 Run: `dotnet ef migrations add AddTenantPosIntegrationSettings --project src/PingMe.Infrastructure --startup-project src/PingMe.Api`
 Expected: succeeds, creating a new migration file that adds the `TenantPosIntegrationSettings` table with a unique index on `TenantId`.
 
-- [ ] **Step 3: Build and run the full backend test suite**
+- [x] **Step 3: Build and run the full backend test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 46 tests green (the integration test factory runs `Database.Migrate()` against `pingme_test`, so the new migration is exercised automatically).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Persistence/PingMeDbContext.cs src/PingMe.Infrastructure/Persistence/Migrations/
