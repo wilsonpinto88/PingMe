@@ -156,7 +156,7 @@ git commit -m "Add Order.PosDeliveryStatus and expose it on AdminOrderDto"
 
 **Does NOT cover:** EF Core mapping/migration (Task 3) or any controller (Task 8) — this task only adds the domain entity.
 
-- [ ] **Step 1: Create the `ProviderType` enum**
+- [x] **Step 1: Create the `ProviderType` enum**
 
 `src/PingMe.Domain/Integrations/ProviderType.cs`:
 ```csharp
@@ -170,7 +170,7 @@ public enum ProviderType
 
 `ProviderType` represents provider *identity* (which POS), not transport — future values like `ZoneSoft`/`Primavera`/`WinRest` slot in here later without restructuring, per the spec's explicit design goal.
 
-- [ ] **Step 2: Create the `TenantPosIntegrationSettings` entity**
+- [x] **Step 2: Create the `TenantPosIntegrationSettings` entity**
 
 `src/PingMe.Domain/Integrations/TenantPosIntegrationSettings.cs`:
 ```csharp
@@ -206,12 +206,12 @@ public class TenantPosIntegrationSettings : Entity, ITenantOwned
 
 This follows the same `Entity`/`ITenantOwned`, private-setter-plus-explicit-method pattern as `Order`, `Location`, and `QrCode`.
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors (no consumers yet; nothing references these new types outside `PingMe.Domain`).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Domain/Integrations/ProviderType.cs src/PingMe.Domain/Integrations/TenantPosIntegrationSettings.cs
