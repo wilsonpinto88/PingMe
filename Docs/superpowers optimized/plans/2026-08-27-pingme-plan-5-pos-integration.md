@@ -279,7 +279,7 @@ git commit -m "Map TenantPosIntegrationSettings with a per-tenant unique index"
 
 **Deviation from the spec's Section 3 interface sketch (documented, not silent):** the spec shows `IPosOrderDispatcher.TryDispatchAsync(Order order, CancellationToken cancellationToken)` with no `locationLabel` parameter, implying the dispatcher itself would re-derive the location from `order.CustomerSessionId` via a `CustomerSession`/`Location` lookup. That would force `PosOrderDispatcher` (Task 6) to depend on `PingMeDbContext` directly, which breaks the spec's own stated unit-testing strategy (Section 9: pure `NotConfigured`/`Failed`/`Sent` control-flow tests, no database). Instead, `TryDispatchAsync` takes `locationLabel` as a parameter — the caller (`OrdersController.Create`, Task 9) already has the location resolved cheaply from its own in-scope `session`/`Location` lookup, so no extra query is needed either way, and `PosOrderDispatcher` becomes fully unit-testable with hand-written fakes and zero EF dependency.
 
-- [ ] **Step 1: Create `IPosIntegration`**
+- [x] **Step 1: Create `IPosIntegration`**
 
 `src/PingMe.Application/Integrations/IPosIntegration.cs`:
 ```csharp
@@ -293,7 +293,7 @@ public interface IPosIntegration
 }
 ```
 
-- [ ] **Step 2: Create `IPosIntegrationResolver`**
+- [x] **Step 2: Create `IPosIntegrationResolver`**
 
 `src/PingMe.Application/Integrations/IPosIntegrationResolver.cs`:
 ```csharp
@@ -307,7 +307,7 @@ public interface IPosIntegrationResolver
 
 Returns `null` when the tenant has no settings row, or `IsEnabled` is `false` — the caller treats a `null` result as `NotConfigured`.
 
-- [ ] **Step 3: Create `IPosOrderDispatcher`**
+- [x] **Step 3: Create `IPosOrderDispatcher`**
 
 `src/PingMe.Application/Integrations/IPosOrderDispatcher.cs`:
 ```csharp
@@ -322,12 +322,12 @@ public interface IPosOrderDispatcher
 }
 ```
 
-- [ ] **Step 4: Build**
+- [x] **Step 4: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Application/Integrations/IPosIntegration.cs src/PingMe.Application/Integrations/IPosIntegrationResolver.cs src/PingMe.Application/Integrations/IPosOrderDispatcher.cs
