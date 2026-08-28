@@ -29,7 +29,7 @@
 
 **Does NOT cover:** any actual POS dispatch logic (Tasks 4-6) or wiring the dispatcher into `OrdersController` (Task 9) — this task only adds the field, the DTO shape, and keeps existing DTO-construction call sites compiling with a `NotConfigured` default.
 
-- [ ] **Step 1: Write a failing test**
+- [x] **Step 1: Write a failing test**
 
 Add this fact to `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs` (inside the existing `OrderTransitionTests` class, alongside the existing facts — do not remove any):
 
@@ -55,12 +55,12 @@ Add this fact to `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs` (insi
 
 Add `using PingMe.Domain.Integrations;` to the top of `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs` (alongside the existing `using PingMe.Domain.Ordering;`).
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderTransitionTests"`
 Expected: FAIL to compile — `PingMe.Domain.Integrations` namespace and `Order.PosDeliveryStatus`/`RecordPosDeliveryStatus` don't exist yet.
 
-- [ ] **Step 3: Create the `PosDeliveryStatus` enum**
+- [x] **Step 3: Create the `PosDeliveryStatus` enum**
 
 `src/PingMe.Domain/Integrations/PosDeliveryStatus.cs`:
 ```csharp
@@ -77,7 +77,7 @@ public enum PosDeliveryStatus
 
 `Pending` is intentionally unused by this plan — reserved for a future async/queued dispatch mechanism (spec Non-Goals) so that value doesn't need a breaking enum change later.
 
-- [ ] **Step 4: Add the field and method to `Order`**
+- [x] **Step 4: Add the field and method to `Order`**
 
 In `src/PingMe.Domain/Ordering/Order.cs`, add the using:
 ```csharp
@@ -97,12 +97,12 @@ public void RecordPosDeliveryStatus(PosDeliveryStatus status)
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderTransitionTests"`
 Expected: PASS — all 6 facts in the file green (4 existing + 2 new).
 
-- [ ] **Step 6: Extend `AdminOrderDto` and update its two existing construction call sites**
+- [x] **Step 6: Extend `AdminOrderDto` and update its two existing construction call sites**
 
 In `src/PingMe.Application/Ordering/AdminOrderDto.cs`, change:
 ```csharp
@@ -134,12 +134,12 @@ to:
 
 In `src/PingMe.Api/Controllers/AdminOrdersController.cs`, update **both** `AdminOrderDto` construction call sites (`GetOrders`'s projection and `UpdateStatus`'s `orderDto` build) the same way, appending `o.PosDeliveryStatus.ToString()` / `order.PosDeliveryStatus.ToString()` as the fifth constructor argument respectively.
 
-- [ ] **Step 7: Run the full backend build and test suite**
+- [x] **Step 7: Run the full backend build and test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 46 tests green (44 existing + 2 new).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Domain/Integrations/PosDeliveryStatus.cs src/PingMe.Domain/Ordering/Order.cs src/PingMe.Application/Ordering/AdminOrderDto.cs src/PingMe.Api/Controllers/OrdersController.cs src/PingMe.Api/Controllers/AdminOrdersController.cs tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs
