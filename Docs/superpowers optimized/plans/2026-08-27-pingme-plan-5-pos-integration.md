@@ -543,7 +543,7 @@ git commit -m "Add WebhookPosIntegration with a payload-shape unit test"
 
 **Does NOT cover:** DI registration (Task 7) or the `HttpClient` factory setup for `WebhookPosIntegration` instances (also Task 7) — this task only implements the two classes.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.UnitTests/Integrations/PosOrderDispatcherTests.cs`:
 ```csharp
@@ -630,12 +630,12 @@ public class PosOrderDispatcherTests
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosOrderDispatcherTests"`
 Expected: FAIL to compile — `PosOrderDispatcher` doesn't exist yet.
 
-- [ ] **Step 3: Implement `PosIntegrationResolver`**
+- [x] **Step 3: Implement `PosIntegrationResolver`**
 
 `src/PingMe.Infrastructure/Integrations/PosIntegrationResolver.cs`:
 ```csharp
@@ -681,7 +681,7 @@ public class PosIntegrationResolver : IPosIntegrationResolver
 
 `FirstOrDefaultAsync(s => s.TenantId == tenantId, ...)` relies on the caller (`OrdersController.Create`, Task 9) having already set `_currentTenantProvider.TenantId = session.TenantId` before dispatch runs — the global tenant query filter already scopes this query correctly, and the explicit `TenantId` predicate is redundant-but-safe defense-in-depth, matching the pattern already used in `OrdersController.GetStatus`.
 
-- [ ] **Step 4: Implement `PosOrderDispatcher`**
+- [x] **Step 4: Implement `PosOrderDispatcher`**
 
 `src/PingMe.Infrastructure/Integrations/PosOrderDispatcher.cs`:
 ```csharp
@@ -725,17 +725,17 @@ public class PosOrderDispatcher : IPosOrderDispatcher
 }
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosOrderDispatcherTests"`
 Expected: PASS — all 3 facts green.
 
-- [ ] **Step 6: Run the full backend test suite**
+- [x] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 51 tests green (48 existing + 3 new).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Integrations/PosIntegrationResolver.cs src/PingMe.Infrastructure/Integrations/PosOrderDispatcher.cs tests/PingMe.UnitTests/Integrations/PosOrderDispatcherTests.cs
