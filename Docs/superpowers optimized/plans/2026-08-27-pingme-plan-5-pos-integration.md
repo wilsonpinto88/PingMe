@@ -398,15 +398,40 @@ public class WebhookPosIntegrationTests
 
         using var payload = JsonDocument.Parse(handler.CapturedBody!);
         var root = payload.RootElement;
-        Assert.Equal(order.Id, root.GetProperty("orderId").GetGuid());
-        Assert.Equal("Table 12", root.GetProperty("locationLabel").GetString());
-        Assert.Equal(27.00m, root.GetProperty("total").GetDecimal());
+        Assert.Equal("order.created", root.GetProperty("eventType").GetString());
+        Assert.NotEqual(Guid.Empty, root.GetProperty("eventId").GetGuid());
+        Assert.True(root.GetProperty("occurredAt").TryGetDateTime(out _));
+        Assert.Equal(order.TenantId, root.GetProperty("tenantId").GetGuid());
 
-        var items = root.GetProperty("items").EnumerateArray().ToList();
+        var orderElement = root.GetProperty("order");
+        Assert.Equal(order.Id, orderElement.GetProperty("id").GetGuid());
+        Assert.Equal("Table 12", orderElement.GetProperty("locationLabel").GetString());
+        Assert.Equal(27.00m, orderElement.GetProperty("total").GetDecimal());
+
+        var items = orderElement.GetProperty("items").EnumerateArray().ToList();
         Assert.Equal(2, items.Count);
         Assert.Equal("Burger", items[0].GetProperty("name").GetString());
         Assert.Equal(2, items[0].GetProperty("quantity").GetInt32());
         Assert.Equal(9.50m, items[0].GetProperty("unitPrice").GetDecimal());
+    }
+
+    [Fact]
+    public async Task Generates_a_distinct_eventId_per_delivery_attempt()
+    {
+        var handler = new CapturingHandler();
+        var httpClient = new HttpClient(handler);
+        var integration = new PingMe.Infrastructure.Integrations.WebhookPosIntegration(
+            "http://example.invalid/webhook", httpClient);
+
+        var order = new Order(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
+
+        await integration.SendOrderAsync(order, "Table 1", CancellationToken.None);
+        var firstEventId = JsonDocument.Parse(handler.CapturedBody!).RootElement.GetProperty("eventId").GetGuid();
+
+        await integration.SendOrderAsync(order, "Table 1", CancellationToken.None);
+        var secondEventId = JsonDocument.Parse(handler.CapturedBody!).RootElement.GetProperty("eventId").GetGuid();
+
+        Assert.NotEqual(firstEventId, secondEventId);
     }
 }
 ```
@@ -461,7 +486,7 @@ public class WebhookPosIntegration : IPosIntegration
 
     public async Task SendOrderAsync(Order order, string locationLabel, CancellationToken cancellationToken)
     {
-        var payload = new WebhookOrderPayload(
+        var orderPayload = new WebhookOrderPayload(
             order.Id,
             locationLabel,
             order.Items
@@ -469,17 +494,26 @@ public class WebhookPosIntegration : IPosIntegration
                 .ToList(),
             order.Items.Sum(i => i.UnitPrice * i.Quantity));
 
-        var response = await _httpClient.PostAsJsonAsync(_webhookUrl, payload, PayloadJsonOptions, cancellationToken);
+        var envelope = new WebhookEventEnvelope(
+            Guid.NewGuid(),
+            "order.created",
+            DateTime.UtcNow,
+            order.TenantId,
+            orderPayload);
+
+        var response = await _httpClient.PostAsJsonAsync(_webhookUrl, envelope, PayloadJsonOptions, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 
-    private record WebhookOrderPayload(Guid OrderId, string LocationLabel, List<WebhookOrderItemPayload> Items, decimal Total);
+    private record WebhookEventEnvelope(Guid EventId, string EventType, DateTime OccurredAt, Guid TenantId, WebhookOrderPayload Order);
+
+    private record WebhookOrderPayload(Guid Id, string LocationLabel, List<WebhookOrderItemPayload> Items, decimal Total);
 
     private record WebhookOrderItemPayload(Guid ProductId, string Name, int Quantity, decimal UnitPrice);
 }
 ```
 
-`JsonSerializerDefaults.Web` sets camelCase property naming — this is what makes the outgoing JSON match the spec's Section 7 contract (`orderId`, `locationLabel`, `items[].productId/name/quantity/unitPrice`, `total`) despite the C# record using PascalCase property names.
+`JsonSerializerDefaults.Web` sets camelCase property naming — this is what makes the outgoing JSON match the spec's Section 7 contract (`eventId`, `eventType`, `occurredAt`, `tenantId`, `order.id/locationLabel/items[].productId/name/quantity/unitPrice/total`) despite the C# records using PascalCase property names. `eventId` is generated fresh on every call to `SendOrderAsync` — it is not persisted anywhere and exists solely so a future retry/idempotency mechanism (out of scope for this plan) has a stable key to build on without a breaking payload change later.
 
 - [ ] **Step 6: Run the test to verify it passes**
 
@@ -489,7 +523,7 @@ Expected: PASS.
 - [ ] **Step 7: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
-Expected: PASS — all 47 tests green (46 existing + 1 new).
+Expected: PASS — all 48 tests green (46 existing + 2 new).
 
 - [ ] **Step 8: Commit**
 
@@ -699,7 +733,7 @@ Expected: PASS — all 3 facts green.
 - [ ] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
-Expected: PASS — all 50 tests green (47 existing + 3 new).
+Expected: PASS — all 51 tests green (48 existing + 3 new).
 
 - [ ] **Step 7: Commit**
 
@@ -747,7 +781,7 @@ Expected: PASS — 0 build errors.
 - [ ] **Step 4: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
-Expected: PASS — all 50 tests green (no behavior change yet for existing tests; this task only adds registrations nothing calls yet).
+Expected: PASS — all 51 tests green (no behavior change yet for existing tests; this task only adds registrations nothing calls yet).
 
 - [ ] **Step 5: Commit**
 
@@ -986,7 +1020,7 @@ Expected: PASS — all 6 facts green.
 - [ ] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
-Expected: PASS — all 56 tests green (50 existing + 6 new).
+Expected: PASS — all 57 tests green (51 existing + 6 new).
 
 - [ ] **Step 7: Commit**
 
@@ -1198,7 +1232,7 @@ Expected: PASS — all 3 facts green.
 - [ ] **Step 5: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
-Expected: PASS — all 59 tests green (56 existing + 3 new).
+Expected: PASS — all 60 tests green (57 existing + 3 new).
 
 - [ ] **Step 6: Commit**
 
@@ -1217,7 +1251,7 @@ git commit -m "Dispatch orders to the tenant's configured POS on creation"
 - [ ] **Step 1: Run the full backend build and test suite from a clean state**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
-Expected: PASS — 0 build errors, all 59 tests passing (see Task 9, Step 5 for the breakdown).
+Expected: PASS — 0 build errors, all 60 tests passing (see Task 9, Step 5 for the breakdown).
 
 - [ ] **Step 2: Confirm no frontend changes are needed**
 

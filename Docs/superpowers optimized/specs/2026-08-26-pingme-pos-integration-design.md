@@ -189,17 +189,25 @@ return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToSt
 
 ```json
 {
-  "orderId": "b3a7314e-...",
-  "locationLabel": "Table 12",
-  "items": [
-    { "productId": "...", "name": "Burger", "quantity": 2, "unitPrice": 9.50 },
-    { "productId": "...", "name": "Beer", "quantity": 2, "unitPrice": 4.00 }
-  ],
-  "total": 27.00
+  "eventId": "5c9a1e2b-4d3f-4a2e-9c1a-7f6e5d4c3b2a",
+  "eventType": "order.created",
+  "occurredAt": "2026-08-27T14:32:00Z",
+  "tenantId": "8f2a1c3d-...",
+  "order": {
+    "id": "b3a7314e-...",
+    "locationLabel": "Table 12",
+    "items": [
+      { "productId": "...", "name": "Burger", "quantity": 2, "unitPrice": 9.50 },
+      { "productId": "...", "name": "Beer", "quantity": 2, "unitPrice": 4.00 }
+    ],
+    "total": 27.00
+  }
 }
 ```
 
 The full order snapshot is sent — the external POS never needs to call back into PingMe to reconstruct order contents. `locationLabel` is resolved via `Order.CustomerSessionId → CustomerSession → Location.Name` (all existing Plan 1 entities).
+
+The envelope fields (`eventId`, `eventType`, `occurredAt`, `tenantId`) wrap the order snapshot rather than being flattened alongside it. `eventId` is a fresh `Guid` generated per delivery attempt (not persisted — this plan does not implement retries, so it exists purely to give a future retry/idempotency mechanism something to key on without a breaking payload change later). `eventType` is a fixed literal for this plan (`"order.created"` is the only event this MVP ever sends); `occurredAt` is `DateTime.UtcNow` at send time, not the order's creation time, since a future retry could resend an older order. `tenantId` is included because the receiver is an external system with no other way to know which venue an order belongs to — it must never be inferred from `locationLabel` alone.
 
 ## 8. Error Handling
 
