@@ -1248,12 +1248,12 @@ git commit -m "Dispatch orders to the tenant's configured POS on creation"
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full backend build and test suite from a clean state**
+- [x] **Step 1: Run the full backend build and test suite from a clean state**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 60 tests passing (see Task 9, Step 5 for the breakdown).
 
-- [ ] **Step 2: Confirm no frontend changes are needed**
+- [x] **Step 2: Confirm no frontend changes are needed**
 
 This plan is backend-only per its Assumptions — run a quick check that neither frontend app references anything this plan touched:
 ```bash
@@ -1262,7 +1262,7 @@ cd ../staff-app && pnpm test && pnpm build
 ```
 Expected: PASS — both apps build and test identically to their pre-Plan-5 state, since this plan added an extra JSON field (`posDeliveryStatus`) that neither app's TypeScript types declare or read.
 
-- [ ] **Step 3: Manually verify the dispatch flow end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 3: Manually verify the dispatch flow end-to-end** (not automatable in this plan — do this once by hand)
 
 1. Start the backend: `dotnet run --project src/PingMe.Api`.
 2. Via Swagger, register a tenant, log in, create a menu/category/product, a location, and a QR code.
@@ -1272,11 +1272,11 @@ Expected: PASS — both apps build and test identically to their pre-Plan-5 stat
 6. `GET /admin/orders` and confirm the order's `posDeliveryStatus` is `"Sent"`.
 7. Stop the backend afterward.
 
-- [ ] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+- [x] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the table to add this plan's row (`5 | POS/ERP Integration (Level 1) | ... | Done, reviewed | 10 / 10`). Add a new carried-forward item: **"WebhookUrl accepts any tenant-supplied URL with no SSRF hardening — explicitly flagged in Plan 5's spec as required before any production rollout that lets a tenant self-serve a webhook URL. Vendor-specific POS adapters (Zone Soft, PRIMAVERA, WinRest, etc.) remain unbuilt — no real API access/credentials exist yet for any of them."**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "Docs/superpowers optimized/plans/PROGRESS.md"
