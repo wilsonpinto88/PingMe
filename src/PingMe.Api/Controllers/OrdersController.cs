@@ -3,7 +3,9 @@ namespace PingMe.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PingMe.Api.Contracts.Ordering;
+using PingMe.Application.Integrations;
 using PingMe.Application.Ordering;
 using PingMe.Domain.Ordering;
 using PingMe.Infrastructure.Persistence;
@@ -17,12 +19,21 @@ public class OrdersController : ControllerBase
     private readonly PingMeDbContext _dbContext;
     private readonly CurrentTenantProvider _currentTenantProvider;
     private readonly IOrderNotifier _orderNotifier;
+    private readonly IPosOrderDispatcher _posOrderDispatcher;
+    private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(PingMeDbContext dbContext, CurrentTenantProvider currentTenantProvider, IOrderNotifier orderNotifier)
+    public OrdersController(
+        PingMeDbContext dbContext,
+        CurrentTenantProvider currentTenantProvider,
+        IOrderNotifier orderNotifier,
+        IPosOrderDispatcher posOrderDispatcher,
+        ILogger<OrdersController> logger)
     {
         _dbContext = dbContext;
         _currentTenantProvider = currentTenantProvider;
         _orderNotifier = orderNotifier;
+        _posOrderDispatcher = posOrderDispatcher;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -82,8 +93,29 @@ public class OrdersController : ControllerBase
             order.Id,
             order.Status.ToString(),
             order.CreatedAt,
-            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList());
+            order.Items.Select(i => new AdminOrderItemDto(i.ProductName, i.UnitPrice, i.Quantity)).ToList(),
+            order.PosDeliveryStatus.ToString());
         await _orderNotifier.NotifyOrderReceivedAsync(order.TenantId, orderDto);
+
+        try
+        {
+            var sessionLocation = await _dbContext.Locations.FirstOrDefaultAsync(l => l.Id == session.LocationId);
+            var locationLabel = sessionLocation?.Name ?? "Unknown location";
+            // Deliberately not HttpContext.RequestAborted: the order is already committed above,
+            // so a customer disconnecting mid-request must not cancel POS delivery and record a
+            // false Failed. The dispatcher's own HttpClient.Timeout (Program.cs) already bounds this.
+            var posDeliveryStatus = await _posOrderDispatcher.TryDispatchAsync(order, locationLabel, CancellationToken.None);
+            order.RecordPosDeliveryStatus(posDeliveryStatus);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // The order itself is already committed above — a failure here (location lookup,
+            // or persisting the POS status) must never turn a successful order into an HTTP
+            // error for the customer. Worst case, PosDeliveryStatus stays at its NotConfigured
+            // default and staff can complete the POS entry manually.
+            _logger.LogWarning(ex, "Failed to record POS delivery status for order {OrderId}", order.Id);
+        }
 
         return Created(string.Empty, new CreateOrderResponse(order.Id, order.Status.ToString()));
     }

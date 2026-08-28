@@ -1,6 +1,7 @@
 namespace PingMe.Domain.Ordering;
 
 using PingMe.Domain.Common;
+using PingMe.Domain.Integrations;
 
 public class Order : Entity, ITenantOwned
 {
@@ -17,6 +18,7 @@ public class Order : Entity, ITenantOwned
     public Guid TenantId { get; private set; }
     public Guid CustomerSessionId { get; private set; }
     public OrderStatus Status { get; private set; }
+    public PosDeliveryStatus PosDeliveryStatus { get; private set; } = PosDeliveryStatus.NotConfigured;
     public DateTime CreatedAt { get; private set; }
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
@@ -43,5 +45,10 @@ public class Order : Entity, ITenantOwned
         }
 
         Status = next;
+    }
+
+    public void RecordPosDeliveryStatus(PosDeliveryStatus status)
+    {
+        PosDeliveryStatus = status;
     }
 }

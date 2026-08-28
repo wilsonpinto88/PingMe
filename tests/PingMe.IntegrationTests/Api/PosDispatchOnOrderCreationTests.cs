@@ -1,0 +1,113 @@
+namespace PingMe.IntegrationTests.Api;
+
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using PingMe.Api.Contracts.Auth;
+using PingMe.Api.Contracts.Catalog;
+using PingMe.Api.Contracts.Integrations;
+using PingMe.Api.Contracts.Locations;
+using PingMe.Api.Contracts.Ordering;
+using PingMe.Application.Ordering;
+using PingMe.IntegrationTests.Infrastructure;
+using Xunit;
+
+public class PosDispatchOnOrderCreationTests : IClassFixture<PingMeWebApplicationFactory>
+{
+    private readonly PingMeWebApplicationFactory _factory;
+
+    public PosDispatchOnOrderCreationTests(PingMeWebApplicationFactory factory)
+    {
+        _factory = factory;
+    }
+
+    private record SeededTenant(HttpClient OwnerClient, ProductDto Product, string QrCode);
+
+    private async Task<SeededTenant> SeedTenantWithOneOrderableProductAsync(string venueName)
+    {
+        var ownerClient = _factory.CreateClient();
+        var email = $"owner-{Guid.NewGuid():N}@example.com";
+        await ownerClient.PostAsJsonAsync("/auth/register-tenant",
+            new RegisterTenantRequest(venueName, email, "P@ssw0rd123"));
+        var loginResponse = await ownerClient.PostAsJsonAsync("/auth/login", new LoginRequest(email, "P@ssw0rd123"));
+        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        ownerClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth!.Token);
+
+        var menuResponse = await ownerClient.PostAsJsonAsync("/admin/menus", new CreateMenuRequest("Menu"));
+        var menu = await menuResponse.Content.ReadFromJsonAsync<MenuDto>();
+        var categoryResponse = await ownerClient.PostAsJsonAsync(
+            $"/admin/menus/{menu!.Id}/categories", new CreateCategoryRequest("Category", 1));
+        var category = await categoryResponse.Content.ReadFromJsonAsync<CategoryDto>();
+        var productResponse = await ownerClient.PostAsJsonAsync(
+            $"/admin/products/categories/{category!.Id}", new CreateProductRequest("Product", 5.00m));
+        var product = (await productResponse.Content.ReadFromJsonAsync<ProductDto>())!;
+
+        var locationResponse = await ownerClient.PostAsJsonAsync("/admin/locations", new CreateLocationRequest("Table 1", null));
+        var location = await locationResponse.Content.ReadFromJsonAsync<LocationDto>();
+        var qrResponse = await ownerClient.PostAsJsonAsync("/admin/qrcodes", new CreateQrCodeRequest(location!.Id));
+        var qrCode = await qrResponse.Content.ReadFromJsonAsync<QrCodeDto>();
+
+        return new SeededTenant(ownerClient, product, qrCode!.Code);
+    }
+
+    [Fact]
+    public async Task Placing_an_order_with_no_pos_settings_succeeds_with_NotConfigured_status()
+    {
+        var seeded = await SeedTenantWithOneOrderableProductAsync("Venue A");
+        var customerClient = _factory.CreateClient();
+        var resolved = await (await customerClient.GetAsync($"/p/{seeded.QrCode}"))
+            .Content.ReadFromJsonAsync<ResolveQrCodeResponse>();
+
+        var orderResponse = await customerClient.PostAsJsonAsync("/orders",
+            new CreateOrderRequest(resolved!.SessionId, new List<CreateOrderItemRequest> { new(seeded.Product.Id, 1) }));
+        var order = await orderResponse.Content.ReadFromJsonAsync<CreateOrderResponse>();
+
+        var adminOrders = await seeded.OwnerClient.GetFromJsonAsync<List<AdminOrderDto>>("/admin/orders");
+        var adminOrder = adminOrders!.Single(o => o.Id == order!.OrderId);
+
+        Assert.Equal("NotConfigured", adminOrder.PosDeliveryStatus);
+    }
+
+    [Fact]
+    public async Task Placing_an_order_with_an_unreachable_webhook_still_succeeds_with_Failed_status()
+    {
+        var seeded = await SeedTenantWithOneOrderableProductAsync("Venue B");
+        await seeded.OwnerClient.PutAsJsonAsync("/admin/pos-integration",
+            new UpsertPosIntegrationSettingsRequest("Webhook", "http://127.0.0.1:1/unreachable", true));
+
+        var customerClient = _factory.CreateClient();
+        var resolved = await (await customerClient.GetAsync($"/p/{seeded.QrCode}"))
+            .Content.ReadFromJsonAsync<ResolveQrCodeResponse>();
+
+        var orderResponse = await customerClient.PostAsJsonAsync("/orders",
+            new CreateOrderRequest(resolved!.SessionId, new List<CreateOrderItemRequest> { new(seeded.Product.Id, 1) }));
+
+        Assert.Equal(System.Net.HttpStatusCode.Created, orderResponse.StatusCode);
+        var order = await orderResponse.Content.ReadFromJsonAsync<CreateOrderResponse>();
+
+        var adminOrders = await seeded.OwnerClient.GetFromJsonAsync<List<AdminOrderDto>>("/admin/orders");
+        var adminOrder = adminOrders!.Single(o => o.Id == order!.OrderId);
+
+        Assert.Equal("Failed", adminOrder.PosDeliveryStatus);
+    }
+
+    [Fact]
+    public async Task Disabled_pos_settings_result_in_NotConfigured_not_an_attempted_call()
+    {
+        var seeded = await SeedTenantWithOneOrderableProductAsync("Venue C");
+        await seeded.OwnerClient.PutAsJsonAsync("/admin/pos-integration",
+            new UpsertPosIntegrationSettingsRequest("Webhook", "http://127.0.0.1:1/unreachable", false));
+
+        var customerClient = _factory.CreateClient();
+        var resolved = await (await customerClient.GetAsync($"/p/{seeded.QrCode}"))
+            .Content.ReadFromJsonAsync<ResolveQrCodeResponse>();
+
+        var orderResponse = await customerClient.PostAsJsonAsync("/orders",
+            new CreateOrderRequest(resolved!.SessionId, new List<CreateOrderItemRequest> { new(seeded.Product.Id, 1) }));
+        var order = await orderResponse.Content.ReadFromJsonAsync<CreateOrderResponse>();
+
+        var adminOrders = await seeded.OwnerClient.GetFromJsonAsync<List<AdminOrderDto>>("/admin/orders");
+        var adminOrder = adminOrders!.Single(o => o.Id == order!.OrderId);
+
+        Assert.Equal("NotConfigured", adminOrder.PosDeliveryStatus);
+    }
+}

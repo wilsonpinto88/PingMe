@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PingMe.Application.Tenants;
 using PingMe.Domain.Catalog;
 using PingMe.Domain.Common;
+using PingMe.Domain.Integrations;
 using PingMe.Domain.Locations;
 using PingMe.Domain.Ordering;
 using PingMe.Domain.Tenants;
@@ -31,6 +32,7 @@ public class PingMeDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Gu
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductOption> ProductOptions => Set<ProductOption>();
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<TenantPosIntegrationSettings> TenantPosIntegrationSettings => Set<TenantPosIntegrationSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,6 +61,10 @@ public class PingMeDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Gu
 
         modelBuilder.Entity<QrCode>()
             .HasIndex(q => q.Code)
+            .IsUnique();
+
+        modelBuilder.Entity<TenantPosIntegrationSettings>()
+            .HasIndex(t => t.TenantId)
             .IsUnique();
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())

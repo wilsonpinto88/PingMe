@@ -93,7 +93,7 @@ public class OrderNotifierIsolationTests : IClassFixture<PingMeWebApplicationFac
 
         using var scope = _factory.Services.CreateScope();
         var notifier = scope.ServiceProvider.GetRequiredService<IOrderNotifier>();
-        var dto = new AdminOrderDto(Guid.NewGuid(), "Received", DateTime.UtcNow, new List<AdminOrderItemDto>());
+        var dto = new AdminOrderDto(Guid.NewGuid(), "Received", DateTime.UtcNow, new List<AdminOrderItemDto>(), "NotConfigured");
         await notifier.NotifyOrderReceivedAsync(tenantA.TenantId, dto);
 
         var completed = await Task.WhenAny(received.Task, Task.Delay(TimeSpan.FromSeconds(5)));

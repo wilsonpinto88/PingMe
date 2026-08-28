@@ -29,7 +29,7 @@
 
 **Does NOT cover:** any actual POS dispatch logic (Tasks 4-6) or wiring the dispatcher into `OrdersController` (Task 9) — this task only adds the field, the DTO shape, and keeps existing DTO-construction call sites compiling with a `NotConfigured` default.
 
-- [ ] **Step 1: Write a failing test**
+- [x] **Step 1: Write a failing test**
 
 Add this fact to `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs` (inside the existing `OrderTransitionTests` class, alongside the existing facts — do not remove any):
 
@@ -55,12 +55,12 @@ Add this fact to `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs` (insi
 
 Add `using PingMe.Domain.Integrations;` to the top of `tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs` (alongside the existing `using PingMe.Domain.Ordering;`).
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderTransitionTests"`
 Expected: FAIL to compile — `PingMe.Domain.Integrations` namespace and `Order.PosDeliveryStatus`/`RecordPosDeliveryStatus` don't exist yet.
 
-- [ ] **Step 3: Create the `PosDeliveryStatus` enum**
+- [x] **Step 3: Create the `PosDeliveryStatus` enum**
 
 `src/PingMe.Domain/Integrations/PosDeliveryStatus.cs`:
 ```csharp
@@ -77,7 +77,7 @@ public enum PosDeliveryStatus
 
 `Pending` is intentionally unused by this plan — reserved for a future async/queued dispatch mechanism (spec Non-Goals) so that value doesn't need a breaking enum change later.
 
-- [ ] **Step 4: Add the field and method to `Order`**
+- [x] **Step 4: Add the field and method to `Order`**
 
 In `src/PingMe.Domain/Ordering/Order.cs`, add the using:
 ```csharp
@@ -97,12 +97,12 @@ public void RecordPosDeliveryStatus(PosDeliveryStatus status)
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~OrderTransitionTests"`
 Expected: PASS — all 6 facts in the file green (4 existing + 2 new).
 
-- [ ] **Step 6: Extend `AdminOrderDto` and update its two existing construction call sites**
+- [x] **Step 6: Extend `AdminOrderDto` and update its two existing construction call sites**
 
 In `src/PingMe.Application/Ordering/AdminOrderDto.cs`, change:
 ```csharp
@@ -134,12 +134,12 @@ to:
 
 In `src/PingMe.Api/Controllers/AdminOrdersController.cs`, update **both** `AdminOrderDto` construction call sites (`GetOrders`'s projection and `UpdateStatus`'s `orderDto` build) the same way, appending `o.PosDeliveryStatus.ToString()` / `order.PosDeliveryStatus.ToString()` as the fifth constructor argument respectively.
 
-- [ ] **Step 7: Run the full backend build and test suite**
+- [x] **Step 7: Run the full backend build and test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 46 tests green (44 existing + 2 new).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Domain/Integrations/PosDeliveryStatus.cs src/PingMe.Domain/Ordering/Order.cs src/PingMe.Application/Ordering/AdminOrderDto.cs src/PingMe.Api/Controllers/OrdersController.cs src/PingMe.Api/Controllers/AdminOrdersController.cs tests/PingMe.UnitTests/Ordering/OrderTransitionTests.cs
@@ -156,7 +156,7 @@ git commit -m "Add Order.PosDeliveryStatus and expose it on AdminOrderDto"
 
 **Does NOT cover:** EF Core mapping/migration (Task 3) or any controller (Task 8) — this task only adds the domain entity.
 
-- [ ] **Step 1: Create the `ProviderType` enum**
+- [x] **Step 1: Create the `ProviderType` enum**
 
 `src/PingMe.Domain/Integrations/ProviderType.cs`:
 ```csharp
@@ -170,7 +170,7 @@ public enum ProviderType
 
 `ProviderType` represents provider *identity* (which POS), not transport — future values like `ZoneSoft`/`Primavera`/`WinRest` slot in here later without restructuring, per the spec's explicit design goal.
 
-- [ ] **Step 2: Create the `TenantPosIntegrationSettings` entity**
+- [x] **Step 2: Create the `TenantPosIntegrationSettings` entity**
 
 `src/PingMe.Domain/Integrations/TenantPosIntegrationSettings.cs`:
 ```csharp
@@ -206,12 +206,12 @@ public class TenantPosIntegrationSettings : Entity, ITenantOwned
 
 This follows the same `Entity`/`ITenantOwned`, private-setter-plus-explicit-method pattern as `Order`, `Location`, and `QrCode`.
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors (no consumers yet; nothing references these new types outside `PingMe.Domain`).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Domain/Integrations/ProviderType.cs src/PingMe.Domain/Integrations/TenantPosIntegrationSettings.cs
@@ -228,7 +228,7 @@ git commit -m "Add TenantPosIntegrationSettings entity and ProviderType enum"
 
 **Does NOT cover:** any controller reading/writing this table (Task 8).
 
-- [ ] **Step 1: Add the DbSet and unique index**
+- [x] **Step 1: Add the DbSet and unique index**
 
 In `src/PingMe.Infrastructure/Persistence/PingMeDbContext.cs`, add the using:
 ```csharp
@@ -249,17 +249,17 @@ Add the unique index in `OnModelCreating`, after the existing `QrCode.Code` uniq
 
 Note: the automatic `ApplyTenantFilter<TEntity>` loop later in the same method also calls `HasIndex(e => e.TenantId)` (non-unique) for every `ITenantOwned` entity, including this one. EF Core's fluent API resolves multiple `HasIndex` calls on the same property set to the same underlying index — since only this explicit call sets `.IsUnique()`, the resulting index stays unique regardless of the loop also touching it. This mirrors how `QrCode.Code`'s explicit unique index coexists with the same loop.
 
-- [ ] **Step 2: Generate the migration**
+- [x] **Step 2: Generate the migration**
 
 Run: `dotnet ef migrations add AddTenantPosIntegrationSettings --project src/PingMe.Infrastructure --startup-project src/PingMe.Api`
 Expected: succeeds, creating a new migration file that adds the `TenantPosIntegrationSettings` table with a unique index on `TenantId`.
 
-- [ ] **Step 3: Build and run the full backend test suite**
+- [x] **Step 3: Build and run the full backend test suite**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 46 tests green (the integration test factory runs `Database.Migrate()` against `pingme_test`, so the new migration is exercised automatically).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Persistence/PingMeDbContext.cs src/PingMe.Infrastructure/Persistence/Migrations/
@@ -279,7 +279,7 @@ git commit -m "Map TenantPosIntegrationSettings with a per-tenant unique index"
 
 **Deviation from the spec's Section 3 interface sketch (documented, not silent):** the spec shows `IPosOrderDispatcher.TryDispatchAsync(Order order, CancellationToken cancellationToken)` with no `locationLabel` parameter, implying the dispatcher itself would re-derive the location from `order.CustomerSessionId` via a `CustomerSession`/`Location` lookup. That would force `PosOrderDispatcher` (Task 6) to depend on `PingMeDbContext` directly, which breaks the spec's own stated unit-testing strategy (Section 9: pure `NotConfigured`/`Failed`/`Sent` control-flow tests, no database). Instead, `TryDispatchAsync` takes `locationLabel` as a parameter — the caller (`OrdersController.Create`, Task 9) already has the location resolved cheaply from its own in-scope `session`/`Location` lookup, so no extra query is needed either way, and `PosOrderDispatcher` becomes fully unit-testable with hand-written fakes and zero EF dependency.
 
-- [ ] **Step 1: Create `IPosIntegration`**
+- [x] **Step 1: Create `IPosIntegration`**
 
 `src/PingMe.Application/Integrations/IPosIntegration.cs`:
 ```csharp
@@ -293,7 +293,7 @@ public interface IPosIntegration
 }
 ```
 
-- [ ] **Step 2: Create `IPosIntegrationResolver`**
+- [x] **Step 2: Create `IPosIntegrationResolver`**
 
 `src/PingMe.Application/Integrations/IPosIntegrationResolver.cs`:
 ```csharp
@@ -307,7 +307,7 @@ public interface IPosIntegrationResolver
 
 Returns `null` when the tenant has no settings row, or `IsEnabled` is `false` — the caller treats a `null` result as `NotConfigured`.
 
-- [ ] **Step 3: Create `IPosOrderDispatcher`**
+- [x] **Step 3: Create `IPosOrderDispatcher`**
 
 `src/PingMe.Application/Integrations/IPosOrderDispatcher.cs`:
 ```csharp
@@ -322,12 +322,12 @@ public interface IPosOrderDispatcher
 }
 ```
 
-- [ ] **Step 4: Build**
+- [x] **Step 4: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Application/Integrations/IPosIntegration.cs src/PingMe.Application/Integrations/IPosIntegrationResolver.cs src/PingMe.Application/Integrations/IPosOrderDispatcher.cs
@@ -347,11 +347,11 @@ git commit -m "Add IPosIntegration, IPosIntegrationResolver, IPosOrderDispatcher
 
 **Deviation from the spec's Section 9 testing strategy (documented):** the spec lists the exact-JSON-shape assertion under `PingMe.IntegrationTests`, implying a live webhook receiver. This plan instead verifies it as a fast `PingMe.UnitTests` test against a stub `HttpMessageHandler` that captures the outgoing request without touching a real socket — this proves the exact same thing (the JSON body `WebhookPosIntegration` sends) without depending on OS-level HTTP-listener behavior, which has no precedent elsewhere in this codebase's test suite.
 
-- [ ] **Step 1: Add a project reference so unit tests can construct `HttpClient`/`HttpMessageHandler`**
+- [x] **Step 1: Add a project reference so unit tests can construct `HttpClient`/`HttpMessageHandler`**
 
 `System.Net.Http` types are part of the base class library (no new package needed) — `PingMe.UnitTests.csproj` doesn't need a new `PackageReference` for this task. Skip this step's file changes; it exists only to confirm no csproj edit is needed here (the csproj edit for Task 6's fakes comes later).
 
-- [ ] **Step 2: Write a failing test**
+- [x] **Step 2: Write a failing test**
 
 `tests/PingMe.UnitTests/Integrations/WebhookPosIntegrationTests.cs`:
 ```csharp
@@ -436,12 +436,12 @@ public class WebhookPosIntegrationTests
 }
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~WebhookPosIntegrationTests"`
 Expected: FAIL to compile — `PingMe.Infrastructure.Integrations.WebhookPosIntegration` doesn't exist yet, and `PingMe.UnitTests` doesn't reference `PingMe.Infrastructure` yet.
 
-- [ ] **Step 4: Add the `PingMe.Infrastructure` project reference to the unit test project**
+- [x] **Step 4: Add the `PingMe.Infrastructure` project reference to the unit test project**
 
 In `tests/PingMe.UnitTests/PingMe.UnitTests.csproj`, change:
 ```xml
@@ -460,7 +460,7 @@ to:
 
 This pulls in EF Core/Npgsql packages transitively (via `PingMe.Infrastructure`), but none of this plan's unit tests open a real database connection — they only construct plain C# objects.
 
-- [ ] **Step 5: Implement `WebhookPosIntegration`**
+- [x] **Step 5: Implement `WebhookPosIntegration`**
 
 `src/PingMe.Infrastructure/Integrations/WebhookPosIntegration.cs`:
 ```csharp
@@ -515,17 +515,17 @@ public class WebhookPosIntegration : IPosIntegration
 
 `JsonSerializerDefaults.Web` sets camelCase property naming — this is what makes the outgoing JSON match the spec's Section 7 contract (`eventId`, `eventType`, `occurredAt`, `tenantId`, `order.id/locationLabel/items[].productId/name/quantity/unitPrice/total`) despite the C# records using PascalCase property names. `eventId` is generated fresh on every call to `SendOrderAsync` — it is not persisted anywhere and exists solely so a future retry/idempotency mechanism (out of scope for this plan) has a stable key to build on without a breaking payload change later.
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~WebhookPosIntegrationTests"`
 Expected: PASS.
 
-- [ ] **Step 7: Run the full backend test suite**
+- [x] **Step 7: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 48 tests green (46 existing + 2 new).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Integrations/WebhookPosIntegration.cs tests/PingMe.UnitTests/Integrations/WebhookPosIntegrationTests.cs tests/PingMe.UnitTests/PingMe.UnitTests.csproj
@@ -543,7 +543,7 @@ git commit -m "Add WebhookPosIntegration with a payload-shape unit test"
 
 **Does NOT cover:** DI registration (Task 7) or the `HttpClient` factory setup for `WebhookPosIntegration` instances (also Task 7) — this task only implements the two classes.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.UnitTests/Integrations/PosOrderDispatcherTests.cs`:
 ```csharp
@@ -630,12 +630,12 @@ public class PosOrderDispatcherTests
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosOrderDispatcherTests"`
 Expected: FAIL to compile — `PosOrderDispatcher` doesn't exist yet.
 
-- [ ] **Step 3: Implement `PosIntegrationResolver`**
+- [x] **Step 3: Implement `PosIntegrationResolver`**
 
 `src/PingMe.Infrastructure/Integrations/PosIntegrationResolver.cs`:
 ```csharp
@@ -681,7 +681,7 @@ public class PosIntegrationResolver : IPosIntegrationResolver
 
 `FirstOrDefaultAsync(s => s.TenantId == tenantId, ...)` relies on the caller (`OrdersController.Create`, Task 9) having already set `_currentTenantProvider.TenantId = session.TenantId` before dispatch runs — the global tenant query filter already scopes this query correctly, and the explicit `TenantId` predicate is redundant-but-safe defense-in-depth, matching the pattern already used in `OrdersController.GetStatus`.
 
-- [ ] **Step 4: Implement `PosOrderDispatcher`**
+- [x] **Step 4: Implement `PosOrderDispatcher`**
 
 `src/PingMe.Infrastructure/Integrations/PosOrderDispatcher.cs`:
 ```csharp
@@ -725,17 +725,17 @@ public class PosOrderDispatcher : IPosOrderDispatcher
 }
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosOrderDispatcherTests"`
 Expected: PASS — all 3 facts green.
 
-- [ ] **Step 6: Run the full backend test suite**
+- [x] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 51 tests green (48 existing + 3 new).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Infrastructure/Integrations/PosIntegrationResolver.cs src/PingMe.Infrastructure/Integrations/PosOrderDispatcher.cs tests/PingMe.UnitTests/Integrations/PosOrderDispatcherTests.cs
@@ -751,7 +751,7 @@ git commit -m "Implement PosIntegrationResolver and PosOrderDispatcher"
 
 **Does NOT cover:** any controller (Task 8) — this task only registers services so they're resolvable.
 
-- [ ] **Step 1: Add the usings**
+- [x] **Step 1: Add the usings**
 
 In `src/PingMe.Api/Program.cs`, add:
 ```csharp
@@ -759,7 +759,7 @@ using PingMe.Application.Integrations;
 using PingMe.Infrastructure.Integrations;
 ```
 
-- [ ] **Step 2: Register the named `HttpClient` and the two services**
+- [x] **Step 2: Register the named `HttpClient` and the two services**
 
 Add this block right after the existing `builder.Services.AddScoped<IOrderNotifier, SignalROrderNotifier>();` line:
 ```csharp
@@ -773,17 +773,17 @@ builder.Services.AddScoped<IPosOrderDispatcher, PosOrderDispatcher>();
 
 The 5-second timeout matters here specifically because POS dispatch happens inline during `POST /orders` (Task 9) — without a bound, an unresponsive POS endpoint could hang a customer's order request indefinitely. `PosOrderDispatcher`'s try/catch (Task 6) already turns a `TaskCanceledException` from this timeout into a `Failed` status, same as any other dispatch failure.
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `dotnet build PingMe.slnx`
 Expected: PASS — 0 build errors.
 
-- [ ] **Step 4: Run the full backend test suite**
+- [x] **Step 4: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 51 tests green (no behavior change yet for existing tests; this task only adds registrations nothing calls yet).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/PingMe.Api/Program.cs
@@ -802,7 +802,7 @@ git commit -m "Register IPosIntegrationResolver, IPosOrderDispatcher, and a time
 
 **Does NOT cover:** the order-creation dispatch call (Task 9) — this task only lets an Owner read/write their tenant's settings.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/PosIntegrationSettingsTests.cs`:
 ```csharp
@@ -923,12 +923,12 @@ public class PosIntegrationSettingsTests : IClassFixture<PingMeWebApplicationFac
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosIntegrationSettingsTests"`
 Expected: FAIL to compile — the DTOs and controller don't exist yet.
 
-- [ ] **Step 3: Create the DTOs**
+- [x] **Step 3: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Integrations/PosIntegrationSettingsDto.cs`:
 ```csharp
@@ -944,7 +944,7 @@ namespace PingMe.Api.Contracts.Integrations;
 public record UpsertPosIntegrationSettingsRequest(string ProviderType, string WebhookUrl, bool IsEnabled);
 ```
 
-- [ ] **Step 4: Create the controller**
+- [x] **Step 4: Create the controller**
 
 `src/PingMe.Api/Controllers/PosIntegrationSettingsController.cs`:
 ```csharp
@@ -1012,17 +1012,17 @@ public class PosIntegrationSettingsController : ControllerBase
 
 `FirstOrDefaultAsync()` with no predicate is safe here because the global tenant query filter already scopes `TenantPosIntegrationSettings` to the authenticated Owner's tenant, and the per-tenant unique index (Task 3) guarantees at most one row exists for that tenant — same one-row-per-tenant pattern this codebase already uses for `Venue` lookups (`LocationsController.CreateLocation`'s `_dbContext.Venues.FirstAsync()`).
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosIntegrationSettingsTests"`
 Expected: PASS — all 6 facts green.
 
-- [ ] **Step 6: Run the full backend test suite**
+- [x] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 57 tests green (51 existing + 6 new).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Integrations/PosIntegrationSettingsDto.cs src/PingMe.Api/Contracts/Integrations/UpsertPosIntegrationSettingsRequest.cs src/PingMe.Api/Controllers/PosIntegrationSettingsController.cs tests/PingMe.IntegrationTests/Api/PosIntegrationSettingsTests.cs
@@ -1039,7 +1039,7 @@ git commit -m "Add PosIntegrationSettingsController: GET/PUT /admin/pos-integrat
 
 **Does NOT cover:** re-broadcasting an `OrderStatusChanged` SignalR event after the POS status is recorded — the existing `OrderReceived` broadcast (built before dispatch runs) already fired with `PosDeliveryStatus = NotConfigured`; this plan does not add a second broadcast for the POS outcome. Staff can only see the final `PosDeliveryStatus` by re-fetching `GET /admin/orders`.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/PosDispatchOnOrderCreationTests.cs`:
 ```csharp
@@ -1158,12 +1158,12 @@ public class PosDispatchOnOrderCreationTests : IClassFixture<PingMeWebApplicatio
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosDispatchOnOrderCreationTests"`
 Expected: FAIL — `AdminOrderDto.PosDeliveryStatus` is always `"NotConfigured"` for every order today (correct for the first and third tests, but only by coincidence since dispatch never runs) and the second test fails because a webhook was configured but nothing ever calls it, so `PosDeliveryStatus` stays `"NotConfigured"` instead of the expected `"Failed"`.
 
-- [ ] **Step 3: Wire the dispatcher into `OrdersController`**
+- [x] **Step 3: Wire the dispatcher into `OrdersController`**
 
 In `src/PingMe.Api/Controllers/OrdersController.cs`, add the usings:
 ```csharp
@@ -1224,17 +1224,17 @@ to:
 
 This reuses `session` (the `CustomerSession` already loaded at the top of `Create`) to resolve the location cheaply, matching the parameter shape locked in by Task 4's `IPosOrderDispatcher.TryDispatchAsync(order, locationLabel, cancellationToken)`.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosDispatchOnOrderCreationTests"`
 Expected: PASS — all 3 facts green.
 
-- [ ] **Step 5: Run the full backend test suite**
+- [x] **Step 5: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 60 tests green (57 existing + 3 new).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/PingMe.Api/Controllers/OrdersController.cs tests/PingMe.IntegrationTests/Api/PosDispatchOnOrderCreationTests.cs
@@ -1248,12 +1248,12 @@ git commit -m "Dispatch orders to the tenant's configured POS on creation"
 **Files:**
 - Modify: `Docs/superpowers optimized/plans/PROGRESS.md`
 
-- [ ] **Step 1: Run the full backend build and test suite from a clean state**
+- [x] **Step 1: Run the full backend build and test suite from a clean state**
 
 Run: `dotnet build PingMe.slnx && dotnet test PingMe.slnx`
 Expected: PASS — 0 build errors, all 60 tests passing (see Task 9, Step 5 for the breakdown).
 
-- [ ] **Step 2: Confirm no frontend changes are needed**
+- [x] **Step 2: Confirm no frontend changes are needed**
 
 This plan is backend-only per its Assumptions — run a quick check that neither frontend app references anything this plan touched:
 ```bash
@@ -1262,7 +1262,7 @@ cd ../staff-app && pnpm test && pnpm build
 ```
 Expected: PASS — both apps build and test identically to their pre-Plan-5 state, since this plan added an extra JSON field (`posDeliveryStatus`) that neither app's TypeScript types declare or read.
 
-- [ ] **Step 3: Manually verify the dispatch flow end-to-end** (not automatable in this plan — do this once by hand)
+- [x] **Step 3: Manually verify the dispatch flow end-to-end** (not automatable in this plan — do this once by hand)
 
 1. Start the backend: `dotnet run --project src/PingMe.Api`.
 2. Via Swagger, register a tenant, log in, create a menu/category/product, a location, and a QR code.
@@ -1272,11 +1272,11 @@ Expected: PASS — both apps build and test identically to their pre-Plan-5 stat
 6. `GET /admin/orders` and confirm the order's `posDeliveryStatus` is `"Sent"`.
 7. Stop the backend afterward.
 
-- [ ] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
+- [x] **Step 4: Update `Docs/superpowers optimized/plans/PROGRESS.md`**
 
 Update the table to add this plan's row (`5 | POS/ERP Integration (Level 1) | ... | Done, reviewed | 10 / 10`). Add a new carried-forward item: **"WebhookUrl accepts any tenant-supplied URL with no SSRF hardening — explicitly flagged in Plan 5's spec as required before any production rollout that lets a tenant self-serve a webhook URL. Vendor-specific POS adapters (Zone Soft, PRIMAVERA, WinRest, etc.) remain unbuilt — no real API access/credentials exist yet for any of them."**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "Docs/superpowers optimized/plans/PROGRESS.md"

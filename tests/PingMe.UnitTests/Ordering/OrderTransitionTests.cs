@@ -1,5 +1,6 @@
 namespace PingMe.UnitTests.Ordering;
 
+using PingMe.Domain.Integrations;
 using PingMe.Domain.Ordering;
 using Xunit;
 
@@ -44,5 +45,23 @@ public class OrderTransitionTests
         order.TransitionTo(OrderStatus.Delivered);
 
         Assert.Throws<InvalidOperationException>(() => order.TransitionTo(OrderStatus.Delivered));
+    }
+
+    [Fact]
+    public void New_order_starts_with_NotConfigured_pos_delivery_status()
+    {
+        var order = new Order(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
+
+        Assert.Equal(PosDeliveryStatus.NotConfigured, order.PosDeliveryStatus);
+    }
+
+    [Fact]
+    public void RecordPosDeliveryStatus_updates_the_status()
+    {
+        var order = new Order(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
+
+        order.RecordPosDeliveryStatus(PosDeliveryStatus.Sent);
+
+        Assert.Equal(PosDeliveryStatus.Sent, order.PosDeliveryStatus);
     }
 }

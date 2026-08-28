@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PingMe.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PingMe.Infrastructure.Persistence;
 namespace PingMe.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(PingMeDbContext))]
-    partial class PingMeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260828091320_AddOrderPosDeliveryStatus")]
+    partial class AddOrderPosDeliveryStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,33 +251,6 @@ namespace PingMe.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProductOptions");
-                });
-
-            modelBuilder.Entity("PingMe.Domain.Integrations.TenantPosIntegrationSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("ProviderType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("WebhookUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId")
-                        .IsUnique();
-
-                    b.ToTable("TenantPosIntegrationSettings");
                 });
 
             modelBuilder.Entity("PingMe.Domain.Locations.CustomerSession", b =>
