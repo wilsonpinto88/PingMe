@@ -802,7 +802,7 @@ git commit -m "Register IPosIntegrationResolver, IPosOrderDispatcher, and a time
 
 **Does NOT cover:** the order-creation dispatch call (Task 9) — this task only lets an Owner read/write their tenant's settings.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/PingMe.IntegrationTests/Api/PosIntegrationSettingsTests.cs`:
 ```csharp
@@ -923,12 +923,12 @@ public class PosIntegrationSettingsTests : IClassFixture<PingMeWebApplicationFac
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosIntegrationSettingsTests"`
 Expected: FAIL to compile — the DTOs and controller don't exist yet.
 
-- [ ] **Step 3: Create the DTOs**
+- [x] **Step 3: Create the DTOs**
 
 `src/PingMe.Api/Contracts/Integrations/PosIntegrationSettingsDto.cs`:
 ```csharp
@@ -944,7 +944,7 @@ namespace PingMe.Api.Contracts.Integrations;
 public record UpsertPosIntegrationSettingsRequest(string ProviderType, string WebhookUrl, bool IsEnabled);
 ```
 
-- [ ] **Step 4: Create the controller**
+- [x] **Step 4: Create the controller**
 
 `src/PingMe.Api/Controllers/PosIntegrationSettingsController.cs`:
 ```csharp
@@ -1012,17 +1012,17 @@ public class PosIntegrationSettingsController : ControllerBase
 
 `FirstOrDefaultAsync()` with no predicate is safe here because the global tenant query filter already scopes `TenantPosIntegrationSettings` to the authenticated Owner's tenant, and the per-tenant unique index (Task 3) guarantees at most one row exists for that tenant — same one-row-per-tenant pattern this codebase already uses for `Venue` lookups (`LocationsController.CreateLocation`'s `_dbContext.Venues.FirstAsync()`).
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `dotnet test PingMe.slnx --filter "FullyQualifiedName~PosIntegrationSettingsTests"`
 Expected: PASS — all 6 facts green.
 
-- [ ] **Step 6: Run the full backend test suite**
+- [x] **Step 6: Run the full backend test suite**
 
 Run: `dotnet test PingMe.slnx`
 Expected: PASS — all 57 tests green (51 existing + 6 new).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/PingMe.Api/Contracts/Integrations/PosIntegrationSettingsDto.cs src/PingMe.Api/Contracts/Integrations/UpsertPosIntegrationSettingsRequest.cs src/PingMe.Api/Controllers/PosIntegrationSettingsController.cs tests/PingMe.IntegrationTests/Api/PosIntegrationSettingsTests.cs
