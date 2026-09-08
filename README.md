@@ -146,6 +146,80 @@ image URLs must be absolute `http(s)` — anything else is rejected with a 400.
 Products also take a `description` and an `imageUrl` through
 `PUT /admin/products/{id}/presentation`.
 
+## Deploying (free tier)
+
+Three services, all with a genuine no-cost tier at this scale: **Neon**
+(Postgres), **Render** (the API, deployed from the existing Dockerfile), and
+**Vercel** (both frontends, deployed independently from the same repo). CI
+runs on every push via `.github/workflows/ci.yml`.
+
+The one trade-off worth knowing before you demo this to anyone: Render's free
+web service sleeps after 15 minutes idle, so the first request after a quiet
+spell takes a few seconds to wake up.
+
+### 1. Database — Neon
+
+1. Create a free account at neon.tech, create a project, and create a
+   database (any name — `pingme` is fine).
+2. Copy the connection details from Neon's dashboard and build an Npgsql
+   connection string in this exact shape (Neon's own connection string is a
+   `postgres://` URI, which Npgsql does not read — convert it manually):
+
+   ```
+   Host=<neon-host>;Port=5432;Database=<db>;Username=<user>;Password=<password>;SSL Mode=Require;Trust Server Certificate=true
+   ```
+
+   Keep this for step 2.
+
+### 2. API — Render
+
+1. Create a free account at render.com and connect this GitHub repo.
+2. **New → Web Service**, environment **Docker**:
+   - Root Directory: leave blank (repo root) — the Dockerfile's `COPY . .`
+     expects the whole repo as build context, same as `docker-compose.yml`.
+   - Dockerfile Path: `src/PingMe.Api/Dockerfile`
+   - Instance Type: Free
+   - Health Check Path: `/health`
+3. Set these environment variables on the service (**never** reuse the dev
+   placeholder key from `appsettings.Development.json` for `Jwt__Key`):
+
+   | Key | Value |
+   | --- | --- |
+   | `ASPNETCORE_ENVIRONMENT` | `Production` |
+   | `ConnectionStrings__PingMe` | the Neon connection string from step 1 |
+   | `Jwt__Key` | a long random secret, e.g. `openssl rand -base64 48` |
+   | `Jwt__Issuer` | `PingMe` |
+   | `Jwt__Audience` | `PingMeAdmin` |
+   | `Jwt__ExpiryMinutes` | `60` |
+   | `Cors__AllowedOrigins__0` | the customer app's Vercel URL (step 3) |
+   | `Cors__AllowedOrigins__1` | the staff app's Vercel URL (step 3) |
+
+   `PORT` is injected by Render automatically — the Dockerfile already listens
+   on it. Database migrations run automatically on startup.
+4. Deploy. Note the resulting `https://<service>.onrender.com` URL.
+
+### 3. Frontends — Vercel
+
+Create **two** Vercel projects from the same repo (one per app), since each
+is an independent app that happens to share a pnpm workspace for local dev:
+
+| Setting | customer-app project | staff-app project |
+| --- | --- | --- |
+| Root Directory | `src/pingme-web/customer-app` | `src/pingme-web/staff-app` |
+| Framework Preset | Vite | Vite |
+| Environment Variable | `VITE_API_BASE_URL=https://<render-service>.onrender.com` | same |
+
+Deploy both, note their `https://<project>.vercel.app` URLs, then go back to
+Render and set `Cors__AllowedOrigins__0`/`__1` to those exact URLs and
+redeploy the API — without that step, the frontends load but every API call
+fails CORS.
+
+### 4. Verify
+
+Open the customer app's Vercel URL at `/p/{code}` (register a tenant and
+create a QR code first, same as the [local walkthrough](#getting-started)),
+and confirm the staff app receives the order live.
+
 ## Status
 
 Plan 1 (bootstrap, domain model, EF Core, multi-tenancy) is complete and merged — see [Docs/superpowers optimized/plans/PROGRESS.md](Docs/superpowers%20optimized/plans/PROGRESS.md) for what's done and what's next. No HTTP endpoints exist yet; that starts with Plan 2. See [Docs/Ideas/Scratch_1/Scratch_1.md](Docs/Ideas/Scratch_1/Scratch_1.md) for the original architecture and MVP planning notes.

@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -130,6 +131,12 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    // Applies any pending migration on startup rather than requiring a manual
+    // `dotnet ef database update` step against the production database — the
+    // free-tier deploy path (Render + Neon) has no separate step to run one.
+    var dbContext = scope.ServiceProvider.GetRequiredService<PingMeDbContext>();
+    await dbContext.Database.MigrateAsync();
+
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     foreach (var roleName in new[] { "Owner", "Staff" })
     {
@@ -147,6 +154,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Render (and most PaaS hosts) terminate TLS at their edge and forward plain
+// http to the container, tagging the original scheme in X-Forwarded-Proto.
+// Without trusting that header, UseHttpsRedirection below sees "http" on
+// every request and redirects, producing a loop the edge proxy itself can't
+// resolve. KnownProxies/KnownNetworks are cleared because the proxy sits
+// outside the container on infrastructure we don't control the IP of; the
+// header is only reachable through that edge, so trusting it here is safe.
+if (!app.Environment.IsDevelopment())
+{
+    var forwardedHeadersOptions = new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    };
+    // Cleared, not left at their loopback-only defaults: the proxy that sets
+    // these headers is the host's edge, not a known local address.
+    forwardedHeadersOptions.KnownNetworks.Clear();
+    forwardedHeadersOptions.KnownProxies.Clear();
+    app.UseForwardedHeaders(forwardedHeadersOptions);
+}
+
 // Skipped in Development: a phone on the local network reaches the API over
 // plain http, and redirecting it to a host-only dev certificate it does not
 // trust would break testing on a real device.
@@ -161,6 +188,10 @@ app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<OrdersHub>("/hubs/orders");
+
+// Unauthenticated on purpose: the host's health check has no JWT to send.
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+
 app.Run();
 
 public partial class Program
