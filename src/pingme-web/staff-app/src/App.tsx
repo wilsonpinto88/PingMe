@@ -4,6 +4,7 @@ import { getOrders, login, updateOrderStatus } from "./api";
 import { connectOrdersHub } from "./signalr";
 import { ACTIVE_STATUSES, groupByStatus, upsertById, type ActiveStatus } from "./orders";
 import { OrderList } from "./components/OrderList";
+import { RegisterForm } from "./components/RegisterForm";
 import { useMediaQuery } from "./useMediaQuery";
 import type { AdminOrderDto, ConnectionState } from "./types";
 
@@ -46,6 +47,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [signingIn, setSigningIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [mode, setMode] = useState<"signIn" | "register">("signIn");
 
   const [orders, setOrders] = useState<AdminOrderDto[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
@@ -176,6 +178,20 @@ export default function App() {
   };
 
   if (!token) {
+    if (mode === "register") {
+      return (
+        <main className="login">
+          <RegisterForm
+            onRegistered={(newToken) => {
+              storeToken(newToken);
+              setToken(newToken);
+            }}
+            onSwitchToSignIn={() => setMode("signIn")}
+          />
+        </main>
+      );
+    }
+
     return (
       <main className="login">
         <form className="login__card" onSubmit={handleLogin}>
@@ -225,6 +241,14 @@ export default function App() {
 
           <button className="btn btn--advance btn--block" type="submit" disabled={signingIn}>
             {signingIn ? "Signing in..." : "Sign in"}
+          </button>
+
+          <button
+            type="button"
+            className="btn btn--ghost btn--block"
+            onClick={() => setMode("register")}
+          >
+            New venue? Register
           </button>
         </form>
       </main>
