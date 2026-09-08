@@ -31,7 +31,7 @@ public class ProductsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(new ProductDto(product.Id, product.CategoryId, product.Name, product.Price, product.IsAvailable));
+        return Ok(new ProductDto(product.Id, product.CategoryId, product.Name, product.Price, product.IsAvailable, product.Description, product.ImageUrl));
     }
 
     [HttpPost("categories/{categoryId}")]
@@ -46,7 +46,7 @@ public class ProductsController : ControllerBase
         var product = new Product(_currentTenantProvider.TenantId!.Value, categoryId, request.Name, request.Price);
         _dbContext.Products.Add(product);
         await _dbContext.SaveChangesAsync();
-        return Created(string.Empty, new ProductDto(product.Id, product.CategoryId, product.Name, product.Price, product.IsAvailable));
+        return Created(string.Empty, new ProductDto(product.Id, product.CategoryId, product.Name, product.Price, product.IsAvailable, product.Description, product.ImageUrl));
     }
 
     [HttpPut("{id}/availability")]
@@ -61,6 +61,28 @@ public class ProductsController : ControllerBase
         product.SetAvailability(request.IsAvailable);
         await _dbContext.SaveChangesAsync();
         return NoContent();
+    }
+
+    [HttpPut("{id}/presentation")]
+    public async Task<ActionResult<ProductDto>> UpdatePresentation(Guid id, UpdateProductPresentationRequest request)
+    {
+        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            product.SetPresentation(request.Description, request.ImageUrl);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        await _dbContext.SaveChangesAsync();
+        return Ok(new ProductDto(product.Id, product.CategoryId, product.Name, product.Price, product.IsAvailable, product.Description, product.ImageUrl));
     }
 
     [HttpPost("{productId}/options")]

@@ -39,6 +39,16 @@ public class PingMeDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Gu
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Product>().Property(p => p.Price).HasPrecision(10, 2);
+        modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(Product.MaxDescriptionLength);
+        modelBuilder.Entity<Product>().Property(p => p.ImageUrl).HasMaxLength(2048);
+
+        modelBuilder.Entity<Venue>().Property(v => v.PrimaryColor).HasMaxLength(7).IsRequired();
+        modelBuilder.Entity<Venue>().Property(v => v.AccentColor).HasMaxLength(7).IsRequired();
+        modelBuilder.Entity<Venue>().Property(v => v.CurrencyCode).HasMaxLength(3).IsRequired();
+        modelBuilder.Entity<Venue>().Property(v => v.ThemeMode).HasConversion<int>();
+        modelBuilder.Entity<Venue>().Property(v => v.LogoUrl).HasMaxLength(2048);
+        modelBuilder.Entity<Venue>().Property(v => v.HeroImageUrl).HasMaxLength(2048);
+        modelBuilder.Entity<Venue>().Property(v => v.Tagline).HasMaxLength(VenueBranding.MaxTaglineLength);
         modelBuilder.Entity<ProductOption>().Property(p => p.PriceDelta).HasPrecision(10, 2);
         modelBuilder.Entity<OrderItem>().Property(i => i.UnitPrice).HasPrecision(10, 2);
         modelBuilder.Entity<OrderItem>().ToTable("OrderItems");

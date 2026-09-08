@@ -103,11 +103,24 @@ builder.Services.AddScoped<IPosIntegrationResolver, PosIntegrationResolver>();
 builder.Services.AddScoped<IPosOrderDispatcher, PosOrderDispatcher>();
 
 const string FrontendDevCorsPolicy = "FrontendDevCorsPolicy";
+
+// Origins come from configuration so a device on the local network (a phone
+// testing the customer app, a tablet on the pass) can be allowed without a
+// code change. Set Cors:AllowedOrigins in appsettings.Development.json.
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
+
+if (allowedOrigins is null || allowedOrigins.Length == 0)
+{
+    allowedOrigins = new[] { "http://localhost:5173", "http://localhost:5174" };
+}
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(FrontendDevCorsPolicy, policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -134,7 +147,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Skipped in Development: a phone on the local network reaches the API over
+// plain http, and redirecting it to a host-only dev certificate it does not
+// trust would break testing on a real device.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseCors(FrontendDevCorsPolicy);
 app.UseAuthentication();
 app.UseMiddleware<TenantResolutionMiddleware>();

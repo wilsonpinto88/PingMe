@@ -43,8 +43,20 @@ public class LocationsController : ControllerBase
             }
         }
 
-        var venue = await _dbContext.Venues.FirstAsync();
-        var location = new Location(_currentTenantProvider.TenantId!.Value, venue.Id, request.Name, request.ParentLocationId);
+        // A child location must live in the same venue as its parent; otherwise fall back to
+        // the tenant's venue. Blindly taking the first venue would misplace child locations.
+        Guid venueId;
+        if (request.ParentLocationId is not null)
+        {
+            var parent = await _dbContext.Locations.FirstAsync(l => l.Id == request.ParentLocationId);
+            venueId = parent.VenueId;
+        }
+        else
+        {
+            venueId = (await _dbContext.Venues.FirstAsync()).Id;
+        }
+
+        var location = new Location(_currentTenantProvider.TenantId!.Value, venueId, request.Name, request.ParentLocationId);
         _dbContext.Locations.Add(location);
         await _dbContext.SaveChangesAsync();
         return Created(string.Empty, new LocationDto(location.Id, location.Name, location.ParentLocationId));

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PingMe.Api.Contracts.Ordering;
+using PingMe.Api.Contracts.Venues;
 using PingMe.Domain.Locations;
 using PingMe.Infrastructure.Persistence;
 using PingMe.Infrastructure.Tenants;
@@ -36,7 +37,9 @@ public class QrResolutionController : ControllerBase
         _currentTenantProvider.TenantId = qrCode.TenantId;
 
         var location = await _dbContext.Locations.FirstAsync(l => l.Id == qrCode.LocationId);
-        var venue = await _dbContext.Venues.FirstAsync();
+        // Resolve the venue that actually owns this location. Picking the tenant's first
+        // venue would show the wrong name and branding once a tenant has more than one.
+        var venue = await _dbContext.Venues.FirstAsync(v => v.Id == location.VenueId);
 
         var now = DateTime.UtcNow;
         var session = await _dbContext.CustomerSessions
@@ -63,11 +66,11 @@ public class QrResolutionController : ControllerBase
                         c.Name,
                         c.SortOrder,
                         products.Where(p => p.CategoryId == c.Id)
-                            .Select(p => new CustomerProductDto(p.Id, p.Name, p.Price))
+                            .Select(p => new CustomerProductDto(p.Id, p.Name, p.Price, p.Description, p.ImageUrl))
                             .ToList()))
                     .ToList()))
             .ToList();
 
-        return Ok(new ResolveQrCodeResponse(session.Id, venue.Name, location.Name, menuDtos));
+        return Ok(new ResolveQrCodeResponse(session.Id, venue.Name, location.Name, venue.ToThemeDto(), menuDtos));
     }
 }

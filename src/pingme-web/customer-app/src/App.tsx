@@ -1,81 +1,217 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { resolveQrCode, placeOrder } from "./api";
-import { addItem, removeItem, type CartItem } from "./cart";
+import { addItem, decrementItem, type CartItem } from "./cart";
+import { applyTheme, FALLBACK_THEME, normalizeTheme } from "./theme";
+import {
+  clearPlacedOrder,
+  loadCart,
+  loadPlacedOrder,
+  savePlacedOrder,
+  saveCart,
+  type PlacedOrder,
+} from "./storage";
 import { MenuBrowser } from "./components/MenuBrowser";
-import { CartView } from "./components/CartView";
+import { MenuSkeleton } from "./components/MenuSkeleton";
+import { VenueHeader } from "./components/VenueHeader";
+import { OrderBar } from "./components/OrderBar";
+import { CartSheet } from "./components/CartSheet";
 import { OrderStatus } from "./components/OrderStatus";
-import type { ResolveQrCodeResponse } from "./types";
+import type { CustomerProduct, ResolveQrCodeResponse } from "./types";
 
 function getCodeFromPath(): string | null {
   const match = window.location.pathname.match(/^\/p\/(.+)$/);
-  return match ? match[1] : null;
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
-export default function App() {
-  const [resolved, setResolved] = useState<ResolveQrCodeResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [placingOrder, setPlacingOrder] = useState(false);
-  const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
+type LoadState = "loading" | "ready" | "error";
 
-  useEffect(() => {
-    const code = getCodeFromPath();
+export default function App() {
+  const code = useMemo(getCodeFromPath, []);
+
+  const [loadState, setLoadState] = useState<LoadState>(code ? "loading" : "error");
+  const [resolved, setResolved] = useState<ResolveQrCodeResponse | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(
+    code ? null : "No code found in this link. Scan the code at your table to start ordering.",
+  );
+
+  const [cart, setCart] = useState<CartItem[]>(() => (code ? loadCart(code) : []));
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [placedOrder, setPlacedOrder] = useState<PlacedOrder | null>(() =>
+    code ? loadPlacedOrder(code) : null,
+  );
+
+  const theme = useMemo(
+    () => (resolved ? normalizeTheme(resolved.theme) : FALLBACK_THEME),
+    [resolved],
+  );
+
+  const loadVenue = useCallback(async () => {
     if (!code) {
-      setError("No QR code found in the URL. Scan a code to start ordering.");
       return;
     }
+    setLoadState("loading");
+    setLoadError(null);
+    try {
+      setResolved(await resolveQrCode(code));
+      setLoadState("ready");
+    } catch {
+      setLoadError("We could not open this menu. Check your connection, or ask a staff member.");
+      setLoadState("error");
+    }
+  }, [code]);
 
-    resolveQrCode(code)
-      .then(setResolved)
-      .catch(() => setError("This code isn't valid — ask a staff member for help."));
+  useEffect(() => {
+    void loadVenue();
+  }, [loadVenue]);
+
+  // Theme the whole document, not just the React tree, so the browser chrome
+  // and the area behind the safe insets match the venue too.
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
+  useEffect(() => {
+    if (code) {
+      saveCart(code, cart);
+    }
+  }, [code, cart]);
+
+  const handleAdd = useCallback((product: CustomerProduct) => {
+    setCart((current) =>
+      addItem(current, {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+      }),
+    );
   }, []);
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  const handleAddById = useCallback((productId: string) => {
+    setCart((current) => {
+      const existing = current.find((item) => item.productId === productId);
+      return existing ? addItem(current, { ...existing, quantity: 1 }) : current;
+    });
+  }, []);
 
-  if (!resolved) {
-    return <p>Loading menu...</p>;
-  }
-
-  if (placedOrderId) {
-    return <OrderStatus orderId={placedOrderId} sessionId={resolved.sessionId} />;
-  }
-
-  const handleAddToCart = (productId: string, name: string, price: number) => {
-    setCart((current) => addItem(current, { productId, name, price, quantity: 1 }));
-  };
-
-  const handleRemove = (productId: string) => {
-    setCart((current) => removeItem(current, productId));
-  };
+  const handleRemoveOne = useCallback((productId: string) => {
+    setCart((current) => decrementItem(current, productId));
+  }, []);
 
   const handlePlaceOrder = async () => {
+    if (!resolved || cart.length === 0) {
+      return;
+    }
     setPlacingOrder(true);
+    setOrderError(null);
     try {
       const order = await placeOrder(
         resolved.sessionId,
         cart.map((item) => ({ productId: item.productId, quantity: item.quantity })),
       );
-      setPlacedOrderId(order.orderId);
+      const placed = { orderId: order.orderId, sessionId: resolved.sessionId };
+      if (code) {
+        savePlacedOrder(code, placed);
+      }
+      setPlacedOrder(placed);
+      setCart([]);
+      setSheetOpen(false);
     } catch {
-      setError("Couldn't place your order — please try again.");
+      // The sheet stays open with the cart intact so nothing is retyped.
+      setOrderError("That did not go through. Check your connection and try again.");
     } finally {
       setPlacingOrder(false);
     }
   };
 
-  return (
-    <div>
-      <h1>{resolved.venueName}</h1>
-      <p>{resolved.locationLabel}</p>
-      <MenuBrowser menus={resolved.menus} onAddToCart={handleAddToCart} />
-      <CartView
-        cart={cart}
-        onRemove={handleRemove}
-        onPlaceOrder={handlePlaceOrder}
-        placingOrder={placingOrder}
+  const handleStartNewOrder = () => {
+    if (code) {
+      clearPlacedOrder(code);
+    }
+    setPlacedOrder(null);
+  };
+
+  if (loadState === "error") {
+    return (
+      <main className="shell screen-center" id="main">
+        <h1 className="status-headline">Something is not right</h1>
+        <p className="notice notice--error" role="alert">
+          {loadError}
+        </p>
+        {code && (
+          <button type="button" className="btn btn--primary btn--lg" onClick={() => void loadVenue()}>
+            Try again
+          </button>
+        )}
+      </main>
+    );
+  }
+
+  if (loadState === "loading" || !resolved) {
+    return (
+      <div className="app">
+        <p className="visually-hidden" aria-live="polite">
+          Loading the menu
+        </p>
+        <MenuSkeleton />
+      </div>
+    );
+  }
+
+  if (placedOrder) {
+    return (
+      <OrderStatus
+        orderId={placedOrder.orderId}
+        sessionId={placedOrder.sessionId}
+        locationLabel={resolved.locationLabel}
+        onStartNewOrder={handleStartNewOrder}
       />
+    );
+  }
+
+  return (
+    <div className={`app${cart.length > 0 ? " app--with-order-bar" : ""}`}>
+      <a className="skip-link" href="#main">
+        Skip to the menu
+      </a>
+
+      <VenueHeader
+        venueName={resolved.venueName}
+        locationLabel={resolved.locationLabel}
+        theme={theme}
+      />
+
+      <main className="shell" id="main">
+        <MenuBrowser
+          menus={resolved.menus}
+          cart={cart}
+          currencyCode={theme.currencyCode}
+          onAdd={handleAdd}
+          onRemoveOne={handleRemoveOne}
+        />
+      </main>
+
+      <OrderBar
+        cart={cart}
+        currencyCode={theme.currencyCode}
+        onReview={() => setSheetOpen(true)}
+      />
+
+      {sheetOpen && (
+        <CartSheet
+          cart={cart}
+          currencyCode={theme.currencyCode}
+          locationLabel={resolved.locationLabel}
+          placingOrder={placingOrder}
+          error={orderError}
+          onAddOne={handleAddById}
+          onRemoveOne={handleRemoveOne}
+          onClose={() => setSheetOpen(false)}
+          onPlaceOrder={handlePlaceOrder}
+        />
+      )}
     </div>
   );
 }

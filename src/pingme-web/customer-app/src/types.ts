@@ -1,7 +1,21 @@
+export type VenueThemeMode = "Light" | "Dark";
+
+export interface VenueTheme {
+  primaryColor: string;
+  accentColor: string;
+  currencyCode: string;
+  themeMode: VenueThemeMode;
+  logoUrl: string | null;
+  heroImageUrl: string | null;
+  tagline: string | null;
+}
+
 export interface CustomerProduct {
   id: string;
   name: string;
   price: number;
+  description: string | null;
+  imageUrl: string | null;
 }
 
 export interface CustomerCategory {
@@ -21,6 +35,7 @@ export interface ResolveQrCodeResponse {
   sessionId: string;
   venueName: string;
   locationLabel: string;
+  theme: VenueTheme;
   menus: CustomerMenu[];
 }
 

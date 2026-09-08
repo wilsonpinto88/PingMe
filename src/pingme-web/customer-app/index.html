@@ -2,8 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PingMe</title>
+    <!-- viewport-fit=cover lets the header sit under the notch; zoom stays enabled. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Overwritten at runtime with the venue primary colour (see theme.ts). -->
+    <meta name="theme-color" content="#111827" />
+    <meta name="description" content="Order from your seat. No queue, no waiting for staff." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <!-- A venue menu should never surface in search results. -->
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="data:," />
+    <title>Order</title>
   </head>
   <body>
     <div id="root"></div>
